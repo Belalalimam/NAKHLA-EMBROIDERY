@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="author" content="">
-    <title>@ViewData["Title"] - Jo</title>
+    <title>NAKHLA EMBROIDERY</title>
     <script type="importmap"></script>
+    <link rel="icon" type="image/svg+xml" href="~/Logo.png" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Jo.styles.css" asp-append-version="true" />
     <link href="~/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet">
-    <script src = "https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin = "anonymous" ></script>
+
 
     
 
@@ -21,6 +24,63 @@
 
 </head>
 <body>
+    <header class=" d-flex justify-content-center"> <u>Free Shipping</u>Domestic Orders $150+</header>
+
+    <section class="ftco-section">
+
+        <div class="wrap">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col">
+                        <p class="mb-0 phone"><span class="fa fa-phone"></span> <a href="#">+00 1234 567</a></p>
+                    </div>
+                    <div class="col d-flex justify-content-end">
+                        <div class="social-media">
+                            <p class="mb-0 d-flex">
+                                <a href="#" class="d-flex align-items-center justify-content-center"><span class="fa fa-facebook"><i class="sr-only">Facebook</i></span></a>
+                                <a href="#" class="d-flex align-items-center justify-content-center"><span class="fa fa-twitter"><i class="sr-only">Twitter</i></span></a>
+                                <a href="#" class="d-flex align-items-center justify-content-center"><span class="fa fa-instagram"><i class="sr-only">Instagram</i></span></a>
+                                <a href="#" class="d-flex align-items-center justify-content-center"><span class="fa fa-dribbble"><i class="sr-only">Dribbble</i></span></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+            <div class="container">                
+                <a class="navbar-brand" href="index.html">EMBROIDERY <span>NAKHLA</span></a>
+                <form action="#" class="searchform order-sm-start order-lg-last">
+                    <div class="form-group d-flex">
+                        <input type="text" class="form-control pl-3" placeholder="Search">
+                        <button type="submit" placeholder="" class="form-control search"><span class="fa fa-search"></span></button>
+                    </div>
+                </form>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fa fa-bars"></span> Menu
+                </button>
+                <div class="collapse navbar-collapse" id="ftco-nav">
+                    <ul class="navbar-nav m-auto">
+                        <li class="nav-item active"><a href="#" class="nav-link">Home</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Page</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown04">
+                                <a class="dropdown-item" href="#">Page 1</a>
+                                <a class="dropdown-item" href="#">Page 2</a>
+                                <a class="dropdown-item" href="#">Page 3</a>
+                                <a class="dropdown-item" href="#">Page 4</a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a href="#" class="nav-link">Catalog</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Blog</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- END nav -->
+
+    </section>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -41,6 +101,10 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/js/popper.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
