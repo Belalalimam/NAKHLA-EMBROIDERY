@@ -1,0 +1,82 @@
+﻿/* Navbar tweaks WITHOUT changing background/fill */
+
+/* Keep background untouched: do not set background-color here */
+
+/* Slightly tighter navbar padding and stronger shadow */
+.ftco - navbar - light {
+    z - index: 1035;
+    padding: 0; /* keep as in original but ensure consistent */
+    box - shadow: 0 6px 20px - 18px rgba(0,0,0,0.45);
+}
+
+    /* Brand style (no fill change) */
+    .ftco - navbar - light.navbar - brand {
+        color: #111111;
+        font - weight: 800;
+        font - size: 20px;
+        letter - spacing: 0.02em;
+        text - transform: uppercase;
+    }
+
+    /* Search input — keep white background behavior from site.css, only adjust sizing */
+    .ftco - navbar - light.searchform {
+        height: 48px;
+        border - radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+        .ftco - navbar - light.searchform.form - control {
+            height: 48px;
+            padding - left: 0.75rem;
+            font - size: 14px;
+        }
+
+    /* Nav links — change typography/spacing but preserve background */
+    .ftco - navbar - light.navbar - nav > .nav - item > .nav - link {
+        font - size: 12px;
+        padding - top: 1.25rem;
+        padding - bottom: 1.25rem;
+        padding - left: 18px;
+        padding - right: 18px;
+        font - weight: 600;
+        color: #4a4a4a;
+        letter - spacing: 1px;
+    }
+
+        /* Hover underline effect — uses accent color, still doesn't change navbar fill */
+        .ftco - navbar - light.navbar - nav > .nav - item > .nav - link:before {
+            background-color: #f1bc31;
+            transform - origin: left center;
+        }
+
+        .ftco - navbar - light.navbar - nav > .nav - item > .nav - link:hover,
+        .ftco-navbar-light .navbar-nav > .nav-item.active > .nav-link {
+            color: #ffffff;
+        }
+
+    /* Toggler styling (mobile) */
+    .ftco - navbar - light.navbar - toggler {
+        border: 0;
+        color: rgba(0, 0, 0, 0.6);
+        font - size: 15px;
+    }
+
+    /* Make dropdowns a bit bigger without touching the navbar fill */
+    .ftco - navbar - light.navbar - nav.dropdown - menu {
+        min - width: 12rem;
+        border - radius: 6px;
+        padding: 0.5rem 0;
+    }
+
+/* Small screen adjustments */
+@media(max - width: 991.98px) {
+    .ftco - navbar - light.navbar - brand {
+        font - size: 18px;
+    }
+
+    .ftco - navbar - light.navbar - nav > .nav - item > .nav - link {
+        padding - top: .75rem;
+        padding - bottom: .75rem;
+        color: #333;
+    }
+}
