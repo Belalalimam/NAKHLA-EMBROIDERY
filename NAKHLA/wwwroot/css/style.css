@@ -3426,21 +3426,23 @@ input[type="button"].btn-block {
   display: block; }
 
 .navbar {
-  position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  padding: 0.5rem 1rem; }
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background-color: #051F20;
+}
   .navbar > .container,
-  .navbar > .container-fluid {
+  .navbar > .container-fluid {  
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -5404,8 +5406,8 @@ button.bg-light:hover,
 button.bg-light:focus {
   background-color: #dae0e5 !important; }
 
-.bg-dark {
-  background-color: #343a40 !important; }
+/*.bg-dark {
+  background-color: #343a40 !important; }*/
 
 a.bg-dark:hover, a.bg-dark:focus,
 button.bg-dark:hover,
@@ -8158,11 +8160,12 @@ h1, h2, h3, h4, h5,
   font-family: "Poppins", Arial, sans-serif;
   color: #000; }
 
-.bg-primary {
-  background: #f1bc31 !important; }
+/*.bg-primary {
+  background: #f1bc31 !important; }*/
 
-/*.ftco-section {
-  padding: 7em 0; }*/
+.ftco-section {
+    background: #051F20 !important;
+}
 
 .ftco-no-pt {
   padding-top: 0; }

@@ -1,0 +1,198 @@
+﻿@model ProductWithRelatedVM
+
+<!-- Product section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="~/images/@Model.Product.MainImg" alt="..." /></div>
+            <div class="col-md-6">
+                <div class="badge bg-primary text-white position-relative" style="top: 0.5rem; right: 0.5rem">@Model.Product.Category.Name</div>
+                <div class="badge bg-danger text-white position-relative" style="top: 0.5rem; right: 0.5rem">Quantity: @Model.Product.Quantity</div>
+                <h1 class="display-5 fw-bolder">@Model.Product.Name</h1>
+                @* <div class="fs-5 mb-5">
+                    <span class="text-decoration-line-through">@Model.Product.Price.ToString("c")</span>
+                    <span>@((Model.Product.Price - (Model.Product.Price * (Model.Product.Discount / 100))).ToString("c"))</span>
+                </div> *@
+                <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium at dolorem quidem modi. Nam sequi consequatur obcaecati excepturi alias magni, accusamus eius blanditiis delectus ipsam minima ea iste laborum vero?</p>
+                <div class="d-flex">
+                    <form asp-action="AddToCart" asp-controller="Cart">
+                        <input type="hidden" name="ProductId" value="@Model.Product.Id">
+                        <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" style="max-width: 3rem" name="count" />
+                        <button class="btn btn-outline-dark flex-shrink-0" type="submit">
+                            <i class="bi-cart-fill me-1"></i>
+                            Add to cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Related items section-->
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h2 class="fw-bolder mb-4">Related products</h2>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+            @foreach(var item in Model.RelatedProducts)
+            {
+                <div class="card">
+                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
+                        <div class="badge">HOT SALE</div>
+                        <div class="tilt">
+                            <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                        </div>
+                        <div class="info">
+                            <div class="cat">High-Performance Laptop</div>
+                            <h2 class="title">UltraBook Pro X</h2>
+                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
+                            @* <div class="feats">
+                            <span class="feat">4K Display</span>
+                            <span class="feat">16-Hour Battery</span>
+                            <span class="feat">Thunderbolt 4</span>
+                        </div> *@
+                            <div class="bottom">
+                                <div class="price">
+                                    <span class="old">$2,499</span>
+                                    <span class="new">$1,999</span>
+                                </div>
+                                <button class="btn">
+                                    <span>Add to Cart</span>
+                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
+                                        <line x1="3" y1="6" x2="21" y2="6" />
+                                        <path d="M16 10a4 4 0 01-8 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="meta">
+                                <div class="rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <span class="rcount">245 Reviews</span>
+                                </div>
+                                <div class="stock">In Stock</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+</section>
+<!-- TOP items section-->
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h2 class="fw-bolder mb-4">TOP products</h2>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+            @foreach(var item in Model.TopProducts)
+            {
+                <div class="card">
+                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
+                        <div class="badge">HOT SALE</div>
+                        <div class="tilt">
+                            <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                        </div>
+                        <div class="info">
+                            <div class="cat">High-Performance Laptop</div>
+                            <h2 class="title">UltraBook Pro X</h2>
+                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
+                            @* <div class="feats">
+                            <span class="feat">4K Display</span>
+                            <span class="feat">16-Hour Battery</span>
+                            <span class="feat">Thunderbolt 4</span>
+                        </div> *@
+                            <div class="bottom">
+                                <div class="price">
+                                    <span class="old">$2,499</span>
+                                    <span class="new">$1,999</span>
+                                </div>
+                                <button class="btn">
+                                    <span>Add to Cart</span>
+                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
+                                        <line x1="3" y1="6" x2="21" y2="6" />
+                                        <path d="M16 10a4 4 0 01-8 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="meta">
+                                <div class="rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <span class="rcount">245 Reviews</span>
+                                </div>
+                                <div class="stock">In Stock</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+</section>
+<!-- Similar items section-->
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h2 class="fw-bolder mb-4">Similar products</h2>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+            @foreach (var item in Model.SimilarProducts)
+            {
+                <div class="card">
+                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
+                        <div class="badge">HOT SALE</div>
+                        <div class="tilt">
+                            <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                        </div>
+                        <div class="info">
+                            <div class="cat">High-Performance Laptop</div>
+                            <h2 class="title">UltraBook Pro X</h2>
+                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
+                            @* <div class="feats">
+                            <span class="feat">4K Display</span>
+                            <span class="feat">16-Hour Battery</span>
+                            <span class="feat">Thunderbolt 4</span>
+                        </div> *@
+                            <div class="bottom">
+                                <div class="price">
+                                    <span class="old">$2,499</span>
+                                    <span class="new">$1,999</span>
+                                </div>
+                                <button class="btn">
+                                    <span>Add to Cart</span>
+                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
+                                        <line x1="3" y1="6" x2="21" y2="6" />
+                                        <path d="M16 10a4 4 0 01-8 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="meta">
+                                <div class="rating">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                    <span class="rcount">245 Reviews</span>
+                                </div>
+                                <div class="stock">In Stock</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+</section>

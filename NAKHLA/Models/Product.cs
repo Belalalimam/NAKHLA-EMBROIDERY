@@ -17,7 +17,7 @@
 
         public Category Category { get; set; }
         public Brand Brand { get; set; }
-        public List<ProductSubImage> ProductSubImage { get; set; }
+        
 
     }
 }

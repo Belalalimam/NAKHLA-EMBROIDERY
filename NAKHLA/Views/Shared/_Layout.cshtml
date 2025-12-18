@@ -10,7 +10,7 @@
     <link rel="icon" type="image/svg+xml" href="~/Logo.png" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Jo.styles.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/css/site.css" /> *@
     <link href="~/css/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -81,7 +81,7 @@
         <!-- END nav -->
 
     </section>
-    <div class="container">
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

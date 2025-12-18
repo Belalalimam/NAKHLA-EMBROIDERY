@@ -1,1 +1,117 @@
-﻿<h1>hello word customer</h1>
+﻿@model List<Product>
+
+
+@if (Model.Any())
+{
+    <div class="container-fluid d-flex">
+
+        @* (قسم الفلتر (انا ماكملت تعديله او تزبيطه لبعدين *@
+        <div class="row">
+            @* Replace the existing `div.fillter1` placeholder with this responsive filter UI *@
+            <div class="filter-col">
+                <!-- Mobile: toggle filters -->
+                <button class="btn btn-outline-secondary d-lg-none mb-2" type="button" data-toggle="collapse" data-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
+                    Filters
+                </button>
+
+                <!-- Collapsible on small screens, always visible on lg+ -->
+                <div class="collapse d-lg-block" id="filtersCollapse">
+                    <aside class="filters p-3 bg-white rounded shadow-sm">
+                        <form id="product-filters" class="d-flex flex-column">
+                            <div class="filter-section mb-3">
+                                <h6 class="filter-title mb-2">Category</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="laptops" id="catLaptops">
+                                    <label class="form-check-label" for="catLaptops">Laptops</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="accessories" id="catAcc">
+                                    <label class="form-check-label" for="catAcc">Accessories</label>
+                                </div>
+                            </div>
+
+                            <div class="filter-section mb-3">
+                                <h6 class="filter-title mb-2">Price</h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <input type="number" class="form-control mr-2" id="priceMin" placeholder="Min" style="width:95px;">
+                                    <span class="mx-1 text-muted">-</span>
+                                    <input type="number" class="form-control ml-2" id="priceMax" placeholder="Max" style="width:95px;">
+                                </div>
+                                <input type="range" class="form-control-range" id="priceRange" min="0" max="5000" step="10">
+                            </div>
+
+                            <div class="filter-section mb-3">
+                                <h6 class="filter-title mb-2">Brand</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="brandA" id="brandA">
+                                    <label class="form-check-label" for="brandA">Brand A</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="brandB" id="brandB">
+                                    <label class="form-check-label" for="brandB">Brand B</label>
+                                </div>
+                            </div>
+
+                            <div class="filter-actions mt-auto d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary">Apply</button>
+                                <button type="button" id="clearFilters" class="btn btn-outline-secondary">Clear</button>
+                            </div>
+                        </form>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        @* قسم المنتجات لسا بده شوي تعديلات *@
+        <div class="row d-flex align-items-center justify-content-center border1">
+            @foreach (var item in Model)    
+            {
+                <div class="card">
+                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
+                    <div class="badge">HOT SALE</div>
+                    <div class="tilt">
+                        <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                    </div>
+                    <div class="info">
+                        <div class="cat">High-Performance Laptop</div>
+                        <h2 class="title">UltraBook Pro X</h2>
+                        @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
+                        @* <div class="feats">
+                            <span class="feat">4K Display</span>
+                            <span class="feat">16-Hour Battery</span>
+                            <span class="feat">Thunderbolt 4</span>
+                        </div> *@
+                        <div class="bottom">
+                            <div class="price">
+                                <span class="old">$2,499</span>
+                                <span class="new">$1,999</span>
+                            </div>
+                            <button class="btn">
+                                <span>Add to Cart</span>
+                                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
+                                    <line x1="3" y1="6" x2="21" y2="6" />
+                                    <path d="M16 10a4 4 0 01-8 0" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="meta">
+                            <div class="rating">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                <span class="rcount">245 Reviews</span>
+                            </div>
+                            <div class="stock">In Stock</div>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+            }
+                </div>  
+        </div>  
+}
+
+

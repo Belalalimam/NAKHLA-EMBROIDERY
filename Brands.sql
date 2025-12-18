@@ -1,0 +1,10 @@
+insert into Brands (id, Name, Description, Status) values (1, 'Tazz', null, false);
+insert into Brands (id, Name, Description, Status) values (2, 'Aivee', null, false);
+insert into Brands (id, Name, Description, Status) values (3, 'Wordtune', null, true);
+insert into Brands (id, Name, Description, Status) values (4, 'Browseblab', null, true);
+insert into Brands (id, Name, Description, Status) values (5, 'Camido', null, false);
+insert into Brands (id, Name, Description, Status) values (6, 'Centizu', null, true);
+insert into Brands (id, Name, Description, Status) values (7, 'Jaxbean', null, true);
+insert into Brands (id, Name, Description, Status) values (8, 'Kwinu', null, false);
+insert into Brands (id, Name, Description, Status) values (9, 'Tanoodle', null, false);
+insert into Brands (id, Name, Description, Status) values (10, 'Roombo', null, false);
