@@ -110,7 +110,7 @@ body {
 
 
 body {
-    background: linear-gradient( 135deg, rgba(226, 226, 226, 1) 0%, rgba(219, 219, 219, 1) 50%, rgba(209, 209, 209, 1) 50%, rgba(209, 209, 209, 1) 50%, rgba(254, 254, 254, 1) 100% ) center/cover no-repeat;
+/*    background: linear-gradient( 135deg, rgba(226, 226, 226, 1) 0%, rgba(219, 219, 219, 1) 50%, rgba(209, 209, 209, 1) 50%, rgba(209, 209, 209, 1) 50%, rgba(254, 254, 254, 1) 100% ) center/cover no-repeat;*/
     /*    min-height: 100vh;*/
 }
 
@@ -250,6 +250,7 @@ body {
     gap: 6px;
     transition: 0.3s;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    text-decoration: none !important;
 }
 
     .btn:hover {

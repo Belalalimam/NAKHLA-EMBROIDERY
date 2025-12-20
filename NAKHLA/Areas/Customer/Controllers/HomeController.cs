@@ -14,16 +14,59 @@ namespace NAKHLA.Areas.Customer.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(FilterVM filterVM, int page = 1)
         {
-
+            const int discount = 50;
             var products = _context.Products.AsQueryable();
 
-           
+            // Filter
+            if (filterVM.Name is not null)
+            {
+                products = products.Where(e => e.Name.Contains(filterVM.Name));
+                ViewBag.ProductName = filterVM.Name;
+            }
+
+            if (filterVM.MinPrice is not null)
+            {
+                products = products.Where(e => e.Price - e.Price * (e.Discount / 100) >= filterVM.MinPrice);
+                ViewBag.MinPrice = filterVM.MinPrice;
+            }
+
+            if (filterVM.MaxPrice is not null)
+            {
+                products = products.Where(e => e.Price - e.Price * (e.Discount / 100) <= filterVM.MaxPrice);
+                ViewBag.MaxPrice = filterVM.MaxPrice;
+            }
+
+            if (filterVM.CategoryId is not null)
+            {
+                products = products.Where(e => e.CategoryId == filterVM.CategoryId);
+                ViewBag.CategoryId = filterVM.CategoryId;
+            }
+
+            if (filterVM.IsHot)
+            {
+                products = products.Where(e => e.Discount >= discount);
+                ViewBag.isHot = filterVM.IsHot;
+            }
+
+
+            // Categories
+            var categories = _context.Categorise;
+            ViewData["categories"] = categories.ToList();
+            ViewBag.categories = categories.ToList();
+
+            // Paginitation
+            var totalNumberOfPages = Math.Ceiling(products.Count() / 8.0);
+            var currentPage = page;
+            ViewBag.totalNumberOfPages = totalNumberOfPages;
+            ViewBag.currentPage = currentPage;
+
+            products = products.Skip((page - 1) * 8).Take(8);
 
 
             return View(products.ToList());
-        }    
+        }
 
 
         public IActionResult Details(int id)
@@ -58,6 +101,59 @@ namespace NAKHLA.Areas.Customer.Controllers
         public IActionResult NotFoundPage()
         {
             return View();
+        }
+
+
+
+
+
+
+        public ViewResult PersonalInfo()
+        {
+            string name = "Mohamed";
+            int age = 27;
+            string address = "Mansoura";
+            char gender = 'M';
+
+            List<string> skills = new List<string>
+        {
+            "C", "C++", "C#", "SQL Server"
+        };
+
+            var PersonalInfoVM = new PersonalInfoVM()
+            {
+                Name = name,
+                Age = age,
+                Address = address,
+                Gender = gender,
+                Skills = skills
+            };
+
+            return View("PersonalInfomation", PersonalInfoVM);
+        }
+
+        public ViewResult PersonalInfo2()
+        {
+            string name = "Mohamed";
+            int age = 27;
+            string address = "Mansoura";
+            char gender = 'M';
+
+            List<string> skills = new List<string>
+        {
+            "C", "C++", "C#", "SQL Server"
+        };
+
+            var PersonalInfoVM = new PersonalInfoVM()
+            {
+                Name = name,
+                Age = age,
+                Address = address,
+                Gender = gender,
+                Skills = skills
+            };
+
+            return View(PersonalInfoVM);
         }
     }
 }
