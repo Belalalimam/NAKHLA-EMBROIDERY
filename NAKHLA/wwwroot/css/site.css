@@ -2,7 +2,7 @@
     border: 1px solid red !important;
 }
 
-/*.filter-col {
+.filter-col {
     
     width: 100%;
     margin-bottom: 1rem;
@@ -72,7 +72,7 @@
 
 .filters .form-control {
     font-size: 0.9rem;
-}*/
+}
 
 
 
@@ -345,10 +345,7 @@ ul {
     list-style: none;
 }
 
-h1,
-h2,
-h3,
-h4 {
+h1, h2, h3, h4 {
     line-height: normal;
     font-weight: 600;
 }
@@ -370,7 +367,7 @@ h4 {
 }
 
 .container1 {
-    max-width: 1200px;
+/*    max-width: 1200px;*/
     margin: 0 auto;
     padding: 0 15px;
 }
@@ -406,7 +403,8 @@ header {
         display: flex;
     }
 
-    header .right .num {
+    header .right .num,
+    .mobile-menu .mini ul li a .num {
         position: absolute;
         left: -10px;
         top: 20px;
@@ -429,7 +427,8 @@ header {
             color: var(--primary-color);
         }
 
-    header .middle, header .right ul li:not(:nth-child(2)) {
+    header .middle,
+    header .right ul li:not(:nth-child(2)) {
         display: none;
     }
 
@@ -439,15 +438,15 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    min-width: 500px;
+    max-width: 500px;
     background-color: var(--white-color);
     box-shadow: 2px 0 45px -20px rgba(0 0 0 / 30%);
     z-index: 1000;
     display: flex;
     flex-direction: row;
-    transform: translate3d(100%, 0, 0);
-    transition: transform 0.3s ease, visibility 0.3s ease;
+    transform: translate3d(-100%, 0, 0);
     visibility: hidden;
+    transition: transform 0.3s, visibility 0.3s;
 }
 
 .showmenu .mobile-menu {
@@ -462,7 +461,7 @@ header {
     opacity: 0;
     visibility: hidden;
     transform: translateX(360px);
-    transition: transform 0.3s ease, visibility 0.3s ease opacity 0.3s ease;
+    transition: transform 0.3s, visibility 0.3s opacity 0.3s;
 }
 
 .mobile-menu .show > ul {
@@ -479,8 +478,8 @@ header {
     flex-direction: column;
     padding: 24px 0;
     width: 65px;
-    background-color: var(--blue-color);
     height: 100%;
+    background-color: var(--blue-color);
     z-index: 10;
 }
 
@@ -494,20 +493,20 @@ header {
     background-color: rgb(255 255 255 / 50%);
     border-radius: 50%;
     margin: 0 auto 12px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
 }
 
     .mobile-menu .mini-close:hover {
         background-color: var(--white-color);
     }
 
-.mobile-menu .mini-closei {
-    transition: transform 0.2s;
-}
+    .mobile-menu .mini-close i {
+        transition: transform 0.2s;
+    }
 
-.mobile-menu .mini-close:hover {
-    transition: rotate(180deg);
-}
+    .mobile-menu .mini-close:hover i {
+        transform: rotate(180deg);
+    }
 
 .mobile-menu .menu-head {
     display: flex;
@@ -516,8 +515,8 @@ header {
     height: 100%;
 }
 
-.mobile-menu logo {
-    transition: rotate(180deg);
+.mobile-menu .logo {
+    transform: rotate(180deg);
     writing-mode: vertical-lr;
     font-size: 24px;
     font-weight: 600;
@@ -542,7 +541,7 @@ header {
         line-height: 40px;
         color: var(--white-color);
         border-radius: 50%;
-        transition: color 0.3s ease, background-color 0.3s ease;
+        transition: color 0.3s, background-color 0.3s;
     }
 
         .mobile-menu .mini ul li a .num {
@@ -608,7 +607,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s;
 }
 
     .mobile-menu .menu-list ul li a {
@@ -629,7 +628,7 @@ header {
 
 .mobile-menu .menu-list li li:not(.back) a {
     color: var(--gray-color);
-    transition: color 0.3s ease;
+    transition: color 0.3s;
 }
 
     .mobile-menu .menu-list li li:not(.back) a:hover {
@@ -680,7 +679,7 @@ header {
     font-size: 5em;
     color: var(--white-color);
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s;
 }
 
 .wider > div.active {
@@ -716,7 +715,9 @@ header {
 
 
 
-
+header .trigger {
+    display: block;
+}
 
 
 @media only screen and (min-width: 992px) {
@@ -724,7 +725,8 @@ header {
         display: none;
     }
 
-    header .middle, header .right ul li:not(:nth-child(2)) {
+    header .middle,
+    header .right ul li:not(:nth-child(2)) {
         display: block;
     }
 }

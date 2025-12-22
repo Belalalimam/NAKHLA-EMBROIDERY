@@ -6,7 +6,7 @@
     <div class="container-fluid d-flex">
 
         @* (قسم الفلتر (انا ماكملت تعديله او تزبيطه لبعدين *@
-        @* <div class="row">
+        <div class="row">
             <div class="filter-col">
                 <button class="btn btn-outline-secondary d-lg-none mb-2" type="button" data-toggle="collapse" data-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
                     Filters
@@ -57,10 +57,10 @@
                     </aside>
                 </div>
             </div>
-        </div> *@
+        </div>
 
         @* قسم المنتجات لسا بده شوي تعديلات *@
-        @* <div class="row d-flex align-items-start justify-content-center">
+        <div class="row d-flex align-items-start justify-content-center">
             @foreach (var item in Model)    
             {
                 <div class="card">
@@ -72,12 +72,12 @@
                     <div class="info">
                         <div class="cat">@item.Category.Name</div>
                         <h2 class="title">@item.Name</h2>
-                        <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p>
+                        @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p>
                         <div class="feats">
                             <span class="feat">4K Display</span>
                             <span class="feat">16-Hour Battery</span>
                             <span class="feat">Thunderbolt 4</span>
-                        </div>
+                        </div> *@
                         <div class="bottom">
                             <div class="price">
                                     <span class="old">@item.Price.ToString("c")</span>
@@ -114,11 +114,11 @@
                 </div>
             }
                 </div>  
-        </div>   *@
+        </div>  
 
 
 
-    @* <div class="row">
+    <div class="row">
         <div class="col-12 d-flex justify-content-center">
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
@@ -146,9 +146,9 @@
                     }
                 </ul>
             </nav>
-        </div> *@
+        </div>
 
-       CONTENT
+       
     </div>
 }
 

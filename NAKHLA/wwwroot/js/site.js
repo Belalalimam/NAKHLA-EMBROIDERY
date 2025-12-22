@@ -39,30 +39,25 @@ button.forEach((menu) => menu.addEventListener('click', function () {
     })
 }))
 
-const topmenu = document.querySelectorAll('.top li a ');
-for (let i = 0; i < topmenu.length; i++) {
-    topmenu[i].addEventListener('click', function () {
+const topmenu = document.querySelectorAll('[data-target]');
+const panels = document.querySelectorAll('.wider > div:not(.main-menu)');
 
-        let current = document.querySelectorAll('.active');
+topmenu.forEach(item => {
+    item.addEventListener('click', function (e) {
+        e.preventDefault();
 
-        //remove active class
-        if (this.classList.contains('active')) {
-            this.classList.remove('active');
-            document.querySelector(`#${this.classList}`).classList.remove('active')
-            return;
+        const targetId = this.dataset.target;
+        const targetPanel = document.getElementById(targetId);
+
+        const isActive = targetPanel.classList.contains('active');
+
+        // سكّر الكل
+        panels.forEach(panel => panel.classList.remove('active'));
+
+        // إذا ما كان مفتوح → افتحه
+        if (!isActive) {
+            targetPanel.classList.add('active');
         }
+    });
+});
 
-        //if there's no active class
-        if (current.length > 0) {
-            current[0].classList.remove('active');
-            document.querySelector(`#${current[0].className}`).classList.remove('active');
-        }
-
-        //add active to id 
-        document.querySelector(`#${this.className}`).classList.add('active');
-
-        //add active class to the current/clicked button
-        this.classList.add('active');
-
-    })
-}
