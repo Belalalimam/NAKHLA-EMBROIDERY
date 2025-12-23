@@ -9,5 +9,14 @@ namespace NAKHLA.Areas.Identity.Controllers
         {
             return View();
         }
+
+        public ViewResult Account()
+        {
+            return View();
+        }
+        public ViewResult WishList()
+        {
+            return View();
+        }
     }
 }
