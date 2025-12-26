@@ -48,6 +48,25 @@ namespace NAKHLA.Areas.Identity.Controllers
 
             return RedirectToAction("Login");
         }
-        
-    }
+
+
+
+        [HttpGet]
+        public ViewResult Login()
+        {
+            return View();
+
+        }
+        [HttpPost]
+        public IActionResult Login(LoginVM loginVM)
+        {
+            if (!ModelState.IsValid)
+                return View(loginVM);
+            return RedirectToAction("Index", "Home", new { area = "" });
+
+        }
+
+
+
+        }
 }

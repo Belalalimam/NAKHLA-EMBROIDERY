@@ -12,8 +12,8 @@ using NAKHLA.DataAccess;
 namespace NAKHLA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251226093939_ResetIdentity")]
-    partial class ResetIdentity
+    [Migration("20251226164827_updateLoginVM")]
+    partial class updateLoginVM
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

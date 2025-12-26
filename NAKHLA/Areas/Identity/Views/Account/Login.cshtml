@@ -1,8 +1,8 @@
-﻿@model NAKHLA.ViewModels.RegisterVM;
+﻿@model NAKHLA.ViewModels.LoginVM;
 
-<div class="container2" id="container2">
-    <div class="form-container sign-up">
-        <form asp-action="Register">
+<div class="container2" id="container2 ">
+    <div class="form-container sign-up ">
+        <form asp-action="Login">
             <h1>Create Account</h1>
             <div class="social-icons">
                 <a href="#" class="icon"><i class="ri-google-line"></i></a>
@@ -11,11 +11,8 @@
                 <a href="#" class="icon"><i class="ri-linkedin-line"></i></a>
             </div>
             <span>or use your email for registeration</span>
-            <input type="text" placeholder="Name" asp-for="Name">
-            <input type="text" placeholder="UserName" asp-for="UserName">
-            <input type="email" placeholder="Email" asp-for="Email">
+            <input type="email" placeholder="UserNameOREmail" asp-for="UserNameOREmail">
             <input type="password" placeholder="Password" asp-for="Password">
-            <input type="password" placeholder="ConfirmPassword" asp-for="ConfirmPassword">
-            <button>Sign Up</button>
+            <button>Login</button>
         </form>
     </div>

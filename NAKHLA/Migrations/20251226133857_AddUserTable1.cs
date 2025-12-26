@@ -5,7 +5,7 @@
 namespace NAKHLA.Migrations
 {
     /// <inheritdoc />
-    public partial class ResetIdentity : Migration
+    public partial class AddUserTable1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
