@@ -31,7 +31,8 @@ namespace NAKHLA.Areas.Identity.Controllers
 
             var result = await _userManager.CreateAsync(new()
             {
-                Name = registerVM.Name,
+                FirstName = registerVM.FirstName,
+                LastName = registerVM.LastName,
                 UserName = registerVM.UserName,
                 Email = registerVM.Email,
 
