@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace NAKHLA.Models
 {
-    public class ApplicationUser
+    public class ApplicationUser : IdentityUser
     {
         public int Id { get; set; }
         [Required]

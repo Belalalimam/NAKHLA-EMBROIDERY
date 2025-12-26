@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿//using NAKHLA.DataAccess.EntityConfigurations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 
 namespace NAKHLA.DataAccess
 {
-    public class ApplicationDbContext : DbContext 
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
