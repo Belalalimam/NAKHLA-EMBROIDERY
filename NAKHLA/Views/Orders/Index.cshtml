@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Orders";
+}
+
+<div class="page">
+
+    <header class="page-header">
+        <h1>Orders</h1>
+
+        <div class="actions">
+            <button class="btn dark">Import</button>
+            <button class="btn">Export</button>
+        </div>
+    </header>
+
+    <div class="table-wrapper">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr onclick="openOrder()">
+                    <td><input type="checkbox" /></td>
+                    <td>#192541</td>
+                    <td>Esther Howard</td>
+                    <td>Shipping</td>
+                    <td><span class="status paid">Paid</span></td>
+                    <td>$3,127.00</td>
+                    <td>Jun 19</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal" id="orderModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Order #4567</h3>
+            <button onclick="closeOrder()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <p><strong>Customer:</strong> Esther Howard</p>
+            <p><strong>Email:</strong> brodrigues@gmail.com</p>
+
+            <hr />
+
+            <p>Stihl TS 800</p>
+            <p>Gasoline generator EYG 7500I</p>
+
+            <div class="total">Total: $1,927.89</div>
+        </div>
+    </div>
+</div>

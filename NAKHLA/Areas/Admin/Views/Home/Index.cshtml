@@ -1,1 +1,426 @@
-﻿<h1>hello word admin</h1>
+﻿@{
+    ViewBag.Title = "Orders Dashboard";
+    ViewBag.PageTitle = "Orders";
+}
+
+<!-- Selection Actions Bar (Hidden by default) -->
+<div class="selection-actions" id="selectionActions">
+    <div class="selected-count">
+        <span id="selectedCount">0</span> orders selected
+    </div>
+    <div class="selection-buttons">
+        <button class="btn btn-secondary" onclick="exportSelected()">
+            <i class="fas fa-file-export"></i> Export
+        </button>
+        <button class="btn btn-secondary" onclick="duplicateSelected()">
+            <i class="fas fa-copy"></i> Duplicate
+        </button>
+        <button class="btn btn-primary" onclick="printSelected()">
+            <i class="fas fa-print"></i> Print Selected
+        </button>
+        <button class="btn btn-secondary" onclick="clearSelection()">
+            <i class="fas fa-times"></i> Clear
+        </button>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+    <div class="filter-group">
+        <button class="filter-btn" data-tooltip="Filter by order status">
+            <span>Status</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        <button class="filter-btn" data-tooltip="Filter by order date">
+            <span>Order date</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        <button class="filter-btn" data-tooltip="Apply multiple filters">
+            <span>All filters</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    <div class="action-buttons">
+        <button class="btn btn-secondary" data-tooltip="Import orders from file">
+            <i class="fas fa-upload"></i>
+            <span>Import</span>
+        </button>
+        <button class="btn btn-secondary" data-tooltip="Export orders data" onclick="exportTableData()">
+            <i class="fas fa-download"></i>
+            <span>Export</span>
+        </button>
+        <button class="btn btn-primary" data-tooltip="Generate orders report">
+            <i class="fas fa-plus"></i>
+            <span>Report</span>
+        </button>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="orders-container">
+    <div class="table-header">
+        <h2>Orders</h2>
+        <div class="table-actions">
+            <button class="table-action" data-tooltip="Print orders table" onclick="printTable()">
+                <i class="fas fa-print"></i>
+                <span>Print</span>
+            </button>
+            <button class="table-action" data-tooltip="Export table data">
+                <i class="fas fa-copy"></i>
+                <span>Duplicate</span>
+            </button>
+            <button class="table-action" data-tooltip="Export to CSV/Excel" onclick="exportTableData('csv')">
+                <i class="fas fa-file-export"></i>
+                <span>Export</span>
+            </button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50px;">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                </th>
+                <th onclick="dashboard.sortTable(1)" style="cursor: pointer;">
+                    Order <i class="fas fa-chevron-down"></i>
+                </th>
+                <th onclick="dashboard.sortTable(2)" style="cursor: pointer;">Customer</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Product</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Row 1 -->
+            <tr class="table-row" data-order-id="192541" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192541" onchange="updateSelection(this)">
+                </td>
+                <td class="order-id">#192541</td>
+                <td class="customer-name">Esther Howard</td>
+                <td>
+                    <span class="type-badge type-shipping">Shipping</span>
+                </td>
+                <td>
+                    <span class="status-badge status-paid">Paid</span>
+                </td>
+                <td class="product-info" onclick="openOrderModal('192541', event)">
+                    <div class="product-name">Order #4567</div>
+                    <div class="product-desc">Esther Howard</div>
+                </td>
+                <td class="total-amount">$3,127.00</td>
+                <td class="order-date">Jun 19</td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action" onclick="exportOrder('192541')" data-tooltip="Export this order">
+                            Export
+                        </button>
+                        <button class="row-action" onclick="duplicateOrder('192541')" data-tooltip="Duplicate this order">
+                            Duplicate
+                        </button>
+                        <button class="row-action" onclick="printOrder('192541')" data-tooltip="Print this order">
+                            Print
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Row 2 (with the order details from your image) -->
+            <tr class="table-row" data-order-id="192540" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192540" onchange="updateSelection(this)">
+                </td>
+                <td class="order-id">#192540</td>
+                <td class="customer-name">David Miller</td>
+                <td>
+                    <span class="type-badge type-pickups">Pickups</span>
+                </td>
+                <td>
+                    <span class="status-badge status-paid">Paid</span>
+                </td>
+                <td class="product-info" onclick="openOrderModal('192540', event)">
+                    <div class="product-name">Stihl TS 800 cut-off machine</div>
+                    <div class="product-desc">Gasoline generator EYG 7500I</div>
+                </td>
+                <td class="total-amount">$1,927.89</td>
+                <td class="order-date">Jun 18</td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action" onclick="exportOrder('192540')" data-tooltip="Export this order">
+                            Export
+                        </button>
+                        <button class="row-action" onclick="duplicateOrder('192540')" data-tooltip="Duplicate this order">
+                            Duplicate
+                        </button>
+                        <button class="row-action" onclick="printOrder('192540')" data-tooltip="Print this order">
+                            Print
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Rest of the stats and overview sections -->
+<div class="stats-container">
+    <!-- ... existing stats cards ... -->
+</div>
+
+<div class="overview-container">
+    <!-- ... existing overview sections ... -->
+</div>
+
+@section Scripts {
+    <script>
+        // Order selection state
+        let selectedOrders = new Set();
+
+        // Select/deselect order row
+        function selectOrderRow(event, row) {
+            // Don't trigger if clicking on checkbox or action buttons
+            if (event.target.type === 'checkbox' ||
+                event.target.closest('.row-actions') ||
+                event.target.closest('.product-info')) {
+                return;
+            }
+
+            const checkbox = row.querySelector('.order-select');
+            checkbox.checked = !checkbox.checked;
+            updateSelection(checkbox);
+        }
+
+        // Update selection state
+        function updateSelection(checkbox) {
+            const orderId = checkbox.value;
+
+            if (checkbox.checked) {
+                selectedOrders.add(orderId);
+                checkbox.closest('.table-row').classList.add('selected');
+            } else {
+                selectedOrders.delete(orderId);
+                checkbox.closest('.table-row').classList.remove('selected');
+                document.getElementById('selectAll').checked = false;
+            }
+
+            updateSelectionUI();
+        }
+
+        // Toggle select all
+        function toggleSelectAll(selectAllCheckbox) {
+            const checkboxes = document.querySelectorAll('.order-select');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                updateSelection(checkbox);
+            });
+        }
+
+        // Update selection UI
+        function updateSelectionUI() {
+            const count = selectedOrders.size;
+            document.getElementById('selectedCount').textContent = count;
+
+            const actionsBar = document.getElementById('selectionActions');
+            if (count > 0) {
+                actionsBar.classList.add('active');
+            } else {
+                actionsBar.classList.remove('active');
+            }
+        }
+
+        // Clear all selections
+        function clearSelection() {
+            selectedOrders.clear();
+            document.querySelectorAll('.order-select').forEach(cb => {
+                cb.checked = false;
+                cb.closest('.table-row').classList.remove('selected');
+            });
+            document.getElementById('selectAll').checked = false;
+            updateSelectionUI();
+        }
+
+        // Export selected orders
+        function exportSelected() {
+            if (selectedOrders.size === 0) {
+                alert('Please select at least one order');
+                return;
+            }
+            console.log('Exporting orders:', Array.from(selectedOrders));
+            // AJAX call to export selected orders
+        }
+
+        // Duplicate selected orders
+        function duplicateSelected() {
+            if (selectedOrders.size === 0) {
+                alert('Please select at least one order');
+                return;
+            }
+            console.log('Duplicating orders:', Array.from(selectedOrders));
+            // AJAX call to duplicate selected orders
+        }
+
+        // Print selected orders
+        function printSelected() {
+            if (selectedOrders.size === 0) {
+                alert('Please select at least one order');
+                return;
+            }
+            console.log('Printing orders:', Array.from(selectedOrders));
+            // Print selected orders
+        }
+
+        // Open order details modal
+        function openOrderModal(orderId, event) {
+            if (event) event.stopPropagation();
+
+            // Set modal title
+            document.getElementById('modalOrderId').textContent = `Order #${orderId}`;
+
+            // Load order details (in real app, this would be an AJAX call)
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = getOrderDetailsHTML(orderId);
+
+            // Show modal
+            document.getElementById('orderModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Initialize modal tabs
+            initModalTabs();
+        }
+
+        // Get order details HTML (sample data)
+        function getOrderDetailsHTML(orderId) {
+            return `
+                <div class="order-customer">
+                    <div class="customer-name">Esther Howard</div>
+                    <div class="customer-email">brodrigues@gmail.com</div>
+                    <div class="customer-phone">+1 (415) 555-2671</div>
+                </div>
+
+                <div class="order-tabs">
+                    <button class="tab active" data-tab="items">Order items</button>
+                    <button class="tab" data-tab="delivery">Delivery</button>
+                    <button class="tab" data-tab="docs">Docs</button>
+                </div>
+
+                <div class="tab-content" id="tabItems">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-details">
+                                <h4>Stihl TS 800 cut-off machine incl.</h4>
+                                <p>5x diamond cutting discs</p>
+                            </div>
+                            <div class="item-price">
+                                <div class="item-quantity">1 × $1,590.00</div>
+                                <div class="item-total">$1,590.00</div>
+                            </div>
+                        </div>
+
+                        <div class="order-item">
+                            <div class="item-details">
+                                <h4>Gasoline generator EYG 7500I</h4>
+                                <p>(inverter)</p>
+                            </div>
+                            <div class="item-price">
+                                <div class="item-quantity">1 × $337.89</div>
+                                <div class="item-total">$337.89</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-total">
+                        Total: $1,927.89
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tabDelivery" style="display: none;">
+                    <p>Delivery information would go here...</p>
+                </div>
+
+                <div class="tab-content" id="tabDocs" style="display: none;">
+                    <p>Documentation would go here...</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="modal-action" onclick="exportOrder('${orderId}')">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                    <button class="modal-action" onclick="duplicateOrder('${orderId}')">
+                        <i class="fas fa-copy"></i> Duplicate
+                    </button>
+                    <button class="modal-action" onclick="printOrder('${orderId}')">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="modal-action" onclick="closeModal()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            `;
+        }
+
+        // Initialize modal tabs
+        function initModalTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Show corresponding content
+                    const tabName = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).style.display = 'block';
+                });
+            });
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking close button or outside
+        document.getElementById('modalClose')?.addEventListener('click', closeModal);
+        document.getElementById('orderModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Individual order actions
+        function exportOrder(orderId) {
+            console.log('Exporting order:', orderId);
+            // AJAX call to export single order
+        }
+
+        function duplicateOrder(orderId) {
+            console.log('Duplicating order:', orderId);
+            // AJAX call to duplicate order
+        }
+
+        function printOrder(orderId) {
+            console.log('Printing order:', orderId);
+            // Print single order
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Orders view loaded with selection functionality');
+        });
+    </script>
+}
