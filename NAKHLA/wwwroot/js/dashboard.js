@@ -1,440 +1,35 @@
-﻿// dashboard.js - Clean, modular JavaScript
+﻿// dashboard.js - Fixed Version with Working Modals
 
-class Dashboard {
-    constructor() {
-        this.init();
-    }
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Dashboard initialized');
 
-    init() {
-        this.setupEventListeners();
-        this.setupTooltips();
-        this.setupSearch();
-        this.setupUserDropdown();
-        this.setupResponsive();
-    }
+    // Initialize mobile navigation
+    initMobileNavigation();
 
-    setupEventListeners() {
-        // Button click animations
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.filter-btn, .btn, .table-action, .row-action')) {
-                this.addClickAnimation(e.target);
-            }
-        });
+    // Initialize search
+    initSearch();
 
-        // Filter dropdown toggle
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.filter-group .filter-btn')) {
-                this.toggleFilterDropdown(e.target.closest('.filter-btn'));
-            }
-        });
+    // Initialize button animations
+    initButtonAnimations();
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-profile') && !e.target.closest('.user-dropdown')) {
-                this.closeUserDropdown();
-            }
+    // Initialize filter dropdowns
+    initFilterDropdowns();
 
-            if (!e.target.closest('.filter-group')) {
-                this.closeAllFilterDropdowns();
-            }
-        });
+    // Initialize modals
+    initModals();
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'f') {
-                e.preventDefault();
-                document.getElementById('globalSearch')?.focus();
-            }
+    // Test if icons are working
+    testIcons();
+});
 
-            if (e.key === 'Escape') {
-                this.closeUserDropdown();
-                this.closeAllFilterDropdowns();
-            }
-        });
-    }
-
-    setupTooltips() {
-        const tooltipElements = document.querySelectorAll('[data-tooltip]');
-
-        tooltipElements.forEach(element => {
-            element.addEventListener('mouseenter', (e) => this.showTooltip(e));
-            element.addEventListener('mouseleave', () => this.hideTooltip());
-        });
-    }
-
-    showTooltip(event) {
-        const element = event.target;
-        const tooltipText = element.getAttribute('data-tooltip');
-        if (!tooltipText) return;
-
-        const tooltip = document.getElementById('tooltip');
-        tooltip.textContent = tooltipText;
-        tooltip.style.display = 'block';
-
-        const rect = element.getBoundingClientRect();
-        tooltip.style.top = `${rect.top - tooltip.offsetHeight - 10}px`;
-        tooltip.style.left = `${rect.left + rect.width / 2 - tooltip.offsetWidth / 2}px`;
-    }
-
-    hideTooltip() {
-        const tooltip = document.getElementById('tooltip');
-        tooltip.style.display = 'none';
-    }
-
-    setupSearch() {
-        const searchInput = document.getElementById('globalSearch');
-        if (!searchInput) return;
-
-        let searchTimeout;
-
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.trim();
-
-            // Clear previous timeout
-            clearTimeout(searchTimeout);
-
-            // Show loader for searches with 2+ characters
-            if (searchTerm.length >= 2) {
-                this.showSearchLoader(true);
-
-                // Debounce search
-                searchTimeout = setTimeout(() => {
-                    this.performSearch(searchTerm);
-                }, 300);
-            } else {
-                this.showSearchLoader(false);
-                this.clearSearchResults();
-            }
-        });
-    }
-
-    performSearch(searchTerm) {
-        // In a real application, this would be an API call
-        console.log('Searching for:', searchTerm);
-
-        // Simulate API delay
-        setTimeout(() => {
-            this.showSearchLoader(false);
-
-            // Here you would typically update the table with search results
-            // For now, just highlight matching text in the table
-            this.highlightSearchResults(searchTerm);
-        }, 500);
-    }
-
-    highlightSearchResults(searchTerm) {
-        // Simple text highlighting - in a real app, you'd filter the table
-        if (!searchTerm) return;
-
-        const tableCells = document.querySelectorAll('table td, table th');
-        tableCells.forEach(cell => {
-            const text = cell.textContent;
-            if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
-                cell.style.backgroundColor = '#fffaf0';
-                cell.style.transition = 'background-color 0.3s';
-
-                // Remove highlight after 2 seconds
-                setTimeout(() => {
-                    cell.style.backgroundColor = '';
-                }, 2000);
-            }
-        });
-    }
-
-    showSearchLoader(show) {
-        const loader = document.querySelector('.search-loader');
-        if (loader) {
-            loader.style.display = show ? 'block' : 'none';
-        }
-    }
-
-    clearSearchResults() {
-        // Clear any search highlighting
-        const highlightedCells = document.querySelectorAll('table td[style*="background-color"]');
-        highlightedCells.forEach(cell => {
-            cell.style.backgroundColor = '';
-        });
-    }
-
-    setupUserDropdown() {
-        const userProfile = document.getElementById('userProfile');
-        if (!userProfile) return;
-
-        userProfile.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggleUserDropdown();
-        });
-    }
-
-    toggleUserDropdown() {
-        const dropdown = document.querySelector('.user-dropdown');
-        if (dropdown) {
-            const isVisible = dropdown.style.display === 'block';
-            dropdown.style.display = isVisible ? 'none' : 'block';
-            dropdown.classList.toggle('show', !isVisible);
-        }
-    }
-
-    closeUserDropdown() {
-        const dropdown = document.querySelector('.user-dropdown');
-        if (dropdown) {
-            dropdown.style.display = 'none';
-            dropdown.classList.remove('show');
-        }
-    }
-
-    toggleFilterDropdown(filterBtn) {
-        const isActive = filterBtn.classList.contains('active');
-
-        // Close all other filter dropdowns
-        this.closeAllFilterDropdowns();
-
-        // Toggle current dropdown
-        if (!isActive) {
-            filterBtn.classList.add('active');
-        }
-    }
-
-    closeAllFilterDropdowns() {
-        document.querySelectorAll('.filter-btn.active').forEach(btn => {
-            btn.classList.remove('active');
-        });
-    }
-
-    setupResponsive() {
-        // Handle window resize with debouncing
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                this.handleResize();
-            }, 250);
-        });
-
-        // Initial check
-        this.handleResize();
-    }
-
-    handleResize() {
-        const width = window.innerWidth;
-
-        // Handle responsive behaviors
-        if (width < 992) {
-            // Mobile/tablet layout
-            this.adaptForMobile();
-        } else {
-            // Desktop layout
-            this.adaptForDesktop();
-        }
-    }
-
-    adaptForMobile() {
-        // Mobile-specific adaptations
-        const userProfile = document.getElementById('userProfile');
-        if (userProfile) {
-            const userName = userProfile.querySelector('span');
-            if (userName) {
-                userName.style.display = 'none';
-            }
-        }
-    }
-
-    adaptForDesktop() {
-        // Desktop-specific adaptations
-        const userProfile = document.getElementById('userProfile');
-        if (userProfile) {
-            const userName = userProfile.querySelector('span');
-            if (userName) {
-                userName.style.display = 'inline';
-            }
-        }
-    }
-
-    addClickAnimation(element) {
-        element.classList.add('click-animation');
-        setTimeout(() => {
-            element.classList.remove('click-animation');
-        }, 150);
-    }
-
-    // Export functionality
-    exportTableData(format = 'csv') {
-        console.log(`Exporting table data as ${format}`);
-
-        // Collect table data
-        const table = document.querySelector('table');
-        if (!table) return null;
-
-        const rows = table.querySelectorAll('tr');
-        const data = [];
-
-        rows.forEach(row => {
-            const rowData = [];
-            row.querySelectorAll('th, td').forEach(cell => {
-                // Exclude action buttons
-                if (!cell.closest('.row-actions') && !cell.closest('.table-actions')) {
-                    rowData.push(cell.textContent.trim());
-                }
-            });
-            data.push(rowData);
-        });
-
-        // In a real application, you would:
-        // 1. Send data to server for processing
-        // 2. Generate file and trigger download
-        // 3. Handle different formats (CSV, Excel, PDF)
-
-        return data;
-    }
-
-    // Print functionality
-    printTable() {
-        const printContent = document.querySelector('.orders-container').cloneNode(true);
-
-        // Remove action buttons for print
-        printContent.querySelectorAll('.table-actions, .row-actions').forEach(el => {
-            el.remove();
-        });
-
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Print Orders</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        table { width: 100%; border-collapse: collapse; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f5f5f5; }
-                    </style>
-                </head>
-                <body>
-                    <h2>Orders Report</h2>
-                    ${printContent.innerHTML}
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    }
-
-    // Duplicate order (AJAX example)
-    duplicateOrder(orderId) {
-        if (!orderId) {
-            console.error('No order ID provided');
-            return;
-        }
-
-        // Show loading state
-        const button = event?.target;
-        if (button) {
-            const originalText = button.textContent;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Duplicating...';
-            button.disabled = true;
-        }
-
-        // Simulate API call
-        setTimeout(() => {
-            console.log(`Order ${orderId} duplicated`);
-
-            // Show success message
-            this.showNotification(`Order #${orderId} duplicated successfully`, 'success');
-
-            // Restore button state
-            if (button) {
-                button.textContent = 'Duplicate';
-                button.disabled = false;
-            }
-        }, 1000);
-    }
-
-    // Notification system
-    showNotification(message, type = 'info') {
-        // Check if notification container exists
-        let container = document.getElementById('notification-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'notification-container';
-            container.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 10000;
-            `;
-            document.body.appendChild(container);
-        }
-
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.style.cssText = `
-            background-color: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#4299e1'};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            animation: slideIn 0.3s ease;
-        `;
-
-        notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-            <span style="margin-left: 8px;">${message}</span>
-        `;
-
-        container.appendChild(notification);
-
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    // Table sorting (example)
-    sortTable(columnIndex) {
-        const table = document.querySelector('table');
-        if (!table) return;
-
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-
-        // Simple alphabetical sort for demonstration
-        rows.sort((a, b) => {
-            const aText = a.children[columnIndex].textContent.trim();
-            const bText = b.children[columnIndex].textContent.trim();
-            return aText.localeCompare(bText);
-        });
-
-        // Reorder rows
-        rows.forEach(row => tbody.appendChild(row));
-    }
-
-
-
-    // dashboard.js - Add mobile navigation
-
-document.addEventListener('DOMContentLoaded', function() {
-        // Initialize mobile navigation
-        initMobileNavigation();
-
-        // Initialize existing dashboard functionality
-        if (typeof dashboard !== 'undefined') {
-            dashboard.init();
-        }
-    });
-
+// ===== MOBILE NAVIGATION =====
 function initMobileNavigation() {
     const sideNav = document.getElementById('sideNav');
     const navToggle = document.getElementById('navToggle');
     const navClose = document.getElementById('navClose');
     const mobileOverlay = document.getElementById('mobileOverlay');
 
-    // Toggle navigation
     if (navToggle) {
         navToggle.addEventListener('click', function () {
             sideNav.classList.add('active');
@@ -443,7 +38,6 @@ function initMobileNavigation() {
         });
     }
 
-    // Close navigation
     if (navClose) {
         navClose.addEventListener('click', function () {
             sideNav.classList.remove('active');
@@ -452,7 +46,6 @@ function initMobileNavigation() {
         });
     }
 
-    // Close nav when clicking overlay
     if (mobileOverlay) {
         mobileOverlay.addEventListener('click', function () {
             sideNav.classList.remove('active');
@@ -460,38 +53,406 @@ function initMobileNavigation() {
             document.body.style.overflow = 'auto';
         });
     }
+}
 
-    // Close nav on window resize (if resizing to desktop)
-    window.addEventListener('resize', function () {
-        if (window.innerWidth > 992) {
-            sideNav.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
+// ===== SEARCH FUNCTIONALITY =====
+function initSearch() {
+    const searchInput = document.getElementById('globalSearch');
+    if (!searchInput) return;
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        const term = this.value.trim();
+
+        if (term.length >= 2) {
+            searchTimeout = setTimeout(() => {
+                console.log('Searching for:', term);
+                // Highlight matching rows
+                highlightSearchResults(term);
+            }, 300);
+        } else {
+            clearSearch();
         }
     });
 }
 
-// Add click animation to buttons
-document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.filter-btn, .btn, .table-action, .row-action, .modal-action');
-    if (btn) {
-        btn.classList.add('click-animation');
-        setTimeout(() => btn.classList.remove('click-animation'), 150);
-    }
-});
-
+function highlightSearchResults(term) {
+    const rows = document.querySelectorAll('table tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(term.toLowerCase())) {
+            row.style.backgroundColor = '#fffaf0';
+        } else {
+            row.style.backgroundColor = '';
+        }
+    });
 }
 
-// Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.dashboard = new Dashboard();
+function clearSearch() {
+    const rows = document.querySelectorAll('table tbody tr');
+    rows.forEach(row => {
+        row.style.backgroundColor = '';
+    });
+}
 
-    // Make dashboard functions globally available
-    window.exportTableData = (format) => window.dashboard.exportTableData(format);
-    window.printTable = () => window.dashboard.printTable();
-    window.duplicateOrder = (orderId) => window.dashboard.duplicateOrder(orderId);
+// ===== BUTTON ANIMATIONS =====
+function initButtonAnimations() {
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.filter-btn, .btn, .table-action, .row-action, .modal-action, .page-item');
+        if (btn && !btn.classList.contains('disabled')) {
+            btn.classList.add('click-animation');
+            setTimeout(() => btn.classList.remove('click-animation'), 150);
+        }
+    });
+}
 
-    console.log('Dashboard initialized');
-});
+// ===== FILTER DROPDOWNS =====
+function initFilterDropdowns() {
+    const filterBtns = document.querySelectorAll('.filter-group .filter-btn');
 
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            filterBtns.forEach(b => {
+                if (b !== this) b.classList.remove('active');
+            });
+            this.classList.toggle('active');
+        });
+    });
 
+    document.addEventListener('click', function () {
+        filterBtns.forEach(btn => btn.classList.remove('active'));
+    });
+}
+
+// ===== MODAL SYSTEM (FIXED) =====
+function initModals() {
+    // Close modals with ESC key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeModal();
+            closeConfirmModal();
+        }
+    });
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal')) {
+            closeModal();
+            closeConfirmModal();
+        }
+    });
+
+    console.log('Modal system initialized');
+}
+
+// ===== ORDER MODAL FUNCTIONS =====
+function openOrderModal(orderId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    console.log('Opening modal for order:', orderId);
+
+    // Set modal title
+    document.getElementById('modalOrderId').textContent = `Order #${orderId}`;
+
+    // Load order details
+    const modalBody = document.getElementById('modalBody');
+    modalBody.innerHTML = getOrderDetailsHTML(orderId);
+
+    // Show modal
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Initialize tabs
+    initModalTabs();
+}
+
+function getOrderDetailsHTML(orderId) {
+    // Sample data - in real app, fetch from API
+    const orders = {
+        '192541': {
+            customer: 'Esther Howard',
+            email: 'brodrigues@gmail.com',
+            phone: '+1 (415) 555-2671',
+            items: [
+                { name: 'Stihl TS 800 cut-off machine incl.', desc: '5x diamond cutting discs', qty: 1, price: 1590.00 },
+                { name: 'Gasoline generator EYG 7500I', desc: '(inverter)', qty: 1, price: 337.89 }
+            ],
+            total: 1927.89
+        }
+    };
+
+    const order = orders[orderId] || {
+        customer: 'Customer',
+        email: 'email@example.com',
+        phone: '+1 (555) 123-4567',
+        items: [
+            { name: 'Product 1', desc: 'Description', qty: 1, price: 100.00 }
+        ],
+        total: 100.00
+    };
+
+    return `
+        <div class="order-details">
+            <div class="customer-info">
+                <h4>${order.customer}</h4>
+                <p><i class="fas fa-envelope"></i> ${order.email}</p>
+                <p><i class="fas fa-phone"></i> ${order.phone}</p>
+            </div>
+            
+            <div class="order-tabs">
+                <button class="tab-btn active" data-tab="items">Order Items</button>
+                <button class="tab-btn" data-tab="delivery">Delivery</button>
+                <button class="tab-btn" data-tab="docs">Documents</button>
+            </div>
+            
+            <div class="tab-content active" id="tab-items">
+                <div class="order-items">
+                    ${order.items.map(item => `
+                        <div class="order-item">
+                            <div class="item-info">
+                                <h5>${item.name}</h5>
+                                <p>${item.desc}</p>
+                            </div>
+                            <div class="item-price">
+                                <span>${item.qty} × $${item.price.toFixed(2)}</span>
+                                <strong>$${(item.qty * item.price).toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="order-total">
+                    <strong>Total: $${order.total.toFixed(2)}</strong>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab-delivery">
+                <p>Delivery information for order #${orderId}</p>
+                <p><strong>Address:</strong> 123 Main Street, San Francisco, CA 94107</p>
+                <p><strong>Status:</strong> Shipped</p>
+                <p><strong>Estimated Delivery:</strong> June 25, 2025</p>
+            </div>
+            
+            <div class="tab-content" id="tab-docs">
+                <p>Documents for order #${orderId}</p>
+                <ul>
+                    <li><i class="fas fa-file-invoice"></i> Invoice #INV-${orderId}</li>
+                    <li><i class="fas fa-receipt"></i> Receipt #REC-${orderId}</li>
+                    <li><i class="fas fa-shipping-fast"></i> Shipping Label #SL-${orderId}</li>
+                </ul>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="exportOrder('${orderId}')">
+                    <i class="fas fa-file-export"></i> Export Order
+                </button>
+                <button class="btn btn-secondary" onclick="duplicateOrder('${orderId}')">
+                    <i class="fas fa-copy"></i> Duplicate
+                </button>
+                <button class="btn btn-secondary" onclick="printOrder('${orderId}')">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function initModalTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked button
+            this.classList.add('active');
+
+            // Show corresponding content
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
+    });
+}
+
+function closeModal() {
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// ===== ORDER ACTIONS =====
+function exportOrder(orderId) {
+    console.log('Exporting order:', orderId);
+    alert(`Exporting order #${orderId}...`);
+}
+
+function duplicateOrder(orderId) {
+    console.log('Duplicating order:', orderId);
+    alert(`Duplicating order #${orderId}...`);
+}
+
+function printOrder(orderId) {
+    console.log('Printing order:', orderId);
+    window.print();
+}
+
+// ===== SELECTION MANAGEMENT =====
+let selectedOrders = new Set();
+
+function selectOrderRow(event, row) {
+    // Don't trigger if clicking on checkbox or action buttons
+    if (event.target.type === 'checkbox' ||
+        event.target.closest('.row-actions') ||
+        event.target.closest('.product-info')) {
+        return;
+    }
+
+    const checkbox = row.querySelector('.order-select');
+    if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        updateSelection(checkbox);
+    }
+}
+
+function updateSelection(checkbox) {
+    const orderId = checkbox.value;
+
+    if (checkbox.checked) {
+        selectedOrders.add(orderId);
+        checkbox.closest('tr').classList.add('selected');
+    } else {
+        selectedOrders.delete(orderId);
+        checkbox.closest('tr').classList.remove('selected');
+        document.getElementById('selectAll').checked = false;
+    }
+
+    updateSelectionUI();
+}
+
+function toggleSelectAll(selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll('.order-select');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+        updateSelection(checkbox);
+    });
+}
+
+function updateSelectionUI() {
+    const count = selectedOrders.size;
+    const selectedCountEl = document.getElementById('selectedCount');
+    const actionsBar = document.getElementById('selectionActions');
+
+    if (selectedCountEl) {
+        selectedCountEl.textContent = count;
+    }
+
+    if (actionsBar) {
+        if (count > 0) {
+            actionsBar.classList.add('active');
+        } else {
+            actionsBar.classList.remove('active');
+        }
+    }
+}
+
+function clearSelection() {
+    selectedOrders.clear();
+    document.querySelectorAll('.order-select').forEach(cb => {
+        cb.checked = false;
+        cb.closest('tr').classList.remove('selected');
+    });
+    document.getElementById('selectAll').checked = false;
+    updateSelectionUI();
+}
+
+// ===== BULK ACTIONS =====
+function exportSelected() {
+    if (selectedOrders.size === 0) {
+        alert('Please select at least one order');
+        return;
+    }
+    console.log('Exporting orders:', Array.from(selectedOrders));
+    alert(`Exporting ${selectedOrders.size} selected orders...`);
+}
+
+function deleteSelected() {
+    if (selectedOrders.size === 0) {
+        alert('Please select at least one order');
+        return;
+    }
+
+    if (confirm(`Delete ${selectedOrders.size} selected orders?`)) {
+        console.log('Deleting orders:', Array.from(selectedOrders));
+        // Remove from UI
+        selectedOrders.forEach(id => {
+            const row = document.querySelector(`tr[data-order-id="${id}"]`);
+            if (row) row.remove();
+        });
+        clearSelection();
+    }
+}
+
+// ===== CONFIRMATION MODAL =====
+function showConfirmModal(title, message, onConfirm) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMessage').textContent = message;
+
+    const confirmBtn = document.getElementById('confirmActionBtn');
+    confirmBtn.onclick = function () {
+        if (onConfirm) onConfirm();
+        closeConfirmModal();
+    };
+
+    document.getElementById('confirmModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// ===== UTILITY FUNCTIONS =====
+function testIcons() {
+    console.log('Testing Font Awesome...');
+    const testIcon = document.createElement('i');
+    testIcon.className = 'fas fa-test';
+    document.body.appendChild(testIcon);
+
+    const computed = window.getComputedStyle(testIcon, ':before');
+    const content = computed.content;
+
+    if (content === 'none' || content === 'normal') {
+        console.warn('Font Awesome may not be loading properly');
+        // Load emergency fallback
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css';
+        document.head.appendChild(link);
+    }
+
+    testIcon.remove();
+}
+
+// ===== GLOBAL FUNCTIONS =====
+window.openOrderModal = openOrderModal;
+window.closeModal = closeModal;
+window.selectOrderRow = selectOrderRow;
+window.updateSelection = updateSelection;
+window.toggleSelectAll = toggleSelectAll;
+window.clearSelection = clearSelection;
+window.exportSelected = exportSelected;
+window.deleteSelected = deleteSelected;
+window.exportOrder = exportOrder;
+window.duplicateOrder = duplicateOrder;
+window.printOrder = printOrder;

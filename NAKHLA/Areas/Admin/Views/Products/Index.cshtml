@@ -1,0 +1,283 @@
+﻿@{
+    ViewBag.Title = "Product Management";
+    ViewBag.PageTitle = "Products";
+    ViewBag.Subtitle = "Manage your products";
+}
+
+<!-- Selection Actions Bar -->
+<div class="selection-actions" id="selectionActions">
+    <div class="selected-count">
+        <span id="selectedCount">0</span> products selected
+    </div>
+    <div class="selection-buttons">
+        <button class="btn btn-secondary" onclick="exportSelected()">
+            <i class="fas fa-file-export"></i> Export
+        </button>
+        <button class="btn btn-danger" onclick="deleteSelected()">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+        <button class="btn btn-secondary" onclick="clearSelection()">
+            <i class="fas fa-times"></i> Clear
+        </button>
+    </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h2>Products</h2>
+        <p class="page-subtitle">Manage your product catalog</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-secondary">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+        <button class="btn btn-primary" onclick="openModal('Add New Product', getProductForm(), 'xl')">
+            <i class="fas fa-plus"></i> Add Product
+        </button>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="cards-grid">
+    <div class="card">
+        <div class="card-header">
+            <h3>Low Stock Alert</h3>
+            <span class="card-badge">12 items</span>
+        </div>
+        <div class="card-body">
+            <p>Products with stock below minimum threshold</p>
+            <button class="btn btn-sm btn-warning">View Details</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Out of Stock</h3>
+            <span class="card-badge">8 items</span>
+        </div>
+        <div class="card-body">
+            <p>Products that need restocking</p>
+            <button class="btn btn-sm btn-danger">Restock Now</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Top Sellers</h3>
+            <span class="card-badge">This Month</span>
+        </div>
+        <div class="card-body">
+            <p>Gasoline generator EYG 7500L (14 units)</p>
+            <button class="btn btn-sm btn-primary">View Report</button>
+        </div>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="data-table-container">
+    <div class="table-header">
+        <h2>All Products</h2>
+        <div class="table-actions">
+            <div class="filter-group">
+                <button class="filter-btn">
+                    <span>Category</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <button class="filter-btn">
+                    <span>Brand</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <button class="filter-btn">
+                    <span>Status</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div>
+                <button class="table-action" onclick="exportData()">
+                    <i class="fas fa-file-export"></i> Export
+                </button>
+                <button class="table-action">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <button class="table-action">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                </th>
+                <th data-sortable="true">Product <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">SKU <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Category <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Brand <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Price <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Stock <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Status <i class="fas fa-sort"></i></th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Gasoline Generator -->
+            <tr class="table-row" data-item-id="1" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="1" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">Gasoline generator EYG 7500L</div>
+                    <div style="font-size: 12px; color: #a0aec0;">With inverter technology</div>
+                </td>
+                <td>PROD-001</td>
+                <td>Tools & Hardware</td>
+                <td>Stihl</td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">$1,590.00</div>
+                </td>
+                <td>
+                    <span class="badge badge-success">42 in stock</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span>Active</span>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Product', getProductForm({
+                            name: 'Gasoline generator EYG 7500L',
+                            sku: 'PROD-001',
+                            price: '1590.00',
+                            stock: '42',
+                            isActive: true
+                        }), 'xl')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('1', 'Gasoline generator EYG 7500L')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Cut-off Machine -->
+            <tr class="table-row" data-item-id="2" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="2" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">Stihl TS 800 cut-off machine</div>
+                    <div style="font-size: 12px; color: #a0aec0;">Includes 5x diamond cutting discs</div>
+                </td>
+                <td>PROD-002</td>
+                <td>Tools & Hardware</td>
+                <td>Stihl</td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">$1,327.89</div>
+                    <div style="font-size: 12px; color: #a0aec0; text-decoration: line-through;">$1,590.00</div>
+                </td>
+                <td>
+                    <span class="badge badge-warning">3 in stock</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span>Active</span>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Product', getProductForm({
+                            name: 'Stihl TS 800 cut-off machine',
+                            sku: 'PROD-002',
+                            price: '1327.89',
+                            comparePrice: '1590.00',
+                            stock: '3',
+                            isActive: true
+                        }), 'xl')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('2', 'Stihl TS 800 cut-off machine')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Out of Stock Product -->
+            <tr class="table-row" data-item-id="3" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="3" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">Professional Drill Set</div>
+                    <div style="font-size: 12px; color: #a0aec0;">32-piece cordless drill set</div>
+                </td>
+                <td>PROD-003</td>
+                <td>Tools & Hardware</td>
+                <td>Premium</td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">$289.99</div>
+                </td>
+                <td>
+                    <span class="badge badge-danger">Out of stock</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-inactive"></span>
+                    <span>Inactive</span>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Product', getProductForm({
+                            name: 'Professional Drill Set',
+                            sku: 'PROD-003',
+                            price: '289.99',
+                            stock: '0',
+                            isActive: false
+                        }), 'xl')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('3', 'Professional Drill Set')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <div class="page-item disabled">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="page-item active">1</div>
+        <div class="page-item">2</div>
+        <div class="page-item">3</div>
+        <div class="page-item">4</div>
+        <div class="page-item">5</div>
+        <div class="page-item">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize product-specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Products page loaded');
+        });
+    </script>
+}

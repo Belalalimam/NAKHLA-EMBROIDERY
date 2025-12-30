@@ -1,0 +1,279 @@
+﻿@{
+    ViewBag.Title = "Brand Management";
+    ViewBag.PageTitle = "Brands";
+    ViewBag.Subtitle = "Manage product brands";
+}
+
+<!-- Selection Actions Bar -->
+<div class="selection-actions" id="selectionActions">
+    <div class="selected-count">
+        <span id="selectedCount">0</span> brands selected
+    </div>
+    <div class="selection-buttons">
+        <button class="btn btn-secondary" onclick="exportSelected()">
+            <i class="fas fa-file-export"></i> Export
+        </button>
+        <button class="btn btn-danger" onclick="deleteSelected()">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+        <button class="btn btn-secondary" onclick="clearSelection()">
+            <i class="fas fa-times"></i> Clear
+        </button>
+    </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h2>Product Brands</h2>
+        <p class="page-subtitle">Manage brands for your products</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-secondary">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+        <button class="btn btn-primary" onclick="openModal('Add New Brand', getBrandForm())">
+            <i class="fas fa-plus"></i> Add Brand
+        </button>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-title">Total Brands</div>
+            <div class="stat-icon">
+                <i class="fas fa-copyright"></i>
+            </div>
+        </div>
+        <div class="stat-value">18</div>
+        <div class="stat-desc">+2 from last month</div>
+        <div class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i> 11.1%
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-title">Active Brands</div>
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+        <div class="stat-value">15</div>
+        <div class="stat-desc">Visible on website</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-title">Featured Brands</div>
+            <div class="stat-icon">
+                <i class="fas fa-star"></i>
+            </div>
+        </div>
+        <div class="stat-value">8</div>
+        <div class="stat-desc">Highlighted on homepage</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-title">Products/Brand</div>
+            <div class="stat-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+        </div>
+        <div class="stat-value">69</div>
+        <div class="stat-desc">Average products per brand</div>
+    </div>
+</div>
+
+<!-- Brands Table -->
+<div class="data-table-container">
+    <div class="table-header">
+        <h2>All Brands</h2>
+        <div class="table-actions">
+            <button class="table-action" onclick="exportData()">
+                <i class="fas fa-file-export"></i> Export All
+            </button>
+            <button class="table-action">
+                <i class="fas fa-print"></i> Print
+            </button>
+            <button class="table-action">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                </th>
+                <th data-sortable="true">Brand Name <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Products <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Status <i class="fas fa-sort"></i></th>
+                <th data-sortable="true">Website <i class="fas fa-sort"></i></th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Stihl -->
+            <tr class="table-row" data-item-id="1" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="1" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">Stihl</div>
+                    <div style="font-size: 12px; color: #a0aec0;">Power tools & equipment</div>
+                </td>
+                <td>
+                    <span class="badge badge-primary">42 products</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span>Active</span>
+                </td>
+                <td>
+                    <a href="https://www.stihl.com" target="_blank">stihl.com</a>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openModal('Stihl Details', '<p>Brand details here...</p>', 'sm')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'Stihl', description: 'Power tools & equipment', website: 'https://www.stihl.com', isActive: true}))">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('1', 'Stihl')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Generic -->
+            <tr class="table-row" data-item-id="2" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="2" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">Generic</div>
+                    <div style="font-size: 12px; color: #a0aec0;">No-brand products</div>
+                </td>
+                <td>
+                    <span class="badge badge-primary">156 products</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span>Active</span>
+                </td>
+                <td>-</td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openModal('Generic Details', '<p>Brand details here...</p>', 'sm')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'Generic', description: 'No-brand products', isActive: true}))">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('2', 'Generic')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Premium -->
+            <tr class="table-row" data-item-id="3" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="3" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">Premium</div>
+                    <div style="font-size: 12px; color: #a0aec0;">High-quality products</div>
+                </td>
+                <td>
+                    <span class="badge badge-primary">89 products</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span>Active</span>
+                </td>
+                <td>
+                    <a href="https://www.premiumtools.com" target="_blank">premiumtools.com</a>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openModal('Premium Details', '<p>Brand details here...</p>', 'sm')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'Premium', description: 'High-quality products', website: 'https://www.premiumtools.com', isActive: true}))">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('3', 'Premium')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Inactive Brand -->
+            <tr class="table-row" data-item-id="4" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="4" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">OldBrand</div>
+                    <div style="font-size: 12px; color: #a0aec0;">Discontinued brand</div>
+                </td>
+                <td>
+                    <span class="badge badge-warning">12 products</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-inactive"></span>
+                    <span>Inactive</span>
+                </td>
+                <td>-</td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openModal('OldBrand Details', '<p>Brand details here...</p>', 'sm')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'OldBrand', description: 'Discontinued brand', isActive: false}))">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="row-action delete" onclick="deleteItem('4', 'OldBrand')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <div class="page-item disabled">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="page-item active">1</div>
+        <div class="page-item">2</div>
+        <div class="page-item">3</div>
+        <div class="page-item">4</div>
+        <div class="page-item">5</div>
+        <div class="page-item">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize brand-specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Brands page loaded');
+        });
+    </script>
+}
