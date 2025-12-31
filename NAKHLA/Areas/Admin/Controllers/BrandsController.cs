@@ -22,7 +22,12 @@ namespace NAKHLA.Areas.Admin.Controllers
             var brands = _context.Brands.Include(e => e.Products).OrderByDescending(e => e.Status).AsQueryable();
 
             // Add Filters
-            
+            if (!brands.Any())
+            {
+                // No data in database
+                ViewBag.Message = "No brands found. Add some brands first.";
+            }
+
             var totalHodsOfPage = Math.Ceiling(brands.Count() / 8.0);
             var currentPage = page;
             ViewBag.totalHodsOfPage = totalHodsOfPage;

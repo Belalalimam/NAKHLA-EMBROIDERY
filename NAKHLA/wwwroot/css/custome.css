@@ -412,3 +412,80 @@ textarea.form-control {
         font-size: 13px;
     }
 }
+
+
+/* Modal Container */
+#brandModalContainer.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#brandModalContainer .modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ensure forms in modals look consistent */
+#brandModalContainer .form-group {
+    margin-bottom: 15px;
+}
+
+#brandModalContainer .modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#brandModalContainer .modal-body {
+    padding: 20px;
+}
+
+#brandModalContainer .modal-footer {
+    padding: 20px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Loading and error states */
+.modal-loading,
+.modal-error {
+    padding: 40px;
+    text-align: center;
+    color: #64748b;
+}
+
+.modal-error {
+    color: #dc2626;
+}
+

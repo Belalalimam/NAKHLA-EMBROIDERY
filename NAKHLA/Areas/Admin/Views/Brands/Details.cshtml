@@ -1,0 +1,68 @@
+﻿@model NAKHLA.Models.Brand
+
+<div class="modal-header">
+    <h3>@Model.Name</h3>
+    <button type="button" class="modal-close" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="brand-details">
+        <div class="form-group">
+            <label class="form-label">Description</label>
+            <div class="form-control" style="background: #f8fafc;">@Model.Description</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Website</label>
+            <div class="form-control" style="background: #f8fafc;">
+                @if (!string.IsNullOrEmpty(Model.Website))
+                {
+                    <a href="@Model.Website" target="_blank">@Model.Website</a>
+                }
+                else
+                {
+                    <span class="text-muted">Not specified</span>
+                }
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <div class="stat-card" style="padding: 15px; margin: 0;">
+                    <div class="stat-title">Total Products</div>
+                    <div class="stat-value">@Model.Products.Count()</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="stat-card" style="padding: 15px; margin: 0;">
+                    <div class="stat-title">Status</div>
+                    <div class="stat-value" style="font-size: 20px;">
+                        <span class="status-dot @(Model.Status == "Active" ? "dot-active" : "dot-inactive")"></span>
+                        @Model.Status
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" @(Model.IsFeatured ? "checked" : "") disabled>
+            <label class="form-check-label">Featured Brand</label>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Created Date</label>
+            <div class="form-control" style="background: #f8fafc;">
+                @Model.CreatedDate.ToString("MMM dd, yyyy")
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+    <button type="button" class="btn btn-primary" onclick="loadEditModal(@Model.Id)">
+        <i class="fas fa-edit"></i> Edit Brand
+    </button>
+</div>

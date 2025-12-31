@@ -21,7 +21,8 @@
             <i class="fas fa-filter"></i>
             <span class="desktop-text">Filter</span>
         </button>
-        <button class="btn btn-primary" onclick="openBrandModal('new', event)">
+        <!-- "Add Brand" button - FIXED: Added (event) parameter -->
+        <button class="btn btn-primary" onclick="loadCreateModal(event)">
             <i class="fas fa-plus"></i>
             <span class="desktop-text">Add Brand</span>
         </button>
@@ -112,42 +113,70 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.Any())
+            @if (Model != null && Model.Any())
             {
                 @foreach (var item in Model)
                 {
-                    <!-- Stihl -->
-                    <tr class="table-row" data-item-id="1" onclick="selectRow(event, this)">
+                    <tr class="table-row" data-item-id="@item.Id" onclick="selectRow(event, this)">
                         <td>
-                            <input type="checkbox" class="row-select" value="1" onchange="updateSelection(this)">
+                            <input type="checkbox" class="row-select" value="@item.Id" onchange="updateSelection(this)">
                         </td>
                         <td>
                             <div class="customer-name">@item.Name</div>
-                            <div class="text-muted">@item.Description</div>
+                            <div class="text-muted">@(item.Description ?? "No description")</div>
                         </td>
                         <td>
-                            <span class="badge badge-primary">@item.Products.Count() products</span>
+                            <span class="badge badge-primary">@(item.Products?.Count() ?? 0) products</span>
                         </td>
                         <td>
-                            <span class="status-dot dot-active"></span>
+                            @if (item.Status == "Active")
+                            {
+                                <span class="status-dot dot-active"></span>
+                            }
+                            else
+                            {
+                                <span class="status-dot dot-inactive"></span>
+                            }
                             <span class="mobile-text">@item.Status</span>
                         </td>
                         <td>
                             <div class="website-link">
-                                <a href="https://www.stihl.com" target="_blank" onclick="event.stopPropagation()">stihl.com</a>
+                                @if (!string.IsNullOrEmpty(item.Website))
+                                {
+                                    <a href="@item.Website" target="_blank" onclick="event.stopPropagation()">
+                                        @{
+                                            // Safely display domain name
+                                            if (!string.IsNullOrEmpty(item.Website) &&
+                                            Uri.TryCreate(item.Website, UriKind.Absolute, out Uri uri))
+                                            {
+                                                @uri.Host
+                                            }
+                                            else
+                                            {
+                                                <span>Website</span>
+                                            }
+                                        }
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not specified</span>
+                                }
                             </div>
                         </td>
                         <td onclick="event.stopPropagation()">
                             <div class="row-actions">
-                                <button class="row-action view" onclick="openBrandModal('1', event)">
+                                <!-- FIXED: Changed to loadViewModal -->
+                                <button class="row-action view" onclick="loadViewModal('@item.Id', event)">
                                     <i class="fas fa-eye"></i>
                                     <span class="desktop-text">View</span>
                                 </button>
-                                <button class="row-action edit" onclick="openBrandModal('edit1', event)">
+                                <!-- FIXED: Changed to loadEditModal -->
+                                <button class="row-action edit" onclick="loadEditModal('@item.Id', event)">
                                     <i class="fas fa-edit"></i>
                                     <span class="desktop-text">Edit</span>
                                 </button>
-                                <button class="row-action delete" onclick="deleteBrand('1', 'Stihl')">
+                                <button class="row-action delete" onclick="deleteBrand('@item.Id', '@item.Name.Replace("'", "\\'")')">
                                     <i class="fas fa-trash"></i>
                                     <span class="desktop-text">Delete</span>
                                 </button>
@@ -156,7 +185,22 @@
                     </tr>
                 }
             }
-
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox fa-3x text-muted"></i>
+                            <h4>No Brands Found</h4>
+                            <p>Get started by creating your first brand.</p>
+                            <!-- FIXED: Added (event) parameter -->
+                            <button class="btn btn-primary" onclick="loadCreateModal(event)">
+                                <i class="fas fa-plus"></i> Add First Brand
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 
@@ -208,8 +252,114 @@
     </div>
 </div>
 
-<style>
+<!-- MODAL CONTAINER -->
+<div id="brandModalContainer" class="modal" style="display: none;">
+    <div class="modal-content">
+        <!-- Content will be loaded dynamically via AJAX -->
+    </div>
+</div>
 
+<style>
+    /* Modal Backdrop */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background: white;
+        border-radius: 8px;
+        width: 500px;
+        max-width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Modal Header */
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        font-size: 1.25rem;
+        padding: 5px;
+    }
+
+        .modal-close:hover {
+            color: #334155;
+        }
+
+    /* Modal Body */
+    .modal-body {
+        padding: 20px;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+        padding: 20px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Loading and error states */
+    .modal-loading,
+    .modal-error {
+        padding: 40px;
+        text-align: center;
+        color: #64748b;
+        font-size: 16px;
+    }
+
+    .modal-error {
+        color: #dc2626;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #64748b;
+    }
+
+        .empty-state i {
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            margin: 10px 0;
+            color: #475569;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+        }
 </style>
 
 @section Scripts {
@@ -218,6 +368,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Brands page loaded');
             initBrandsPage();
+            setupModalEvents();
         });
 
         // Brand-specific functions
@@ -231,308 +382,117 @@
             });
         }
 
-        // Open brand details modal
-        function openBrandModal(brandId, event) {
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
+        // ==================== MODAL FUNCTIONS ====================
+        let currentModalType = '';
+        let currentBrandId = null;
 
-            if (brandId === 'new') {
-                // Open new brand modal
-                showAddBrandModal();
-                return;
-            }
+        function loadCreateModal(event) {
+            if (event) event.preventDefault();
 
-            if (brandId.startsWith('edit')) {
-                // Open edit modal for specific brand
-                const editId = brandId.replace('edit', '');
-                showEditBrandModal(editId);
-                return;
-            }
+            currentModalType = 'create';
+            currentBrandId = null;
 
-            console.log('Opening modal for brand:', brandId);
+            // Show loading state
+            const modalContainer = document.getElementById('brandModalContainer');
+            const modalContent = modalContainer.querySelector('.modal-content');
+            modalContent.innerHTML = '<div class="modal-loading">Loading form...</div>';
+            modalContainer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
 
-            const brands = {
-                '1': {
-                    name: 'Stihl',
-                    description: 'Power tools & equipment',
-                    products: 42,
-                    status: 'Active',
-                    website: 'https://www.stihl.com',
-                    featured: true,
-                    created: 'Mar 15, 2023',
-                    lastUpdated: 'Jun 25, 2025'
+            // Load Create.cshtml partial view via AJAX
+            $.ajax({
+                url: '/Brands/Create',
+                type: 'GET',
+                success: function(response) {
+                    modalContent.innerHTML = response;
+                    setupModalEvents();
                 },
-                '2': {
-                    name: 'Generic',
-                    description: 'No-brand products',
-                    products: 156,
-                    status: 'Active',
-                    website: '',
-                    featured: false,
-                    created: 'Jan 10, 2023',
-                    lastUpdated: 'May 30, 2025'
-                },
-                '3': {
-                    name: 'Premium',
-                    description: 'High-quality products',
-                    products: 89,
-                    status: 'Active',
-                    website: 'https://www.premiumtools.com',
-                    featured: true,
-                    created: 'Feb 22, 2024',
-                    lastUpdated: 'Jun 20, 2025'
-                },
-                '4': {
-                    name: 'OldBrand',
-                    description: 'Discontinued brand',
-                    products: 12,
-                    status: 'Inactive',
-                    website: '',
-                    featured: false,
-                    created: 'Nov 05, 2022',
-                    lastUpdated: 'Dec 15, 2023'
+                error: function() {
+                    modalContent.innerHTML = '<div class="modal-error">Error loading form. Please try again.</div>';
                 }
-            };
+            });
+        }
 
-            const brand = brands[brandId] || {
-                name: 'Brand ' + brandId,
-                description: 'Brand description',
-                products: Math.floor(Math.random() * 200) + 20,
-                status: 'Active',
-                website: 'https://www.example.com',
-                featured: Math.random() > 0.5,
-                created: 'Jan 01, 2024',
-                lastUpdated: 'Jun 01, 2025'
-            };
+        function loadEditModal(brandId, event) {
+            if (event) event.stopPropagation();
 
-            const modal = document.getElementById('universalModal');
-            const modalContent = document.getElementById('modalContent');
+            currentModalType = 'edit';
+            currentBrandId = brandId;
 
-            if (!modal || !modalContent) {
-                alert('Modal system error. Please refresh the page.');
-                return;
+            const modalContainer = document.getElementById('brandModalContainer');
+            const modalContent = modalContainer.querySelector('.modal-content');
+            modalContent.innerHTML = '<div class="modal-loading">Loading...</div>';
+            modalContainer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Load Edit.cshtml with brand data
+            $.ajax({
+                url: '/Brands/Edit/' + brandId,
+                type: 'GET',
+                success: function(response) {
+                    modalContent.innerHTML = response;
+                    setupModalEvents();
+                },
+                error: function() {
+                    modalContent.innerHTML = '<div class="modal-error">Error loading form. Please try again.</div>';
+                }
+            });
+        }
+
+        function loadViewModal(brandId, event) {
+            if (event) event.stopPropagation();
+
+            const modalContainer = document.getElementById('brandModalContainer');
+            const modalContent = modalContainer.querySelector('.modal-content');
+            modalContent.innerHTML = '<div class="modal-loading">Loading...</div>';
+            modalContainer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Load Details.cshtml
+            $.ajax({
+                url: '/Brands/Details/' + brandId,
+                type: 'GET',
+                success: function(response) {
+                    modalContent.innerHTML = response;
+                    setupModalEvents();
+                },
+                error: function() {
+                    modalContent.innerHTML = '<div class="modal-error">Error loading brand details.</div>';
+                }
+            });
+        }
+
+        function closeModal() {
+            const modalContainer = document.getElementById('brandModalContainer');
+            if (modalContainer) {
+                modalContainer.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
-
-            // Set modal content
-            modalContent.innerHTML = `
-                <div class="modal-header">
-                    <h3>${brand.name}</h3>
-                    <button class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="brand-details">
-                        <div class="mb-3">
-                            <h4>Brand Information</h4>
-                            <div class="form-group">
-                                <label class="form-label">Brand Name</label>
-                                <div class="form-control" style="background: #f8fafc; font-weight: 600;">${brand.name}</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <div class="form-control" style="background: #f8fafc; min-height: 80px;">${brand.description}</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Website</label>
-                                <div class="form-control" style="background: #f8fafc;">
-                                    ${brand.website ? `<a href="${brand.website}" target="_blank">${brand.website}</a>` : 'Not specified'}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <div class="stat-card" style="padding: 15px; margin: 0;">
-                                    <div class="stat-title">Total Products</div>
-                                    <div class="stat-value">${brand.products}</div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="stat-card" style="padding: 15px; margin: 0;">
-                                    <div class="stat-title">Status</div>
-                                    <div class="stat-value" style="font-size: 20px;">
-                                        <span class="status-dot ${brand.status === 'Active' ? 'dot-active' : brand.status === 'Pending' ? 'dot-pending' : 'dot-inactive'}"></span>
-                                        ${brand.status}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="featuredCheck" ${brand.featured ? 'checked' : ''} disabled>
-                                <label class="form-check-label" for="featuredCheck">Featured Brand (shown on homepage)</label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <h5>Timestamps</h5>
-                            <div class="form-group">
-                                <label class="form-label">Created</label>
-                                <div class="form-control" style="background: #f8fafc;">${brand.created}</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Last Updated</label>
-                                <div class="form-control" style="background: #f8fafc;">${brand.lastUpdated}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
-                    <button class="btn btn-primary" onclick="showEditBrandModal('${brandId}')">
-                        <i class="fas fa-edit"></i> Edit Brand
-                    </button>
-                </div>
-                </div>
-
-            `;
-
-            // Show modal
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            currentModalType = '';
+            currentBrandId = null;
         }
 
-        // Show add brand modal
-        function showAddBrandModal() {
-            const modal = document.getElementById('universalModal');
-            const modalContent = document.getElementById('modalContent');
+        function setupModalEvents() {
+            const modalContainer = document.getElementById('brandModalContainer');
 
-            if (!modal || !modalContent) return;
+            if (!modalContainer) return;
 
-            modalContent.innerHTML = `
-                <div class="modal-header">
-                    <h3>Add New Brand</h3>
-                    <button class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="addBrandForm" method="post">
-                        <div class="form-group">
-                            <label class="form-label">Brand Name *</label>
-                            <input type="text" class="form-control" id="brandName" name="Name" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" id="brandDescription" name="Description" rows="3"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Website URL</label>
-                            <input type="url" class="form-control" id="brandWebsite" name="WebSite" placeholder="https://">
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label class="form-label">Status</label>
-                                    <select class="form-control" name="Status" id="brandStatus">
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="pending">Pending</option>
-                                    </select>
-                                </div>
-                            </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Products Count</label>
-                                        <input type="number" class="form-control" id="brandProducts" value="0" min="0">
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input" id="brandFeatured">
-                            <label class="form-check-label" for="brandFeatured">Featured Brand</label>
-                        </div>
-                        <div class="modal-footer">
-                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-save"></i> Save Brand
-                    </button>
-                </div>
-                    </form>
+            // Close on backdrop click
+            modalContainer.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
 
-                </div>
-
-            `;
-
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
         }
 
-        // Show edit brand modal
-        function showEditBrandModal(brandId) {
-            // Close current modal first
-            closeModal();
-
-            // Simulate API call delay
-            setTimeout(() => {
-                const modal = document.getElementById('universalModal');
-                const modalContent = document.getElementById('modalContent');
-
-                if (!modal || !modalContent) return;
-
-                modalContent.innerHTML = `
-                    <div class="modal-header">
-                        <h3>Edit Brand</h3>
-                        <button class="modal-close" onclick="closeModal()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editBrandForm">
-                            <div class="form-group">
-                                <label class="form-label">Brand Name *</label>
-                                <input type="text" class="form-control" id="editBrandName" value="Brand ${brandId}" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" id="editBrandDescription" rows="3">Brand description for ${brandId}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Website URL</label>
-                                <input type="url" class="form-control" id="editBrandWebsite" placeholder="https://" value="https://www.brand${brandId}.com">
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Status</label>
-                                        <select class="form-control" id="editBrandStatus">
-                                            <option value="active" selected>Active</option>
-                                            <option value="inactive">Inactive</option>
-                                            <option value="pending">Pending</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Products Count</label>
-                                        <input type="number" class="form-control" id="editBrandProducts" value="50" min="0">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-check mb-3">
-                                <input type="checkbox" class="form-check-input" id="editBrandFeatured" checked>
-                                <label class="form-check-label" for="editBrandFeatured">Featured Brand</label>
-                            </div>
-                        </form>
-                        <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                        <button class="btn btn-primary" onclick="saveBrandChanges('${brandId}')">
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
-                    </div>
-                    </div>
-                    
-                `;
-
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }, 300);
-        }
-
-        // Delete brand function
+        // ==================== BRAND OPERATIONS ====================
         function deleteBrand(brandId, brandName) {
             if (confirm(`Are you sure you want to delete "${brandName}"? This action cannot be undone.`)) {
                 console.log('Deleting brand:', brandId);
@@ -577,18 +537,7 @@
             alert('Refreshing brands data...');
         }
 
-        // Form save functions
-        function saveNewBrand() {
-            alert('Saving new brand...');
-            closeModal();
-        }
-
-        function saveBrandChanges(brandId) {
-            alert(`Saving changes for brand ${brandId}...`);
-            closeModal();
-        }
-
-        // Generic functions (should be in dashboard.js)
+        // ==================== SELECTION FUNCTIONS ====================
         let selectedItems = new Set();
 
         function selectRow(event, row) {
@@ -658,7 +607,7 @@
             updateSelectionUI();
         }
 
-        // Mobile detection
+        // ==================== MOBILE FUNCTIONS ====================
         function isMobile() {
             return window.innerWidth <= 768;
         }
