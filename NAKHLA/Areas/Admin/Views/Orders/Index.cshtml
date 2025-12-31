@@ -1,30 +1,365 @@
 ﻿@{
-    ViewBag.Title = "Orders Dashboard";
+    ViewBag.Title = "Orders";
     ViewBag.PageTitle = "Orders";
+    ViewBag.Subtitle = "Manage and track all orders";
 }
 
-<!-- TEST: If you see icons below, Font Awesome is working -->
-<div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
-    <h3>Font Awesome Test</h3>
-    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin: 15px 0;">
-        <div>
-            <i class="fas fa-box" style="color: #3b82f6; font-size: 24px;"></i>
-            <span>fas fa-box</span>
-        </div>
-        <div>
-            <i class="fas fa-search" style="color: #10b981; font-size: 24px;"></i>
-            <span>fas fa-search</span>
-        </div>
-        <div>
-            <i class="fas fa-chevron-down" style="color: #ef4444; font-size: 24px;"></i>
-            <span>fas fa-chevron-down</span>
-        </div>
-        <div>
-            <i class="fas fa-user" style="color: #8b5cf6; font-size: 24px;"></i>
-            <span>fas fa-user</span>
+<!-- Mobile Scroll Hint -->
+<div class="mobile-scroll-hint">
+    <i class="fas fa-arrows-left-right"></i> Swipe horizontally to view all columns
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h2>Orders</h2>
+        <p>Manage and track all customer orders</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-secondary">
+            <i class="fas fa-filter"></i> 
+            <span class="btn-text">Filters</span>
+        </button>
+        <button class="btn btn-primary">
+            <i class="fas fa-plus"></i> 
+            <span class="btn-text">New Order</span>
+        </button>
+    </div>
+</div>
+
+<!-- Orders Statistics -->
+<div class="orders-stats-container">
+    <div class="orders-stat-card">
+        <div class="orders-stat-title">Total Orders</div>
+        <div class="orders-stat-value">1,234</div>
+        <div class="orders-stat-desc">+12% from last month</div>
+    </div>
+    <div class="orders-stat-card">
+        <div class="orders-stat-title">Revenue</div>
+        <div class="orders-stat-value">$54,230</div>
+        <div class="orders-stat-desc">+8% from last month</div>
+    </div>
+    <div class="orders-stat-card">
+        <div class="orders-stat-title">Avg. Order Value</div>
+        <div class="orders-stat-value">$43.98</div>
+        <div class="orders-stat-desc">+2% from last month</div>
+    </div>
+    <div class="orders-stat-card">
+        <div class="orders-stat-title">Pending Orders</div>
+        <div class="orders-stat-value">24</div>
+        <div class="orders-stat-desc">Require attention</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+    <div class="filter-group">
+        <button class="filter-btn active">
+            <span>All Orders</span>
+            <span class="badge badge-primary">1,234</span>
+        </button>
+        <button class="filter-btn">
+            <span>Shipping</span>
+            <span class="badge badge-primary">842</span>
+        </button>
+        <button class="filter-btn">
+            <span>Pickups</span>
+            <span class="badge badge-warning">392</span>
+        </button>
+        <button class="filter-btn">
+            <span>Paid</span>
+            <span class="badge badge-success">987</span>
+        </button>
+        <button class="filter-btn">
+            <span>Pending</span>
+            <span class="badge badge-warning">247</span>
+        </button>
+    </div>
+    <div class="action-buttons">
+        <button class="btn btn-secondary">
+            <i class="fas fa-calendar"></i> 
+            <span class="btn-text">Date Range</span>
+        </button>
+        <button class="btn btn-secondary">
+            <i class="fas fa-download"></i> 
+            <span class="btn-text">Export</span>
+        </button>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="data-table-container">
+    <div class="table-header">
+        <h2>Recent Orders</h2>
+        <div class="table-actions">
+            <button class="table-action" onclick="clearSelection()">
+                <i class="fas fa-times"></i> 
+                <span class="btn-text">Clear Selection</span>
+            </button>
+            <button class="table-action" onclick="exportSelected()">
+                <i class="fas fa-download"></i> 
+                <span class="btn-text">Export Selected</span>
+            </button>
+            <button class="table-action" onclick="deleteSelected()">
+                <i class="fas fa-trash"></i> 
+                <span class="btn-text">Delete Selected</span>
+            </button>
         </div>
     </div>
-    <p><strong>If you don't see icons above, Font Awesome is not loading!</strong></p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 40px;">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                </th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Order 1 -->
+            <tr data-order-id="192541" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192541" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="order-id">#192541</div>
+                </td>
+                <td>
+                    <div class="customer-name">Esther Howard</div>
+                    <div class="text-muted">brodrigues@gmail.com</div>
+                </td>
+                <td>
+                    <div class="order-product-info">
+                        <div class="order-product-name">Stihl TS 800 cut-off machine incl.</div>
+                        <div class="order-product-desc">5x diamond cutting discs</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="order-type-badge order-type-shipping">Shipping</span>
+                </td>
+                <td>
+                    <div class="order-date">June 12, 2025</div>
+                </td>
+                <td>
+                    <div class="order-total-amount">$1,927.89</div>
+                </td>
+                <td>
+                    <span class="order-status-badge order-status-paid">Paid</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openOrderModal('192541', event)">
+                            <i class="fas fa-eye"></i> 
+                            <span class="btn-text">View</span>
+                        </button>
+                        <button class="row-action edit">
+                            <i class="fas fa-edit"></i> 
+                            <span class="btn-text">Edit</span>
+                        </button>
+                        <button class="row-action delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Order 2 -->
+            <tr data-order-id="192540" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192540" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="order-id">#192540</div>
+                </td>
+                <td>
+                    <div class="customer-name">David Miller</div>
+                    <div class="text-muted">droidrigues@gmail.com</div>
+                </td>
+                <td>
+                    <div class="order-product-info">
+                        <div class="order-product-name">Generic Product</div>
+                        <div class="order-product-desc">Standard item</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="order-type-badge order-type-pickups">Pickup</span>
+                </td>
+                <td>
+                    <div class="order-date">June 11, 2025</div>
+                </td>
+                <td>
+                    <div class="order-total-amount">$1,590.00</div>
+                </td>
+                <td>
+                    <span class="order-status-badge order-status-pending">Pending</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openOrderModal('192540', event)">
+                            <i class="fas fa-eye"></i> 
+                            <span class="btn-text">View</span>
+                        </button>
+                        <button class="row-action edit">
+                            <i class="fas fa-edit"></i> 
+                            <span class="btn-text">Edit</span>
+                        </button>
+                        <button class="row-action delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Order 3 -->
+            <tr data-order-id="192539" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192539" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="order-id">#192539</div>
+                </td>
+                <td>
+                    <div class="customer-name">Sarah Johnson</div>
+                    <div class="text-muted">sjohnson@gmail.com</div>
+                </td>
+                <td>
+                    <div class="order-product-info">
+                        <div class="order-product-name">Wireless Headphones</div>
+                        <div class="order-product-desc">Noise cancelling</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="order-type-badge order-type-shipping">Shipping</span>
+                </td>
+                <td>
+                    <div class="order-date">June 10, 2025</div>
+                </td>
+                <td>
+                    <div class="order-total-amount">$299.99</div>
+                </td>
+                <td>
+                    <span class="order-status-badge order-status-paid">Paid</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openOrderModal('192539', event)">
+                            <i class="fas fa-eye"></i> 
+                            <span class="btn-text">View</span>
+                        </button>
+                        <button class="row-action edit">
+                            <i class="fas fa-edit"></i> 
+                            <span class="btn-text">Edit</span>
+                        </button>
+                        <button class="row-action delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Order 4 -->
+            <tr data-order-id="192538" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192538" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="order-id">#192538</div>
+                </td>
+                <td>
+                    <div class="customer-name">Michael Chen</div>
+                    <div class="text-muted">mchen@gmail.com</div>
+                </td>
+                <td>
+                    <div class="order-product-info">
+                        <div class="order-product-name">Laptop Stand</div>
+                        <div class="order-product-desc">Adjustable aluminum</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="order-type-badge order-type-pickups">Pickup</span>
+                </td>
+                <td>
+                    <div class="order-date">June 9, 2025</div>
+                </td>
+                <td>
+                    <div class="order-total-amount">$89.99</div>
+                </td>
+                <td>
+                    <span class="order-status-badge order-status-cancelled">Cancelled</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openOrderModal('192538', event)">
+                            <i class="fas fa-eye"></i> 
+                            <span class="btn-text">View</span>
+                        </button>
+                        <button class="row-action edit">
+                            <i class="fas fa-edit"></i> 
+                            <span class="btn-text">Edit</span>
+                        </button>
+                        <button class="row-action delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Order 5 -->
+            <tr data-order-id="192537" onclick="selectOrderRow(event, this)">
+                <td>
+                    <input type="checkbox" class="order-select" value="192537" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="order-id">#192537</div>
+                </td>
+                <td>
+                    <div class="customer-name">Emily Wilson</div>
+                    <div class="text-muted">ewilson@gmail.com</div>
+                </td>
+                <td>
+                    <div class="order-product-info">
+                        <div class="order-product-name">Smart Watch</div>
+                        <div class="order-product-desc">Fitness tracker</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="order-type-badge order-type-shipping">Shipping</span>
+                </td>
+                <td>
+                    <div class="order-date">June 8, 2025</div>
+                </td>
+                <td>
+                    <div class="order-total-amount">$249.99</div>
+                </td>
+                <td>
+                    <span class="order-status-badge order-status-paid">Paid</span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openOrderModal('192537', event)">
+                            <i class="fas fa-eye"></i> 
+                            <span class="btn-text">View</span>
+                        </button>
+                        <button class="row-action edit">
+                            <i class="fas fa-edit"></i> 
+                            <span class="btn-text">Edit</span>
+                        </button>
+                        <button class="row-action delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- Selection Actions Bar -->
@@ -33,549 +368,34 @@
         <span id="selectedCount">0</span> orders selected
     </div>
     <div class="selection-buttons">
-        <button class="btn btn-secondary" onclick="exportSelected()">
-            <i class="fas fa-file-export"></i> Export
+        <button class="btn btn-secondary btn-sm" onclick="clearSelection()">
+            <i class="fas fa-times"></i> 
+            <span class="btn-text">Clear</span>
         </button>
-        <button class="btn btn-secondary" onclick="duplicateSelected()">
-            <i class="fas fa-copy"></i> Duplicate
+        <button class="btn btn-primary btn-sm" onclick="exportSelected()">
+            <i class="fas fa-download"></i> 
+            <span class="btn-text">Export</span>
         </button>
-        <button class="btn btn-primary" onclick="printSelected()">
-            <i class="fas fa-print"></i> Print Selected
-        </button>
-        <button class="btn btn-secondary" onclick="clearSelection()">
-            <i class="fas fa-times"></i> Clear
-        </button>
-    </div>
-</div>
-
-<!-- Filters -->
-<div class="filters">
-    <div class="filter-group">
-        <button class="filter-btn">
-            <span>Status</span>
-            <i class="fas fa-chevron-down"></i>
-        </button>
-        <button class="filter-btn">
-            <span>Order date</span>
-            <i class="fas fa-chevron-down"></i>
-        </button>
-        <button class="filter-btn">
-            <span>All filters</span>
-            <i class="fas fa-chevron-down"></i>
-        </button>
-    </div>
-    <div class="action-buttons">
-        <button class="btn btn-secondary">
-            <i class="fas fa-upload"></i>
-            <span>Import</span>
-        </button>
-        <button class="btn btn-secondary" onclick="exportTableData()">
-            <i class="fas fa-download"></i>
-            <span>Export</span>
-        </button>
-        <button class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            <span>Report</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteSelected()">
+            <i class="fas fa-trash"></i> 
+            <span class="btn-text">Delete</span>
         </button>
     </div>
 </div>
 
-<!-- Orders Table -->
-<div class="orders-container">
-    <div class="table-header">
-        <h2>Orders</h2>
-        <div class="table-actions">
-            <button class="table-action" onclick="printTable()">
-                <i class="fas fa-print"></i>
-                <span>Print</span>
-            </button>
-            <button class="table-action">
-                <i class="fas fa-copy"></i>
-                <span>Duplicate</span>
-            </button>
-            <button class="table-action" onclick="exportTableData('csv')">
-                <i class="fas fa-file-export"></i>
-                <span>Export</span>
-            </button>
-        </div>
-    </div>
-    
-    <table class="orders-table">
-        <thead>
-            <tr>
-                <th style="width: 50px;">
-                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
-                </th>
-                <th>Order <i class="fas fa-chevron-down"></i></th>
-                <th>Customer</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Product</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Row 1 -->
-            <tr class="table-row" data-order-id="192541" onclick="selectOrderRow(event, this)">
-                <td>
-                    <input type="checkbox" class="row-select" value="192541" onchange="updateSelection(this)">
-                </td>
-                <td class="order-id">#192541</td>
-                <td class="customer-name">Esther Howard</td>
-                <td>
-                    <span class="order-type-badge order-type-shipping">Shipping</span>
-                </td>
-                <td>
-                    <span class="order-status-badge order-status-paid">Paid</span>
-                </td>
-                <td class="order-product-info" onclick="openOrderModal('192541', event)">
-                    <div class="order-product-name">Order #4567</div>
-                    <div class="order-product-desc">Esther Howard</div>
-                </td>
-                <td class="order-total-amount">$3,127.00</td>
-                <td class="order-date">Jun 19</td>
-                <td onclick="event.stopPropagation()">
-                    <div class="order-row-actions">
-                        <button class="order-row-action" onclick="exportOrder('192541')">
-                            Export
-                        </button>
-                        <button class="order-row-action" onclick="duplicateOrder('192541')">
-                            Duplicate
-                        </button>
-                        <button class="order-row-action" onclick="printOrder('192541')">
-                            Print
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            
-            <!-- Row 2 -->
-            <tr class="table-row" data-order-id="192540" onclick="selectOrderRow(event, this)">
-                <td>
-                    <input type="checkbox" class="row-select" value="192540" onchange="updateSelection(this)">
-                </td>
-                <td class="order-id">#192540</td>
-                <td class="customer-name">David Miller</td>
-                <td>
-                    <span class="order-type-badge order-type-pickups">Pickups</span>
-                </td>
-                <td>
-                    <span class="order-status-badge order-status-paid">Paid</span>
-                </td>
-                <td class="order-product-info" onclick="openOrderModal('192540', event)">
-                    <div class="order-product-name">Droidrigues@gmail.com</div>
-                </td>
-                <td class="order-total-amount">$1,590.00</td>
-                <td class="order-date">Jun 19</td>
-                <td onclick="event.stopPropagation()">
-                    <div class="order-row-actions">
-                        <button class="order-row-action" onclick="exportOrder('192540')">
-                            Export
-                        </button>
-                        <button class="order-row-action" onclick="duplicateOrder('192540')">
-                            Duplicate
-                        </button>
-                        <button class="order-row-action" onclick="printOrder('192540')">
-                            Print
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            
-            <!-- Add more rows... -->
-        </tbody>
-    </table>
-</div>
-
-<!-- Stats Section -->
-<div class="orders-stats-container">
-    <div class="orders-stat-card">
-        <div class="orders-stat-title">RECEIPT OF GOODS</div>
-        <div class="orders-stat-value">$2.2m</div>
-        <div class="orders-stat-desc">242 orders</div>
-    </div>
-    
-    <div class="orders-stat-card">
-        <div class="orders-stat-title">SHIPMENTS</div>
-        <div class="orders-stat-value">$864,600</div>
-        <div class="orders-stat-desc">95 shipments</div>
-    </div>
-    
-    <div class="orders-stat-card">
-        <div class="orders-stat-title">PICKUPS</div>
-        <div class="orders-stat-value">$1.34m</div>
-        <div class="orders-stat-desc">147 pickups</div>
-    </div>
-    
-    <div class="orders-stat-card">
-        <div class="orders-stat-title">AVERAGE ORDER</div>
-        <div class="orders-stat-value">$2,246.75</div>
-        <div class="orders-stat-desc">This month</div>
-    </div>
-</div>
-
-<!-- Bottom Section -->
-<div class="overview-container">
-    <div class="overview-stats">
-        <div class="overview-stat">
-            <div class="orders-stat-title">Total revenue</div>
-            <div class="orders-stat-value">$2.2m</div>
-        </div>
-        
-        <div class="overview-stat">
-            <div class="orders-stat-title">Processing time</div>
-            <div class="orders-stat-value">16 min</div>
-        </div>
-        
-        <div class="overview-stat">
-            <div class="orders-stat-title">Pending orders</div>
-            <div class="orders-stat-value">0.32%</div>
-        </div>
-        
-        <div class="overview-stat">
-            <div class="orders-stat-title">Avg. items/order</div>
-            <div class="orders-stat-value">17</div>
-        </div>
-        
-        <div class="overview-stat">
-            <div class="orders-stat-title">Reject rate</div>
-            <div class="orders-stat-value">0.61%</div>
-        </div>
-        
-        <div class="order-status-widget">
-            <h3>ORDER STATUS</h3>
-            <div class="order-status-list">
-                <div class="order-status-item">
-                    <div class="order-status-color order-status-paid-color"></div>
-                    <span class="order-status-label">Paid</span>
-                </div>
-                <div class="order-status-item">
-                    <div class="order-status-color order-status-cancelled-color"></div>
-                    <span class="order-status-label">Cancelled</span>
-                </div>
-                <div class="order-status-item">
-                    <div class="order-status-color order-status-refunded-color"></div>
-                    <span class="order-status-label">Refunded</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="top-sellers-widget">
-        <div class="top-sellers-header">
-            <h3>TOP SELLERS</h3>
-            <button class="filter-btn">
-                <span>This month</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-        </div>
-        
-        <div class="top-seller-item">
-            <div class="top-seller-name">Gasoline generator EYG 7500L (inverter)</div>
-            <div class="top-seller-count">14</div>
-        </div>
-    </div>
-</div>
-
-<!-- Selection Actions Bar -->
-<div class="orders-selection-actions" id="selectionActions">
-    <div class="selected-count">
-        <span id="selectedCount">0</span> orders selected
-    </div>
-    <div class="selection-buttons">
-        <button class="btn btn-secondary" onclick="exportSelected()">
-            <i class="fas fa-file-export"></i> Export
-        </button>
-        <button class="btn btn-secondary" onclick="duplicateSelected()">
-            <i class="fas fa-copy"></i> Duplicate
-        </button>
-        <button class="btn btn-primary" onclick="printSelected()">
-            <i class="fas fa-print"></i> Print Selected
-        </button>
-        <button class="btn btn-secondary" onclick="clearSelection()">
-            <i class="fas fa-times"></i> Clear
-        </button>
-    </div>
-</div>
-
-<!-- Bottom Section -->
-
-
-@section Scripts {
-    <script>
-        // Order selection state
-        let selectedOrders = new Set();
-
-        // Select/deselect order row
-        function selectOrderRow(event, row) {
-            if (event.target.type === 'checkbox' ||
-                event.target.closest('.row-actions') ||
-                event.target.closest('.product-info')) {
-                return;
-            }
-
-            const checkbox = row.querySelector('.order-select');
-            checkbox.checked = !checkbox.checked;
-            updateSelection(checkbox);
-        }
-
-        // Update selection state
-        function updateSelection(checkbox) {
-            const orderId = checkbox.value;
-
-            if (checkbox.checked) {
-                selectedOrders.add(orderId);
-                checkbox.closest('.table-row').classList.add('selected');
-            } else {
-                selectedOrders.delete(orderId);
-                checkbox.closest('.table-row').classList.remove('selected');
-                document.getElementById('selectAll').checked = false;
-            }
-
-            updateSelectionUI();
-        }
-
-        // Toggle select all
-        function toggleSelectAll(selectAllCheckbox) {
-            const checkboxes = document.querySelectorAll('.order-select');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-                updateSelection(checkbox);
-            });
-        }
-
-        // Update selection UI
-        function updateSelectionUI() {
-            const count = selectedOrders.size;
-            document.getElementById('selectedCount').textContent = count;
-
-            const actionsBar = document.getElementById('selectionActions');
-            if (count > 0) {
-                actionsBar.classList.add('active');
-            } else {
-                actionsBar.classList.remove('active');
-            }
-        }
-
-        // Clear all selections
-        function clearSelection() {
-            selectedOrders.clear();
-            document.querySelectorAll('.order-select').forEach(cb => {
-                cb.checked = false;
-                cb.closest('.table-row').classList.remove('selected');
-            });
-            document.getElementById('selectAll').checked = false;
-            updateSelectionUI();
-        }
-
-        // Export selected orders
-        function exportSelected() {
-            if (selectedOrders.size === 0) {
-                alert('Please select at least one order');
-                return;
-            }
-            console.log('Exporting orders:', Array.from(selectedOrders));
-            alert(`Exporting ${selectedOrders.size} selected orders...`);
-        }
-
-        // Duplicate selected orders
-        function duplicateSelected() {
-            if (selectedOrders.size === 0) {
-                alert('Please select at least one order');
-                return;
-            }
-            console.log('Duplicating orders:', Array.from(selectedOrders));
-            alert(`Duplicating ${selectedOrders.size} selected orders...`);
-        }
-
-        // Print selected orders
-        function printSelected() {
-            if (selectedOrders.size === 0) {
-                alert('Please select at least one order');
-                return;
-            }
-            console.log('Printing orders:', Array.from(selectedOrders));
-            alert(`Printing ${selectedOrders.size} selected orders...`);
-        }
-
-        // Open order details modal
-        function openOrderModal(orderId, event) {
-            if (event) event.stopPropagation();
-
-            document.getElementById('modalOrderId').textContent = `Order #${orderId}`;
-
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = getOrderDetailsHTML(orderId);
-
-            document.getElementById('orderModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-
-            initModalTabs();
-        }
-
-        // Get order details HTML
-        function getOrderDetailsHTML(orderId) {
-            if (orderId === '192537') {
-                return `
-                    <div class="order-customer">
-                        <div class="customer-name">Esther Howard</div>
-                        <div class="customer-email">brodrigues@gmail.com</div>
-                        <div class="customer-phone">+1 (415) 555-2671</div>
-                    </div>
-
-                    <div class="order-tabs">
-                        <button class="tab active" data-tab="items">Order items</button>
-                        <button class="tab" data-tab="delivery">Delivery</button>
-                        <button class="tab" data-tab="docs">Docs</button>
-                    </div>
-
-                    <div class="tab-content" id="tabItems">
-                        <div class="order-items">
-                            <div class="order-item">
-                                <div class="item-details">
-                                    <h4>Stihl TS 800 cut-off machine incl.</h4>
-                                    <p>5x diamond cutting discs</p>
-                                </div>
-                                <div class="item-price">
-                                    <div class="item-quantity">1 × $1,590.00</div>
-                                    <div class="item-total">$1,590.00</div>
-                                </div>
-                            </div>
-
-                            <div class="order-item">
-                                <div class="item-details">
-                                    <h4>Gasoline generator EYG 7500I</h4>
-                                    <p>(inverter)</p>
-                                </div>
-                                <div class="item-price">
-                                    <div class="item-quantity">1 × $337.89</div>
-                                    <div class="item-total">$337.89</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="order-total">
-                            Total: $1,927.89
-                        </div>
-                    </div>
-
-                    <div class="tab-content" id="tabDelivery" style="display: none;">
-                        <p>Delivery Address:<br>
-                        123 Main Street<br>
-                        San Francisco, CA 94107<br>
-                        United States</p>
-                        <p>Estimated Delivery: June 25, 2025</p>
-                        <p>Shipping Method: Standard Ground</p>
-                    </div>
-
-                    <div class="tab-content" id="tabDocs" style="display: none;">
-                        <p><i class="fas fa-file-invoice"></i> Invoice #INV-4567</p>
-                        <p><i class="fas fa-receipt"></i> Receipt #REC-4567</p>
-                        <p><i class="fas fa-shipping-fast"></i> Shipping Label #SL-4567</p>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button class="modal-action" onclick="exportOrder('${orderId}')">
-                            <i class="fas fa-file-export"></i> Export
-                        </button>
-                        <button class="modal-action" onclick="duplicateOrder('${orderId}')">
-                            <i class="fas fa-copy"></i> Duplicate
-                        </button>
-                        <button class="modal-action" onclick="printOrder('${orderId}')">
-                            <i class="fas fa-print"></i> Print
-                        </button>
-                        <button class="modal-action" onclick="closeModal()">
-                            <i class="fas fa-times"></i> Close
-                        </button>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="order-customer">
-                        <div class="customer-name">Order #${orderId} Details</div>
-                    </div>
-
-                    <div class="order-tabs">
-                        <button class="tab active" data-tab="items">Order items</button>
-                        <button class="tab" data-tab="delivery">Delivery</button>
-                        <button class="tab" data-tab="docs">Docs</button>
-                    </div>
-
-                    <div class="tab-content" id="tabItems">
-                        <p>Order details for #${orderId}</p>
-                    </div>
-
-                    <div class="tab-content" id="tabDelivery" style="display: none;">
-                        <p>Delivery information for order #${orderId}</p>
-                    </div>
-
-                    <div class="tab-content" id="tabDocs" style="display: none;">
-                        <p>Documents for order #${orderId}</p>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button class="modal-action" onclick="exportOrder('${orderId}')">
-                            <i class="fas fa-file-export"></i> Export
-                        </button>
-                        <button class="modal-action" onclick="duplicateOrder('${orderId}')">
-                            <i class="fas fa-copy"></i> Duplicate
-                        </button>
-                        <button class="modal-action" onclick="printOrder('${orderId}')">
-                            <i class="fas fa-print"></i> Print
-                        </button>
-                        <button class="modal-action" onclick="closeModal()">
-                            <i class="fas fa-times"></i> Close
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        // Initialize modal tabs
-        function initModalTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const tabName = this.getAttribute('data-tab');
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.style.display = 'none';
-                    });
-                    document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).style.display = 'block';
-                });
-            });
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('orderModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Close modal when clicking close button or outside
-        document.getElementById('modalClose')?.addEventListener('click', closeModal);
-        document.getElementById('orderModal')?.addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-
-        // Individual order actions
-        function exportOrder(orderId) {
-            console.log('Exporting order:', orderId);
-            alert(`Exporting order #${orderId}...`);
-        }
-
-        function duplicateOrder(orderId) {
-            console.log('Duplicating order:', orderId);
-            alert(`Duplicating order #${orderId}...`);
-        }
-
-        function printOrder(orderId) {
-            console.log('Printing order:', orderId);
-            alert(`Printing order #${orderId}...`);
-        }
-    </script>
-}
+<!-- Pagination -->
+@* <div class="pagination">
+    <a href="#" class="page-item disabled">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+    <a href="#" class="page-item active">1</a>
+    <a href="#" class="page-item">2</a>
+    <a href="#" class="page-item">3</a>
+    <a href="#" class="page-item">4</a>
+    <a href="#" class="page-item">5</a>
+    <span class="page-item">...</span>
+    <a href="#" class="page-item">10</a>
+    <a href="#" class="page-item">
+        <i class="fas fa-chevron-right"></i>
+    </a>
+</div> *@

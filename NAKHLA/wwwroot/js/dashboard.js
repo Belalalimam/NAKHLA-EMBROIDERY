@@ -1,4 +1,4 @@
-﻿// dashboard.js - Fixed Version with Working Modals
+﻿// dashboard.js - Complete Dashboard Functionality
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize mobile navigation
     initMobileNavigation();
+
+    // Initialize user profile dropdown
+    initUserProfileDropdown();
 
     // Initialize search
     initSearch();
@@ -19,9 +22,90 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize modals
     initModals();
 
-    // Test if icons are working
-    testIcons();
+    // Initialize mobile enhancements
+    initMobileEnhancements(); // Add this line
 });
+
+// ===== MOBILE DETECTION AND ENHANCEMENTS =====
+function initMobileEnhancements() {
+    const mobileScrollHint = document.querySelector('.mobile-scroll-hint');
+
+    // Check if mobile
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
+    // Show/hide mobile hint
+    if (mobileScrollHint) {
+        if (isMobile()) {
+            mobileScrollHint.style.display = 'block';
+        }
+
+        // Update on resize
+        window.addEventListener('resize', function () {
+            mobileScrollHint.style.display = isMobile() ? 'block' : 'none';
+        });
+    }
+
+    // Improve touch scrolling for tables
+    const tableContainers = document.querySelectorAll('.data-table-container');
+    tableContainers.forEach(container => {
+        let startX;
+        let scrollLeft;
+
+        container.addEventListener('touchstart', function (e) {
+            startX = e.touches[0].pageX - container.offsetLeft;
+            scrollLeft = container.scrollLeft;
+        });
+
+        container.addEventListener('touchmove', function (e) {
+            if (!startX) return;
+            const x = e.touches[0].pageX - container.offsetLeft;
+            const walk = (x - startX) * 2; // Scroll multiplier
+            container.scrollLeft = scrollLeft - walk;
+        });
+    });
+
+    // Prevent accidental row clicks on mobile
+    if (isMobile()) {
+        document.addEventListener('click', function (e) {
+            if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
+                e.stopPropagation();
+            }
+        });
+    }
+}
+
+// ===== USER PROFILE DROPDOWN =====
+function initUserProfileDropdown() {
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = userProfile ? document.getElementById('userDropdown') : null;
+
+    if (!userProfile || !userDropdown) return;
+
+    // Toggle dropdown on click
+    userProfile.addEventListener('click', function (e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+        userDropdown.style.display = userDropdown.classList.contains('show') ? 'block' : 'none';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!userProfile.contains(e.target)) {
+            userDropdown.classList.remove('show');
+            userDropdown.style.display = 'none';
+        }
+    });
+
+    // Close dropdown with ESC key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            userDropdown.classList.remove('show');
+            userDropdown.style.display = 'none';
+        }
+    });
+}
 
 // ===== MOBILE NAVIGATION =====
 function initMobileNavigation() {
@@ -69,7 +153,6 @@ function initSearch() {
         if (term.length >= 2) {
             searchTimeout = setTimeout(() => {
                 console.log('Searching for:', term);
-                // Highlight matching rows
                 highlightSearchResults(term);
             }, 300);
         } else {
@@ -100,7 +183,7 @@ function clearSearch() {
 // ===== BUTTON ANIMATIONS =====
 function initButtonAnimations() {
     document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.filter-btn, .btn, .table-action, .row-action, .modal-action, .page-item');
+        const btn = e.target.closest('.filter-btn, .btn, .table-action, .row-action, .page-item');
         if (btn && !btn.classList.contains('disabled')) {
             btn.classList.add('click-animation');
             setTimeout(() => btn.classList.remove('click-animation'), 150);
@@ -127,7 +210,7 @@ function initFilterDropdowns() {
     });
 }
 
-// ===== MODAL SYSTEM (FIXED) =====
+// ===== MODAL SYSTEM =====
 function initModals() {
     // Close modals with ESC key
     document.addEventListener('keydown', function (e) {
@@ -157,15 +240,35 @@ function openOrderModal(orderId, event) {
 
     console.log('Opening modal for order:', orderId);
 
-    // Set modal title
-    document.getElementById('modalOrderId').textContent = `Order #${orderId}`;
+    const modal = document.getElementById('universalModal');
+    const modalContent = document.getElementById('modalContent');
 
-    // Load order details
-    const modalBody = document.getElementById('modalBody');
-    modalBody.innerHTML = getOrderDetailsHTML(orderId);
+    if (!modal || !modalContent) {
+        console.error('Modal elements not found!');
+        alert('Modal system error. Please refresh the page.');
+        return;
+    }
+
+    // Set modal content
+    modalContent.innerHTML = `
+        <div class="modal-header">
+            <h3>Order #${orderId}</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            ${getOrderDetailsHTML(orderId)}
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            <button class="btn btn-primary" onclick="printOrder('${orderId}')">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    `;
 
     // Show modal
-    const modal = document.getElementById('orderModal');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
@@ -174,7 +277,6 @@ function openOrderModal(orderId, event) {
 }
 
 function getOrderDetailsHTML(orderId) {
-    // Sample data - in real app, fetch from API
     const orders = {
         '192541': {
             customer: 'Esther Howard',
@@ -185,6 +287,15 @@ function getOrderDetailsHTML(orderId) {
                 { name: 'Gasoline generator EYG 7500I', desc: '(inverter)', qty: 1, price: 337.89 }
             ],
             total: 1927.89
+        },
+        '192540': {
+            customer: 'David Miller',
+            email: 'droidrigues@gmail.com',
+            phone: '+1 (415) 555-1234',
+            items: [
+                { name: 'Generic Product', desc: 'Standard item', qty: 2, price: 795.00 }
+            ],
+            total: 1590.00
         }
     };
 
@@ -193,72 +304,62 @@ function getOrderDetailsHTML(orderId) {
         email: 'email@example.com',
         phone: '+1 (555) 123-4567',
         items: [
-            { name: 'Product 1', desc: 'Description', qty: 1, price: 100.00 }
+            { name: 'Sample Product', desc: 'Product description', qty: 1, price: 100.00 }
         ],
         total: 100.00
     };
 
     return `
         <div class="order-details">
-            <div class="customer-info">
+            <div class="customer-info mb-3">
                 <h4>${order.customer}</h4>
                 <p><i class="fas fa-envelope"></i> ${order.email}</p>
                 <p><i class="fas fa-phone"></i> ${order.phone}</p>
             </div>
             
-            <div class="order-tabs">
+            <div class="order-tabs mb-3">
                 <button class="tab-btn active" data-tab="items">Order Items</button>
                 <button class="tab-btn" data-tab="delivery">Delivery</button>
                 <button class="tab-btn" data-tab="docs">Documents</button>
             </div>
             
             <div class="tab-content active" id="tab-items">
-                <div class="order-items">
+                <div class="order-items mb-3">
                     ${order.items.map(item => `
-                        <div class="order-item">
-                            <div class="item-info">
-                                <h5>${item.name}</h5>
-                                <p>${item.desc}</p>
-                            </div>
-                            <div class="item-price">
-                                <span>${item.qty} × $${item.price.toFixed(2)}</span>
-                                <strong>$${(item.qty * item.price).toFixed(2)}</strong>
+                        <div class="order-item mb-2 pb-2 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="mb-1">${item.name}</h5>
+                                    <p class="text-muted mb-0">${item.desc}</p>
+                                </div>
+                                <div class="text-end">
+                                    <p class="mb-1">${item.qty} × $${item.price.toFixed(2)}</p>
+                                    <strong>$${(item.qty * item.price).toFixed(2)}</strong>
+                                </div>
                             </div>
                         </div>
                     `).join('')}
                 </div>
                 
-                <div class="order-total">
-                    <strong>Total: $${order.total.toFixed(2)}</strong>
+                <div class="order-total text-end">
+                    <h4>Total: $${order.total.toFixed(2)}</h4>
                 </div>
             </div>
             
-            <div class="tab-content" id="tab-delivery">
+            <div class="tab-content" id="tab-delivery" style="display: none;">
                 <p>Delivery information for order #${orderId}</p>
                 <p><strong>Address:</strong> 123 Main Street, San Francisco, CA 94107</p>
                 <p><strong>Status:</strong> Shipped</p>
                 <p><strong>Estimated Delivery:</strong> June 25, 2025</p>
             </div>
             
-            <div class="tab-content" id="tab-docs">
+            <div class="tab-content" id="tab-docs" style="display: none;">
                 <p>Documents for order #${orderId}</p>
-                <ul>
+                <ul class="list-unstyled">
                     <li><i class="fas fa-file-invoice"></i> Invoice #INV-${orderId}</li>
                     <li><i class="fas fa-receipt"></i> Receipt #REC-${orderId}</li>
                     <li><i class="fas fa-shipping-fast"></i> Shipping Label #SL-${orderId}</li>
                 </ul>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="btn btn-primary" onclick="exportOrder('${orderId}')">
-                    <i class="fas fa-file-export"></i> Export Order
-                </button>
-                <button class="btn btn-secondary" onclick="duplicateOrder('${orderId}')">
-                    <i class="fas fa-copy"></i> Duplicate
-                </button>
-                <button class="btn btn-secondary" onclick="printOrder('${orderId}')">
-                    <i class="fas fa-print"></i> Print
-                </button>
             </div>
         </div>
     `;
@@ -270,24 +371,29 @@ function initModalTabs() {
 
     tabButtons.forEach(button => {
         button.addEventListener('click', function () {
-            // Remove active class from all buttons and contents
             tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
 
-            // Add active class to clicked button
             this.classList.add('active');
-
-            // Show corresponding content
             const tabId = this.getAttribute('data-tab');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const tabContent = document.getElementById(`tab-${tabId}`);
+            if (tabContent) {
+                tabContent.classList.add('active');
+                tabContent.style.display = 'block';
+            }
         });
     });
 }
 
 function closeModal() {
-    const modal = document.getElementById('orderModal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
+    const modal = document.getElementById('universalModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 }
 
 // ===== ORDER ACTIONS =====
@@ -310,7 +416,6 @@ function printOrder(orderId) {
 let selectedOrders = new Set();
 
 function selectOrderRow(event, row) {
-    // Don't trigger if clicking on checkbox or action buttons
     if (event.target.type === 'checkbox' ||
         event.target.closest('.row-actions') ||
         event.target.closest('.product-info')) {
@@ -333,7 +438,8 @@ function updateSelection(checkbox) {
     } else {
         selectedOrders.delete(orderId);
         checkbox.closest('tr').classList.remove('selected');
-        document.getElementById('selectAll').checked = false;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = false;
     }
 
     updateSelectionUI();
@@ -369,9 +475,10 @@ function clearSelection() {
     selectedOrders.clear();
     document.querySelectorAll('.order-select').forEach(cb => {
         cb.checked = false;
-        cb.closest('tr').classList.remove('selected');
+        cb.closest('tr')?.classList.remove('selected');
     });
-    document.getElementById('selectAll').checked = false;
+    const selectAll = document.getElementById('selectAll');
+    if (selectAll) selectAll.checked = false;
     updateSelectionUI();
 }
 
@@ -381,7 +488,6 @@ function exportSelected() {
         alert('Please select at least one order');
         return;
     }
-    console.log('Exporting orders:', Array.from(selectedOrders));
     alert(`Exporting ${selectedOrders.size} selected orders...`);
 }
 
@@ -392,8 +498,6 @@ function deleteSelected() {
     }
 
     if (confirm(`Delete ${selectedOrders.size} selected orders?`)) {
-        console.log('Deleting orders:', Array.from(selectedOrders));
-        // Remove from UI
         selectedOrders.forEach(id => {
             const row = document.querySelector(`tr[data-order-id="${id}"]`);
             if (row) row.remove();
@@ -420,28 +524,6 @@ function showConfirmModal(title, message, onConfirm) {
 function closeConfirmModal() {
     document.getElementById('confirmModal').style.display = 'none';
     document.body.style.overflow = 'auto';
-}
-
-// ===== UTILITY FUNCTIONS =====
-function testIcons() {
-    console.log('Testing Font Awesome...');
-    const testIcon = document.createElement('i');
-    testIcon.className = 'fas fa-test';
-    document.body.appendChild(testIcon);
-
-    const computed = window.getComputedStyle(testIcon, ':before');
-    const content = computed.content;
-
-    if (content === 'none' || content === 'normal') {
-        console.warn('Font Awesome may not be loading properly');
-        // Load emergency fallback
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css';
-        document.head.appendChild(link);
-    }
-
-    testIcon.remove();
 }
 
 // ===== GLOBAL FUNCTIONS =====

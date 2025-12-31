@@ -1,25 +1,13 @@
-﻿@{
+﻿@model List<Brand>
+@{
     ViewBag.Title = "Brand Management";
     ViewBag.PageTitle = "Brands";
     ViewBag.Subtitle = "Manage product brands";
 }
 
-<!-- Selection Actions Bar -->
-<div class="selection-actions" id="selectionActions">
-    <div class="selected-count">
-        <span id="selectedCount">0</span> brands selected
-    </div>
-    <div class="selection-buttons">
-        <button class="btn btn-secondary" onclick="exportSelected()">
-            <i class="fas fa-file-export"></i> Export
-        </button>
-        <button class="btn btn-danger" onclick="deleteSelected()">
-            <i class="fas fa-trash"></i> Delete
-        </button>
-        <button class="btn btn-secondary" onclick="clearSelection()">
-            <i class="fas fa-times"></i> Clear
-        </button>
-    </div>
+<!-- Mobile Table Hint (Visible only on mobile) -->
+<div class="mobile-scroll-hint" style="display: none; background: #f1f5f9; padding: 8px; text-align: center; color: #64748b; font-size: 12px; border-radius: 6px; margin-bottom: 15px;">
+    <i class="fas fa-arrows-left-right"></i> Swipe horizontally to view all columns
 </div>
 
 <!-- Page Header -->
@@ -30,10 +18,12 @@
     </div>
     <div class="header-actions">
         <button class="btn btn-secondary">
-            <i class="fas fa-filter"></i> Filter
+            <i class="fas fa-filter"></i>
+            <span class="desktop-text">Filter</span>
         </button>
-        <button class="btn btn-primary" onclick="openModal('Add New Brand', getBrandForm())">
-            <i class="fas fa-plus"></i> Add Brand
+        <button class="btn btn-primary" onclick="openBrandModal('new', event)">
+            <i class="fas fa-plus"></i>
+            <span class="desktop-text">Add Brand</span>
         </button>
     </div>
 </div>
@@ -93,14 +83,17 @@
     <div class="table-header">
         <h2>All Brands</h2>
         <div class="table-actions">
-            <button class="table-action" onclick="exportData()">
-                <i class="fas fa-file-export"></i> Export All
+            <button class="table-action" onclick="exportAllBrands()">
+                <i class="fas fa-file-export"></i>
+                <span class="desktop-text">Export All</span>
             </button>
-            <button class="table-action">
-                <i class="fas fa-print"></i> Print
+            <button class="table-action" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                <span class="desktop-text">Print</span>
             </button>
-            <button class="table-action">
-                <i class="fas fa-sync-alt"></i> Refresh
+            <button class="table-action" onclick="refreshBrands()">
+                <i class="fas fa-sync-alt"></i>
+                <span class="desktop-text">Refresh</span>
             </button>
         </div>
     </div>
@@ -108,7 +101,7 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 50px;">
+                <th style="width: 40px;">
                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
                 </th>
                 <th data-sortable="true">Brand Name <i class="fas fa-sort"></i></th>
@@ -119,161 +112,570 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Stihl -->
-            <tr class="table-row" data-item-id="1" onclick="selectRow(event, this)">
-                <td>
-                    <input type="checkbox" class="row-select" value="1" onchange="updateSelection(this)">
-                </td>
-                <td>
-                    <div style="font-weight: 600; color: #2d3748;">Stihl</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Power tools & equipment</div>
-                </td>
-                <td>
-                    <span class="badge badge-primary">42 products</span>
-                </td>
-                <td>
-                    <span class="status-dot dot-active"></span>
-                    <span>Active</span>
-                </td>
-                <td>
-                    <a href="https://www.stihl.com" target="_blank">stihl.com</a>
-                </td>
-                <td onclick="event.stopPropagation()">
-                    <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Stihl Details', '<p>Brand details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'Stihl', description: 'Power tools & equipment', website: 'https://www.stihl.com', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="row-action delete" onclick="deleteItem('1', 'Stihl')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </td>
-            </tr>
+            @if (Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <!-- Stihl -->
+                    <tr class="table-row" data-item-id="1" onclick="selectRow(event, this)">
+                        <td>
+                            <input type="checkbox" class="row-select" value="1" onchange="updateSelection(this)">
+                        </td>
+                        <td>
+                            <div class="customer-name">@item.Name</div>
+                            <div class="text-muted">@item.Description</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">@item.Products.Count() products</span>
+                        </td>
+                        <td>
+                            <span class="status-dot dot-active"></span>
+                            <span class="mobile-text">@item.Status</span>
+                        </td>
+                        <td>
+                            <div class="website-link">
+                                <a href="https://www.stihl.com" target="_blank" onclick="event.stopPropagation()">stihl.com</a>
+                            </div>
+                        </td>
+                        <td onclick="event.stopPropagation()">
+                            <div class="row-actions">
+                                <button class="row-action view" onclick="openBrandModal('1', event)">
+                                    <i class="fas fa-eye"></i>
+                                    <span class="desktop-text">View</span>
+                                </button>
+                                <button class="row-action edit" onclick="openBrandModal('edit1', event)">
+                                    <i class="fas fa-edit"></i>
+                                    <span class="desktop-text">Edit</span>
+                                </button>
+                                <button class="row-action delete" onclick="deleteBrand('1', 'Stihl')">
+                                    <i class="fas fa-trash"></i>
+                                    <span class="desktop-text">Delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
 
-            <!-- Generic -->
-            <tr class="table-row" data-item-id="2" onclick="selectRow(event, this)">
-                <td>
-                    <input type="checkbox" class="row-select" value="2" onchange="updateSelection(this)">
-                </td>
-                <td>
-                    <div style="font-weight: 600; color: #2d3748;">Generic</div>
-                    <div style="font-size: 12px; color: #a0aec0;">No-brand products</div>
-                </td>
-                <td>
-                    <span class="badge badge-primary">156 products</span>
-                </td>
-                <td>
-                    <span class="status-dot dot-active"></span>
-                    <span>Active</span>
-                </td>
-                <td>-</td>
-                <td onclick="event.stopPropagation()">
-                    <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Generic Details', '<p>Brand details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'Generic', description: 'No-brand products', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="row-action delete" onclick="deleteItem('2', 'Generic')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </td>
-            </tr>
-
-            <!-- Premium -->
-            <tr class="table-row" data-item-id="3" onclick="selectRow(event, this)">
-                <td>
-                    <input type="checkbox" class="row-select" value="3" onchange="updateSelection(this)">
-                </td>
-                <td>
-                    <div style="font-weight: 600; color: #2d3748;">Premium</div>
-                    <div style="font-size: 12px; color: #a0aec0;">High-quality products</div>
-                </td>
-                <td>
-                    <span class="badge badge-primary">89 products</span>
-                </td>
-                <td>
-                    <span class="status-dot dot-active"></span>
-                    <span>Active</span>
-                </td>
-                <td>
-                    <a href="https://www.premiumtools.com" target="_blank">premiumtools.com</a>
-                </td>
-                <td onclick="event.stopPropagation()">
-                    <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Premium Details', '<p>Brand details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'Premium', description: 'High-quality products', website: 'https://www.premiumtools.com', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="row-action delete" onclick="deleteItem('3', 'Premium')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </td>
-            </tr>
-
-            <!-- Inactive Brand -->
-            <tr class="table-row" data-item-id="4" onclick="selectRow(event, this)">
-                <td>
-                    <input type="checkbox" class="row-select" value="4" onchange="updateSelection(this)">
-                </td>
-                <td>
-                    <div style="font-weight: 600; color: #2d3748;">OldBrand</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Discontinued brand</div>
-                </td>
-                <td>
-                    <span class="badge badge-warning">12 products</span>
-                </td>
-                <td>
-                    <span class="status-dot dot-inactive"></span>
-                    <span>Inactive</span>
-                </td>
-                <td>-</td>
-                <td onclick="event.stopPropagation()">
-                    <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('OldBrand Details', '<p>Brand details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="row-action edit" onclick="openModal('Edit Brand', getBrandForm({name: 'OldBrand', description: 'Discontinued brand', isActive: false}))">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="row-action delete" onclick="deleteItem('4', 'OldBrand')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </td>
-            </tr>
         </tbody>
     </table>
 
     <!-- Pagination -->
-    <div class="pagination">
-        <div class="page-item disabled">
-            <i class="fas fa-chevron-left"></i>
-        </div>
-        <div class="page-item active">1</div>
-        <div class="page-item">2</div>
-        <div class="page-item">3</div>
-        <div class="page-item">4</div>
-        <div class="page-item">5</div>
-        <div class="page-item">
-            <i class="fas fa-chevron-right"></i>
-        </div>
+    <nav aria-label="Page navigation example ">
+        <ul class="pagination d-flex justify-content-center">
+            @if (ViewBag.currentPage > 1)
+            {
+                <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage - 1)">Previous</a></li>
+            }
+
+            @for (var i = 1; i <= ViewBag.totalHodsOfPage; i++)
+            {
+                if (i == ViewBag.currentPage)
+                {
+                    <li class="page-item active"><a class="page-link" href="https://localhost:7286/Admin/Brands?page=@i">@i</a></li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="https://localhost:7286/Admin/Brands?page=@i">@i</a></li>
+                }
+            }
+            @if (ViewBag.currentPage != ViewBag.totalHodsOfPage && Model.Any())
+            {
+                <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage + 1)">Next</a></li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<!-- Selection Actions Bar -->
+<div class="selection-actions" id="selectionActions">
+    <div class="selected-count">
+        <span id="selectedCount">0</span> brands selected
+    </div>
+    <div class="selection-buttons">
+        <button class="btn btn-secondary btn-sm" onclick="exportSelectedBrands()">
+            <i class="fas fa-file-export"></i>
+            <span class="desktop-text">Export</span>
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSelectedBrands()">
+            <i class="fas fa-trash"></i>
+            <span class="desktop-text">Delete</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="clearSelection()">
+            <i class="fas fa-times"></i>
+            <span class="desktop-text">Clear</span>
+        </button>
     </div>
 </div>
+
+<style>
+
+</style>
 
 @section Scripts {
     <script>
         // Initialize brand-specific functionality
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Brands page loaded');
+            initBrandsPage();
+        });
+
+        // Brand-specific functions
+        function initBrandsPage() {
+            // Add brand-specific event listeners
+            const checkboxes = document.querySelectorAll('.row-select');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    updateSelection(this);
+                });
+            });
+        }
+
+        // Open brand details modal
+        function openBrandModal(brandId, event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+
+            if (brandId === 'new') {
+                // Open new brand modal
+                showAddBrandModal();
+                return;
+            }
+
+            if (brandId.startsWith('edit')) {
+                // Open edit modal for specific brand
+                const editId = brandId.replace('edit', '');
+                showEditBrandModal(editId);
+                return;
+            }
+
+            console.log('Opening modal for brand:', brandId);
+
+            const brands = {
+                '1': {
+                    name: 'Stihl',
+                    description: 'Power tools & equipment',
+                    products: 42,
+                    status: 'Active',
+                    website: 'https://www.stihl.com',
+                    featured: true,
+                    created: 'Mar 15, 2023',
+                    lastUpdated: 'Jun 25, 2025'
+                },
+                '2': {
+                    name: 'Generic',
+                    description: 'No-brand products',
+                    products: 156,
+                    status: 'Active',
+                    website: '',
+                    featured: false,
+                    created: 'Jan 10, 2023',
+                    lastUpdated: 'May 30, 2025'
+                },
+                '3': {
+                    name: 'Premium',
+                    description: 'High-quality products',
+                    products: 89,
+                    status: 'Active',
+                    website: 'https://www.premiumtools.com',
+                    featured: true,
+                    created: 'Feb 22, 2024',
+                    lastUpdated: 'Jun 20, 2025'
+                },
+                '4': {
+                    name: 'OldBrand',
+                    description: 'Discontinued brand',
+                    products: 12,
+                    status: 'Inactive',
+                    website: '',
+                    featured: false,
+                    created: 'Nov 05, 2022',
+                    lastUpdated: 'Dec 15, 2023'
+                }
+            };
+
+            const brand = brands[brandId] || {
+                name: 'Brand ' + brandId,
+                description: 'Brand description',
+                products: Math.floor(Math.random() * 200) + 20,
+                status: 'Active',
+                website: 'https://www.example.com',
+                featured: Math.random() > 0.5,
+                created: 'Jan 01, 2024',
+                lastUpdated: 'Jun 01, 2025'
+            };
+
+            const modal = document.getElementById('universalModal');
+            const modalContent = document.getElementById('modalContent');
+
+            if (!modal || !modalContent) {
+                alert('Modal system error. Please refresh the page.');
+                return;
+            }
+
+            // Set modal content
+            modalContent.innerHTML = `
+                <div class="modal-header">
+                    <h3>${brand.name}</h3>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="brand-details">
+                        <div class="mb-3">
+                            <h4>Brand Information</h4>
+                            <div class="form-group">
+                                <label class="form-label">Brand Name</label>
+                                <div class="form-control" style="background: #f8fafc; font-weight: 600;">${brand.name}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <div class="form-control" style="background: #f8fafc; min-height: 80px;">${brand.description}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Website</label>
+                                <div class="form-control" style="background: #f8fafc;">
+                                    ${brand.website ? `<a href="${brand.website}" target="_blank">${brand.website}</a>` : 'Not specified'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="stat-card" style="padding: 15px; margin: 0;">
+                                    <div class="stat-title">Total Products</div>
+                                    <div class="stat-value">${brand.products}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card" style="padding: 15px; margin: 0;">
+                                    <div class="stat-title">Status</div>
+                                    <div class="stat-value" style="font-size: 20px;">
+                                        <span class="status-dot ${brand.status === 'Active' ? 'dot-active' : brand.status === 'Pending' ? 'dot-pending' : 'dot-inactive'}"></span>
+                                        ${brand.status}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="featuredCheck" ${brand.featured ? 'checked' : ''} disabled>
+                                <label class="form-check-label" for="featuredCheck">Featured Brand (shown on homepage)</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Timestamps</h5>
+                            <div class="form-group">
+                                <label class="form-label">Created</label>
+                                <div class="form-control" style="background: #f8fafc;">${brand.created}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Updated</label>
+                                <div class="form-control" style="background: #f8fafc;">${brand.lastUpdated}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="showEditBrandModal('${brandId}')">
+                        <i class="fas fa-edit"></i> Edit Brand
+                    </button>
+                </div>
+                </div>
+
+            `;
+
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Show add brand modal
+        function showAddBrandModal() {
+            const modal = document.getElementById('universalModal');
+            const modalContent = document.getElementById('modalContent');
+
+            if (!modal || !modalContent) return;
+
+            modalContent.innerHTML = `
+                <div class="modal-header">
+                    <h3>Add New Brand</h3>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBrandForm" method="post">
+                        <div class="form-group">
+                            <label class="form-label">Brand Name *</label>
+                            <input type="text" class="form-control" id="brandName" name="Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="brandDescription" name="Description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Website URL</label>
+                            <input type="url" class="form-control" id="brandWebsite" name="WebSite" placeholder="https://">
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-control" name="Status" id="brandStatus">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                        <option value="pending">Pending</option>
+                                    </select>
+                                </div>
+                            </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Products Count</label>
+                                        <input type="number" class="form-control" id="brandProducts" value="0" min="0">
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="brandFeatured">
+                            <label class="form-check-label" for="brandFeatured">Featured Brand</label>
+                        </div>
+                        <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-save"></i> Save Brand
+                    </button>
+                </div>
+                    </form>
+
+                </div>
+
+            `;
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Show edit brand modal
+        function showEditBrandModal(brandId) {
+            // Close current modal first
+            closeModal();
+
+            // Simulate API call delay
+            setTimeout(() => {
+                const modal = document.getElementById('universalModal');
+                const modalContent = document.getElementById('modalContent');
+
+                if (!modal || !modalContent) return;
+
+                modalContent.innerHTML = `
+                    <div class="modal-header">
+                        <h3>Edit Brand</h3>
+                        <button class="modal-close" onclick="closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editBrandForm">
+                            <div class="form-group">
+                                <label class="form-label">Brand Name *</label>
+                                <input type="text" class="form-control" id="editBrandName" value="Brand ${brandId}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="editBrandDescription" rows="3">Brand description for ${brandId}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Website URL</label>
+                                <input type="url" class="form-control" id="editBrandWebsite" placeholder="https://" value="https://www.brand${brandId}.com">
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-control" id="editBrandStatus">
+                                            <option value="active" selected>Active</option>
+                                            <option value="inactive">Inactive</option>
+                                            <option value="pending">Pending</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Products Count</label>
+                                        <input type="number" class="form-control" id="editBrandProducts" value="50" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="editBrandFeatured" checked>
+                                <label class="form-check-label" for="editBrandFeatured">Featured Brand</label>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveBrandChanges('${brandId}')">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                    </div>
+                    
+                `;
+
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }, 300);
+        }
+
+        // Delete brand function
+        function deleteBrand(brandId, brandName) {
+            if (confirm(`Are you sure you want to delete "${brandName}"? This action cannot be undone.`)) {
+                console.log('Deleting brand:', brandId);
+                // Remove from UI
+                const row = document.querySelector(`tr[data-item-id="${brandId}"]`);
+                if (row) row.remove();
+                updateSelectionUI();
+            }
+        }
+
+        // Bulk actions for brands
+        function deleteSelectedBrands() {
+            const selected = document.querySelectorAll('.row-select:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one brand');
+                return;
+            }
+
+            if (confirm(`Delete ${selected.length} selected brands?`)) {
+                selected.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    if (row) row.remove();
+                });
+                clearSelection();
+            }
+        }
+
+        function exportSelectedBrands() {
+            const selected = document.querySelectorAll('.row-select:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one brand');
+                return;
+            }
+            alert(`Exporting ${selected.length} selected brands...`);
+        }
+
+        function exportAllBrands() {
+            alert('Exporting all brands...');
+        }
+
+        function refreshBrands() {
+            alert('Refreshing brands data...');
+        }
+
+        // Form save functions
+        function saveNewBrand() {
+            alert('Saving new brand...');
+            closeModal();
+        }
+
+        function saveBrandChanges(brandId) {
+            alert(`Saving changes for brand ${brandId}...`);
+            closeModal();
+        }
+
+        // Generic functions (should be in dashboard.js)
+        let selectedItems = new Set();
+
+        function selectRow(event, row) {
+            if (event.target.type === 'checkbox' ||
+                event.target.closest('.row-actions') ||
+                event.target.tagName === 'A') {
+                return;
+            }
+
+            const checkbox = row.querySelector('.row-select');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                updateSelection(checkbox);
+            }
+        }
+
+        function updateSelection(checkbox) {
+            const itemId = checkbox.value;
+
+            if (checkbox.checked) {
+                selectedItems.add(itemId);
+                checkbox.closest('tr').classList.add('selected');
+            } else {
+                selectedItems.delete(itemId);
+                checkbox.closest('tr').classList.remove('selected');
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) selectAll.checked = false;
+            }
+
+            updateSelectionUI();
+        }
+
+        function toggleSelectAll(selectAllCheckbox) {
+            const checkboxes = document.querySelectorAll('.row-select');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                updateSelection(checkbox);
+            });
+        }
+
+        function updateSelectionUI() {
+            const count = selectedItems.size;
+            const selectedCountEl = document.getElementById('selectedCount');
+            const actionsBar = document.getElementById('selectionActions');
+
+            if (selectedCountEl) {
+                selectedCountEl.textContent = count;
+            }
+
+            if (actionsBar) {
+                if (count > 0) {
+                    actionsBar.classList.add('active');
+                } else {
+                    actionsBar.classList.remove('active');
+                }
+            }
+        }
+
+        function clearSelection() {
+            selectedItems.clear();
+            document.querySelectorAll('.row-select').forEach(cb => {
+                cb.checked = false;
+                cb.closest('tr')?.classList.remove('selected');
+            });
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            updateSelectionUI();
+        }
+
+        // Mobile detection
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        // Show mobile hint
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileHint = document.querySelector('.mobile-scroll-hint');
+            if (mobileHint && isMobile()) {
+                mobileHint.style.display = 'block';
+            }
+
+            // Update on resize
+            window.addEventListener('resize', function() {
+                if (mobileHint) {
+                    mobileHint.style.display = isMobile() ? 'block' : 'none';
+                }
+            });
         });
     </script>
 }

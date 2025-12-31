@@ -4,22 +4,9 @@
     ViewBag.Subtitle = "Manage product categories";
 }
 
-<!-- Selection Actions Bar -->
-<div class="selection-actions" id="selectionActions">
-    <div class="selected-count">
-        <span id="selectedCount">0</span> categories selected
-    </div>
-    <div class="selection-buttons">
-        <button class="btn btn-secondary" onclick="exportSelected()">
-            <i class="fas fa-file-export"></i> Export
-        </button>
-        <button class="btn btn-danger" onclick="deleteSelected()">
-            <i class="fas fa-trash"></i> Delete
-        </button>
-        <button class="btn btn-secondary" onclick="clearSelection()">
-            <i class="fas fa-times"></i> Clear
-        </button>
-    </div>
+<!-- Mobile Table Hint (Visible only on mobile) -->
+<div class="mobile-scroll-hint" style="display: none; background: #f1f5f9; padding: 8px; text-align: center; color: #64748b; font-size: 12px; border-radius: 6px; margin-bottom: 15px;">
+    <i class="fas fa-arrows-left-right"></i> Swipe horizontally to view all columns
 </div>
 
 <!-- Page Header -->
@@ -30,10 +17,12 @@
     </div>
     <div class="header-actions">
         <button class="btn btn-secondary">
-            <i class="fas fa-filter"></i> Filter
+            <i class="fas fa-filter"></i>
+            <span class="desktop-text">Filter</span>
         </button>
         <button class="btn btn-primary" onclick="openModal('Add New Category', getCategoryForm())">
-            <i class="fas fa-plus"></i> Add Category
+            <i class="fas fa-plus"></i>
+            <span class="desktop-text">Add Category</span>
         </button>
     </div>
 </div>
@@ -97,13 +86,16 @@
         <h2>All Categories</h2>
         <div class="table-actions">
             <button class="table-action" onclick="exportData()">
-                <i class="fas fa-file-export"></i> Export All
+                <i class="fas fa-file-export"></i>
+                <span class="desktop-text">Export All</span>
             </button>
             <button class="table-action">
-                <i class="fas fa-print"></i> Print
+                <i class="fas fa-print"></i>
+                <span class="desktop-text">Print</span>
             </button>
             <button class="table-action">
-                <i class="fas fa-sync-alt"></i> Refresh
+                <i class="fas fa-sync-alt"></i>
+                <span class="desktop-text">Refresh</span>
             </button>
         </div>
     </div>
@@ -111,7 +103,7 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 50px;">
+                <th style="width: 40px;">
                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
                 </th>
                 <th data-sortable="true">Category Name <i class="fas fa-sort"></i></th>
@@ -128,27 +120,32 @@
                     <input type="checkbox" class="row-select" value="1" onchange="updateSelection(this)">
                 </td>
                 <td>
-                    <div style="font-weight: 600; color: #2d3748;">Electronics</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Computers, phones, accessories</div>
+                    <div class="customer-name">Electronics</div>
+                    <div class="text-muted">Computers, phones, accessories</div>
                 </td>
                 <td>
                     <span class="badge badge-primary">324 products</span>
                 </td>
                 <td>
                     <span class="status-dot dot-active"></span>
-                    <span>Active</span>
+                    <span class="mobile-text">Active</span>
                 </td>
-                <td>Jan 15, 2024</td>
+                <td>
+                    <div class="order-date">Jan 15, 2024</div>
+                </td>
                 <td onclick="event.stopPropagation()">
                     <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Electronics Details', '<p>Category details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
+                        <button class="row-action view" onclick="openCategoryModal('1', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
                         </button>
                         <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Electronics', description: 'Computers, phones, accessories', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
                         </button>
-                        <button class="row-action delete" onclick="deleteItem('1', 'Electronics')">
-                            <i class="fas fa-trash"></i> Delete
+                        <button class="row-action delete" onclick="deleteCategory('1', 'Electronics')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
                         </button>
                     </div>
                 </td>
@@ -160,27 +157,32 @@
                     <input type="checkbox" class="row-select" value="2" onchange="updateSelection(this)">
                 </td>
                 <td>
-                    <div style="font-weight: 600; color: #2d3748;">Clothing</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Men, women, kids clothing</div>
+                    <div class="customer-name">Clothing</div>
+                    <div class="text-muted">Men, women, kids clothing</div>
                 </td>
                 <td>
                     <span class="badge badge-primary">287 products</span>
                 </td>
                 <td>
                     <span class="status-dot dot-active"></span>
-                    <span>Active</span>
+                    <span class="mobile-text">Active</span>
                 </td>
-                <td>Feb 03, 2024</td>
+                <td>
+                    <div class="order-date">Feb 03, 2024</div>
+                </td>
                 <td onclick="event.stopPropagation()">
                     <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Clothing Details', '<p>Category details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
+                        <button class="row-action view" onclick="openCategoryModal('2', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
                         </button>
                         <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Clothing', description: 'Men, women, kids clothing', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
                         </button>
-                        <button class="row-action delete" onclick="deleteItem('2', 'Clothing')">
-                            <i class="fas fa-trash"></i> Delete
+                        <button class="row-action delete" onclick="deleteCategory('2', 'Clothing')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
                         </button>
                     </div>
                 </td>
@@ -192,27 +194,32 @@
                     <input type="checkbox" class="row-select" value="3" onchange="updateSelection(this)">
                 </td>
                 <td>
-                    <div style="font-weight: 600; color: #2d3748;">Home & Garden</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Furniture, decor, gardening</div>
+                    <div class="customer-name">Home & Garden</div>
+                    <div class="text-muted">Furniture, decor, gardening</div>
                 </td>
                 <td>
                     <span class="badge badge-primary">189 products</span>
                 </td>
                 <td>
                     <span class="status-dot dot-active"></span>
-                    <span>Active</span>
+                    <span class="mobile-text">Active</span>
                 </td>
-                <td>Mar 10, 2024</td>
+                <td>
+                    <div class="order-date">Mar 10, 2024</div>
+                </td>
                 <td onclick="event.stopPropagation()">
                     <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Home & Garden Details', '<p>Category details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
+                        <button class="row-action view" onclick="openCategoryModal('3', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
                         </button>
                         <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Home & Garden', description: 'Furniture, decor, gardening', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
                         </button>
-                        <button class="row-action delete" onclick="deleteItem('3', 'Home & Garden')">
-                            <i class="fas fa-trash"></i> Delete
+                        <button class="row-action delete" onclick="deleteCategory('3', 'Home & Garden')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
                         </button>
                     </div>
                 </td>
@@ -224,27 +231,32 @@
                     <input type="checkbox" class="row-select" value="4" onchange="updateSelection(this)">
                 </td>
                 <td>
-                    <div style="font-weight: 600; color: #2d3748;">Tools & Hardware</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Power tools, hand tools, hardware</div>
+                    <div class="customer-name">Tools & Hardware</div>
+                    <div class="text-muted">Power tools, hand tools, hardware</div>
                 </td>
                 <td>
                     <span class="badge badge-primary">156 products</span>
                 </td>
                 <td>
                     <span class="status-dot dot-active"></span>
-                    <span>Active</span>
+                    <span class="mobile-text">Active</span>
                 </td>
-                <td>Apr 22, 2024</td>
+                <td>
+                    <div class="order-date">Apr 22, 2024</div>
+                </td>
                 <td onclick="event.stopPropagation()">
                     <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Tools & Hardware Details', '<p>Category details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
+                        <button class="row-action view" onclick="openCategoryModal('4', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
                         </button>
                         <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Tools & Hardware', description: 'Power tools, hand tools, hardware', isActive: true}))">
-                            <i class="fas fa-edit"></i> Edit
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
                         </button>
-                        <button class="row-action delete" onclick="deleteItem('4', 'Tools & Hardware')">
-                            <i class="fas fa-trash"></i> Delete
+                        <button class="row-action delete" onclick="deleteCategory('4', 'Tools & Hardware')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
                         </button>
                     </div>
                 </td>
@@ -256,27 +268,106 @@
                     <input type="checkbox" class="row-select" value="5" onchange="updateSelection(this)">
                 </td>
                 <td>
-                    <div style="font-weight: 600; color: #2d3748;">Sports & Outdoors</div>
-                    <div style="font-size: 12px; color: #a0aec0;">Equipment, apparel, accessories</div>
+                    <div class="customer-name">Sports & Outdoors</div>
+                    <div class="text-muted">Equipment, apparel, accessories</div>
                 </td>
                 <td>
                     <span class="badge badge-warning">45 products</span>
                 </td>
                 <td>
                     <span class="status-dot dot-inactive"></span>
-                    <span>Inactive</span>
+                    <span class="mobile-text">Inactive</span>
                 </td>
-                <td>May 05, 2024</td>
+                <td>
+                    <div class="order-date">May 05, 2024</div>
+                </td>
                 <td onclick="event.stopPropagation()">
                     <div class="row-actions">
-                        <button class="row-action view" onclick="openModal('Sports & Outdoors Details', '<p>Category details here...</p>', 'sm')">
-                            <i class="fas fa-eye"></i> View
+                        <button class="row-action view" onclick="openCategoryModal('5', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
                         </button>
                         <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Sports & Outdoors', description: 'Equipment, apparel, accessories', isActive: false}))">
-                            <i class="fas fa-edit"></i> Edit
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
                         </button>
-                        <button class="row-action delete" onclick="deleteItem('5', 'Sports & Outdoors')">
-                            <i class="fas fa-trash"></i> Delete
+                        <button class="row-action delete" onclick="deleteCategory('5', 'Sports & Outdoors')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Books & Media -->
+            <tr class="table-row" data-item-id="6" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="6" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="customer-name">Books & Media</div>
+                    <div class="text-muted">Books, movies, music, games</div>
+                </td>
+                <td>
+                    <span class="badge badge-primary">89 products</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span class="mobile-text">Active</span>
+                </td>
+                <td>
+                    <div class="order-date">Jun 18, 2024</div>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openCategoryModal('6', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Books & Media', description: 'Books, movies, music, games', isActive: true}))">
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
+                        </button>
+                        <button class="row-action delete" onclick="deleteCategory('6', 'Books & Media')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Health & Beauty -->
+            <tr class="table-row" data-item-id="7" onclick="selectRow(event, this)">
+                <td>
+                    <input type="checkbox" class="row-select" value="7" onchange="updateSelection(this)">
+                </td>
+                <td>
+                    <div class="customer-name">Health & Beauty</div>
+                    <div class="text-muted">Skincare, supplements, personal care</div>
+                </td>
+                <td>
+                    <span class="badge badge-primary">142 products</span>
+                </td>
+                <td>
+                    <span class="status-dot dot-active"></span>
+                    <span class="mobile-text">Active</span>
+                </td>
+                <td>
+                    <div class="order-date">Jul 02, 2024</div>
+                </td>
+                <td onclick="event.stopPropagation()">
+                    <div class="row-actions">
+                        <button class="row-action view" onclick="openCategoryModal('7', event)">
+                            <i class="fas fa-eye"></i>
+                            <span class="desktop-text">View</span>
+                        </button>
+                        <button class="row-action edit" onclick="openModal('Edit Category', getCategoryForm({name: 'Health & Beauty', description: 'Skincare, supplements, personal care', isActive: true}))">
+                            <i class="fas fa-edit"></i>
+                            <span class="desktop-text">Edit</span>
+                        </button>
+                        <button class="row-action delete" onclick="deleteCategory('7', 'Health & Beauty')">
+                            <i class="fas fa-trash"></i>
+                            <span class="desktop-text">Delete</span>
                         </button>
                     </div>
                 </td>
@@ -300,11 +391,291 @@
     </div>
 </div>
 
+<!-- Selection Actions Bar -->
+<div class="selection-actions" id="selectionActions">
+    <div class="selected-count">
+        <span id="selectedCount">0</span> categories selected
+    </div>
+    <div class="selection-buttons">
+        <button class="btn btn-secondary btn-sm" onclick="exportSelectedCategories()">
+            <i class="fas fa-file-export"></i>
+            <span class="desktop-text">Export</span>
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSelectedCategories()">
+            <i class="fas fa-trash"></i>
+            <span class="desktop-text">Delete</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="clearSelection()">
+            <i class="fas fa-times"></i>
+            <span class="desktop-text">Clear</span>
+        </button>
+    </div>
+</div>
+
+
+
 @section Scripts {
     <script>
         // Initialize category-specific functionality
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Categories page loaded');
+            initCategoriesPage();
+        });
+
+        // Category-specific functions
+        function initCategoriesPage() {
+            // Add category-specific event listeners
+            const checkboxes = document.querySelectorAll('.row-select');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    updateSelection(this);
+                });
+            });
+        }
+
+        // Open category details modal
+        function openCategoryModal(categoryId, event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+
+            console.log('Opening modal for category:', categoryId);
+
+            const categories = {
+                '1': {
+                    name: 'Electronics',
+                    description: 'Computers, phones, accessories',
+                    products: 324,
+                    status: 'Active',
+                    created: 'Jan 15, 2024',
+                    lastUpdated: 'Jun 20, 2025'
+                },
+                '2': {
+                    name: 'Clothing',
+                    description: 'Men, women, kids clothing',
+                    products: 287,
+                    status: 'Active',
+                    created: 'Feb 03, 2024',
+                    lastUpdated: 'Jun 18, 2025'
+                },
+                '3': {
+                    name: 'Home & Garden',
+                    description: 'Furniture, decor, gardening',
+                    products: 189,
+                    status: 'Active',
+                    created: 'Mar 10, 2024',
+                    lastUpdated: 'Jun 15, 2025'
+                }
+            };
+
+            const category = categories[categoryId] || {
+                name: 'Category ' + categoryId,
+                description: 'Category description',
+                products: Math.floor(Math.random() * 300) + 50,
+                status: 'Active',
+                created: 'Jan 01, 2024',
+                lastUpdated: 'Jun 01, 2025'
+            };
+
+            const modal = document.getElementById('universalModal');
+            const modalContent = document.getElementById('modalContent');
+
+            if (!modal || !modalContent) {
+                alert('Modal system error. Please refresh the page.');
+                return;
+            }
+
+            // Set modal content
+            modalContent.innerHTML = `
+                <div class="modal-header">
+                    <h3>${category.name}</h3>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="category-details">
+                        <div class="mb-3">
+                            <h4>Category Information</h4>
+                            <div class="form-group">
+                                <label class="form-label">Category Name</label>
+                                <div class="form-control" style="background: #f8fafc;">${category.name}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <div class="form-control" style="background: #f8fafc; min-height: 80px;">${category.description}</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="stat-card" style="padding: 15px; margin: 0;">
+                                    <div class="stat-title">Total Products</div>
+                                    <div class="stat-value">${category.products}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card" style="padding: 15px; margin: 0;">
+                                    <div class="stat-title">Status</div>
+                                    <div class="stat-value" style="font-size: 20px;">
+                                        <span class="status-dot ${category.status === 'Active' ? 'dot-active' : 'dot-inactive'}"></span>
+                                        ${category.status}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Timestamps</h5>
+                            <div class="form-group">
+                                <label class="form-label">Created</label>
+                                <div class="form-control" style="background: #f8fafc;">${category.created}</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Updated</label>
+                                <div class="form-control" style="background: #f8fafc;">${category.lastUpdated}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    <button class="btn btn-primary" onclick="editCategory('${categoryId}')">
+                        <i class="fas fa-edit"></i> Edit Category
+                    </button>
+                </div>
+            `;
+
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Delete category function
+        function deleteCategory(categoryId, categoryName) {
+            if (confirm(`Are you sure you want to delete "${categoryName}"? This action cannot be undone.`)) {
+                console.log('Deleting category:', categoryId);
+                // Remove from UI
+                const row = document.querySelector(`tr[data-item-id="${categoryId}"]`);
+                if (row) row.remove();
+                updateSelectionUI();
+            }
+        }
+
+        // Bulk actions for categories
+        function deleteSelectedCategories() {
+            const selected = document.querySelectorAll('.row-select:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one category');
+                return;
+            }
+
+            if (confirm(`Delete ${selected.length} selected categories?`)) {
+                selected.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    if (row) row.remove();
+                });
+                clearSelection();
+            }
+        }
+
+        function exportSelectedCategories() {
+            const selected = document.querySelectorAll('.row-select:checked');
+            if (selected.length === 0) {
+                alert('Please select at least one category');
+                return;
+            }
+            alert(`Exporting ${selected.length} selected categories...`);
+        }
+
+        // Generic functions (should be in dashboard.js)
+        let selectedItems = new Set();
+
+        function selectRow(event, row) {
+            if (event.target.type === 'checkbox' ||
+                event.target.closest('.row-actions')) {
+                return;
+            }
+
+            const checkbox = row.querySelector('.row-select');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                updateSelection(checkbox);
+            }
+        }
+
+        function updateSelection(checkbox) {
+            const itemId = checkbox.value;
+
+            if (checkbox.checked) {
+                selectedItems.add(itemId);
+                checkbox.closest('tr').classList.add('selected');
+            } else {
+                selectedItems.delete(itemId);
+                checkbox.closest('tr').classList.remove('selected');
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) selectAll.checked = false;
+            }
+
+            updateSelectionUI();
+        }
+
+        function toggleSelectAll(selectAllCheckbox) {
+            const checkboxes = document.querySelectorAll('.row-select');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                updateSelection(checkbox);
+            });
+        }
+
+        function updateSelectionUI() {
+            const count = selectedItems.size;
+            const selectedCountEl = document.getElementById('selectedCount');
+            const actionsBar = document.getElementById('selectionActions');
+
+            if (selectedCountEl) {
+                selectedCountEl.textContent = count;
+            }
+
+            if (actionsBar) {
+                if (count > 0) {
+                    actionsBar.classList.add('active');
+                } else {
+                    actionsBar.classList.remove('active');
+                }
+            }
+        }
+
+        function clearSelection() {
+            selectedItems.clear();
+            document.querySelectorAll('.row-select').forEach(cb => {
+                cb.checked = false;
+                cb.closest('tr')?.classList.remove('selected');
+            });
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            updateSelectionUI();
+        }
+
+        // Mobile detection
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        // Show mobile hint
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileHint = document.querySelector('.mobile-scroll-hint');  
+            if (mobileHint && isMobile()) {
+                mobileHint.style.display = 'block';
+            }
+
+            // Update on resize
+            window.addEventListener('resize', function() {
+                if (mobileHint) {
+                    mobileHint.style.display = isMobile() ? 'block' : 'none';
+                }
+            });
         });
     </script>
 }
