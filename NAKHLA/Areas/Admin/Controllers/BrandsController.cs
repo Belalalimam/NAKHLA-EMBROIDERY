@@ -45,18 +45,43 @@ namespace NAKHLA.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View(new Brand());
+            return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Brand brand)
         {
-            if (!ModelState.IsValid)
-                return View(brand);
+            Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
 
-            _context.Add(brand);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            // Log all validation errors
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine($"Error: {error.ErrorMessage}");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Brands.Add(brand);
+                    _context.SaveChanges();
+
+                    TempData["SuccessMessage"] = $"Brand '{brand.Name}' created successfully!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception: {ex.Message}");
+                    ModelState.AddModelError("", $"Error saving brand: {ex.Message}");
+                }
+            }
+
+            return View(brand);
         }
+
+
+
+
         //[HttpGet]
         //public IActionResult Edit()
         //{

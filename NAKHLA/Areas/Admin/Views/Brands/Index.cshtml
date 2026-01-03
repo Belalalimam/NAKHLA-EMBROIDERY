@@ -21,11 +21,11 @@
             <i class="fas fa-filter"></i>
             <span class="desktop-text">Filter</span>
         </button>
-        <!-- "Add Brand" button - FIXED: Added (event) parameter -->
-        <button class="btn btn-primary" onclick="loadCreateModal(event)">
+        <!-- "Add Brand" button - Now links to create page -->
+        <a href="/admin/brands/create" class="btn btn-primary">
             <i class="fas fa-plus"></i>
             <span class="desktop-text">Add Brand</span>
-        </button>
+        </a>
     </div>
 </div>
 
@@ -166,12 +166,10 @@
                         </td>
                         <td onclick="event.stopPropagation()">
                             <div class="row-actions">
-                                <!-- FIXED: Changed to loadViewModal -->
                                 <button class="row-action view" onclick="loadViewModal('@item.Id', event)">
                                     <i class="fas fa-eye"></i>
                                     <span class="desktop-text">View</span>
                                 </button>
-                                <!-- FIXED: Changed to loadEditModal -->
                                 <button class="row-action edit" onclick="loadEditModal('@item.Id', event)">
                                     <i class="fas fa-edit"></i>
                                     <span class="desktop-text">Edit</span>
@@ -193,10 +191,9 @@
                             <i class="fas fa-inbox fa-3x text-muted"></i>
                             <h4>No Brands Found</h4>
                             <p>Get started by creating your first brand.</p>
-                            <!-- FIXED: Added (event) parameter -->
-                            <button class="btn btn-primary" onclick="loadCreateModal(event)">
+                            <a href="/admin/brands/create" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Add First Brand
-                            </button>
+                            </a>
                         </div>
                     </td>
                 </tr>
@@ -209,7 +206,7 @@
         <ul class="pagination d-flex justify-content-center">
             @if (ViewBag.currentPage > 1)
             {
-                <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage - 1)">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="/admin/brands?page=@(ViewBag.currentPage - 1)">Previous</a></li>
             }
 
             @for (var i = 1; i <= ViewBag.totalHodsOfPage; i++)
@@ -225,7 +222,7 @@
             }
             @if (ViewBag.currentPage != ViewBag.totalHodsOfPage && Model.Any())
             {
-                <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage + 1)">Next</a></li>
+                <li class="page-item"><a class="page-link" href="/admin/brands?page=@(ViewBag.currentPage + 1)">Next</a></li>
             }
         </ul>
     </nav>
@@ -252,7 +249,7 @@
     </div>
 </div>
 
-<!-- MODAL CONTAINER -->
+<!-- Keep View and Edit modals if you still want those as modals -->
 <div id="brandModalContainer" class="modal" style="display: none;">
     <div class="modal-content">
         <!-- Content will be loaded dynamically via AJAX -->
@@ -382,42 +379,10 @@
             });
         }
 
-        // ==================== MODAL FUNCTIONS ====================
-        let currentModalType = '';
-        let currentBrandId = null;
-
-        function loadCreateModal(event) {
-            if (event) event.preventDefault();
-
-            currentModalType = 'create';
-            currentBrandId = null;
-
-            // Show loading state
-            const modalContainer = document.getElementById('brandModalContainer');
-            const modalContent = modalContainer.querySelector('.modal-content');
-            modalContent.innerHTML = '<div class="modal-loading">Loading form...</div>';
-            modalContainer.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-
-            // Load Create.cshtml partial view via AJAX
-            $.ajax({
-                url: '/Brands/Create',
-                type: 'GET',
-                success: function(response) {
-                    modalContent.innerHTML = response;
-                    setupModalEvents();
-                },
-                error: function() {
-                    modalContent.innerHTML = '<div class="modal-error">Error loading form. Please try again.</div>';
-                }
-            });
-        }
-
+        // ==================== MODAL FUNCTIONS (FOR VIEW/EDIT) ====================
+        // Keep these for View and Edit operations if you still want them as modals
         function loadEditModal(brandId, event) {
             if (event) event.stopPropagation();
-
-            currentModalType = 'edit';
-            currentBrandId = brandId;
 
             const modalContainer = document.getElementById('brandModalContainer');
             const modalContent = modalContainer.querySelector('.modal-content');
@@ -430,8 +395,15 @@
                 url: '/Brands/Edit/' + brandId,
                 type: 'GET',
                 success: function(response) {
-                    modalContent.innerHTML = response;
+                    const tempDiv = $('<div>').html(response);
+                    if (tempDiv.find('.modal-header').length > 0) {
+                        modalContent.innerHTML = response;
+                    } else {
+                        const modalHtml = tempDiv.find('#brandModalContainer').html() || response;
+                        modalContent.innerHTML = modalHtml;
+                    }
                     setupModalEvents();
+                    attachEditFormHandlers();
                 },
                 error: function() {
                     modalContent.innerHTML = '<div class="modal-error">Error loading form. Please try again.</div>';
@@ -453,7 +425,13 @@
                 url: '/Brands/Details/' + brandId,
                 type: 'GET',
                 success: function(response) {
-                    modalContent.innerHTML = response;
+                    const tempDiv = $('<div>').html(response);
+                    if (tempDiv.find('.modal-header').length > 0) {
+                        modalContent.innerHTML = response;
+                    } else {
+                        const modalHtml = tempDiv.find('#brandModalContainer').html() || response;
+                        modalContent.innerHTML = modalHtml;
+                    }
                     setupModalEvents();
                 },
                 error: function() {
@@ -468,28 +446,63 @@
                 modalContainer.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
-            currentModalType = '';
-            currentBrandId = null;
         }
 
         function setupModalEvents() {
             const modalContainer = document.getElementById('brandModalContainer');
-
             if (!modalContainer) return;
 
             // Close on backdrop click
             modalContainer.addEventListener('click', function(e) {
-                if (e.target === this) {
+                if (e.target === this || e.target.closest('.modal-close')) {
                     closeModal();
                 }
             });
 
             // Close on Escape key
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
+                if (e.key === 'Escape' && modalContainer.style.display === 'flex') {
                     closeModal();
                 }
             });
+
+            // Prevent clicks inside modal content from closing modal
+            const modalContent = modalContainer.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        }
+
+        function attachEditFormHandlers() {
+            // Handle edit form submission
+            const editForm = document.getElementById('editBrandForm');
+            if (editForm) {
+                editForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: this.action,
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                closeModal();
+                                window.location.reload();
+                            } else {
+                                // Replace form with validation errors
+                                const modalContent = document.querySelector('#brandModalContainer .modal-content');
+                                modalContent.innerHTML = response;
+                                attachEditFormHandlers();
+                            }
+                        },
+                        error: function() {
+                            alert('Error saving brand. Please try again.');
+                        }
+                    });
+                });
+            }
         }
 
         // ==================== BRAND OPERATIONS ====================
