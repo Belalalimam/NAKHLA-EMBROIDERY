@@ -1,16 +1,207 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NAKHLA.DataAccess;
+using NAKHLA.Models;
+using System.Threading.Tasks;
 
-namespace NAKHLA.Areas.Admin.Controllers
+namespace NAKHLA.Controllers.Admin
 {
     [Area("Admin")]
-    public class CategoriesController : Controller
+    public class CategoriseController : Controller  // Fixed name: CategoriseController
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext _context;
+
+        public CategoriseController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Admin/Categorise
+        public async Task<IActionResult> Index()
         {
             ViewBag.Title = "Category Management";
-            ViewBag.PageTitle = "Categories";
-            ViewBag.Subtitle = "Manage product categories";
+            ViewBag.PageTitle = "Categorise";
+            ViewBag.Subtitle = "Manage product Categorise";
+
+            var Categorise = await _context.Categorise  // Fixed: Categorise not Categorise
+                .Include(c => c.Products)
+                .Where(c => !c.IsDeleted)
+                .OrderBy(c => c.DisplayOrder)
+                .ThenBy(c => c.Name)
+                .ToListAsync();
+
+            return View(Categorise);
+        }
+
+        // GET: Admin/Categorise/Details/5 (for regular page)
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var category = await _context.Categorise  // Fixed: Categorise not Categorise
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (category == null) return NotFound();
+
+            return View(category);
+        }
+
+        // GET: Admin/Categorise/GetDetails/5 (for modal - AJAX)
+        [HttpGet]
+        public async Task<IActionResult> GetDetails(int id)
+        {
+            var category = await _context.Categorise  // Fixed: Categorise not Categorise
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_DetailsPartial", category);
+        }
+
+        // GET: Admin/Categorise/Create
+        public IActionResult Create()
+        {
             return View();
+        }
+
+        // POST: Admin/Categorise/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                category.CreatedAt = DateTime.Now;
+                category.CreatedBy = User.Identity?.Name ?? "System";
+
+                // Generate slug if empty
+                if (string.IsNullOrEmpty(category.Slug))
+                {
+                    category.GenerateSlug();
+                }
+
+                _context.Categorise.Add(category);  // Fixed: Categorise not Categorise
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Category created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(category);
+        }
+
+        // GET: Admin/Categorise/Edit/5 (for regular page)
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var category = await _context.Categorise.FindAsync(id);  // Fixed: Categorise not Categorise
+            if (category == null) return NotFound();
+
+            return View(category);
+        }
+
+        // GET: Admin/Categorise/GetEdit/5 (for modal - AJAX)
+        [HttpGet]
+        public async Task<IActionResult> GetEdit(int id)
+        {
+            var category = await _context.Categorise.FindAsync(id);  // Fixed: Categorise not Categorise
+            if (category == null) return NotFound();
+
+            return PartialView("_EditPartial", category);
+        }
+
+        // POST: Admin/Categorise/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Category category)
+        {
+            if (id != category.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    category.UpdatedAt = DateTime.Now;
+                    category.UpdatedBy = User.Identity?.Name ?? "System";
+
+                    _context.Categorise.Update(category);  // Fixed: Categorise not Categorise
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Category updated successfully!";
+                    return Json(new { success = true, message = "Category updated successfully!" });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CategoryExists(category.Id))
+                    {
+                        return NotFound();
+                    }
+                    throw;
+                }
+            }
+
+            // If we got this far, something failed
+            return Json(new { success = false, error = "Validation failed" });
+        }
+
+        // POST: Admin/Categorise/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var category = await _context.Categorise.FindAsync(id);  // Fixed: Categorise not Categorise
+            if (category != null)
+            {
+                // Soft delete
+                category.IsDeleted = true;
+                category.DeletedAt = DateTime.Now;
+                category.DeletedBy = User.Identity?.Name ?? "System";
+
+                _context.Categorise.Update(category);  // Fixed: Categorise not Categorise
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Category deleted successfully!" });
+            }
+
+            return Json(new { success = false, message = "Category not found!" });
+        }
+
+        // POST: Admin/Categorise/DeleteMultiple
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMultiple([FromBody] List<int> ids)
+        {
+            try
+            {
+                var Categorise = await _context.Categorise  // Fixed: Categorise not Categorise
+                    .Where(c => ids.Contains(c.Id))
+                    .ToListAsync();
+
+                foreach (var category in Categorise)
+                {
+                    category.IsDeleted = true;
+                    category.DeletedAt = DateTime.Now;
+                    category.DeletedBy = User.Identity?.Name ?? "System";
+                }
+
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = $"{Categorise.Count} Categorise deleted" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        private bool CategoryExists(int id)
+        {
+            return _context.Categorise.Any(e => e.Id == id);  // Fixed: Categorise not Categorise
         }
     }
 }

@@ -1,0 +1,59 @@
+﻿@model NAKHLA.Models.Category
+
+<div class="modal-header">
+    <h5 class="modal-title">Category Details</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="detail-view">
+        <div class="detail-item">
+            <strong>Name:</strong>
+            <span>@Model.Name</span>
+        </div>
+
+        <div class="detail-item">
+            <strong>Description:</strong>
+            <span>@(string.IsNullOrEmpty(Model.Description) ? "No description" : Model.Description)</span>
+        </div>
+
+        <div class="detail-item">
+            <strong>Status:</strong>
+            <span class="badge @(Model.Status.ToString() == "Active" ? "badge-success" : "badge-secondary")">
+                @Model.Status.ToString()
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <strong>Display Order:</strong>
+            <span>@Model.DisplayOrder</span>
+        </div>
+
+        <div class="detail-item">
+            <strong>Products Count:</strong>
+            <span>@Model.Products?.Count() ?? 0</span>
+        </div>
+
+        <div class="detail-item">
+            <strong>Created:</strong>
+            <span>@Model.CreatedAt.ToString("dd MMM yyyy")</span>
+        </div>
+
+        @if (Model.UpdatedAt.HasValue)
+        {
+            <div class="detail-item">
+                <strong>Last Updated:</strong>
+                <span>@Model.UpdatedAt.Value.ToString("dd MMM yyyy HH:mm")</span>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <a href="@Url.Action("Edit", "Categories", new { id = Model.Id })" class="btn btn-primary">
+        <i class="fas fa-edit"></i> Edit
+    </a>
+</div>

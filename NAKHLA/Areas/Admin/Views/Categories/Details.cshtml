@@ -1,0 +1,182 @@
+﻿@model NAKHLA.Models.Category
+
+@{
+    ViewBag.Title = "Category Details";
+    ViewBag.PageTitle = "Category Details";
+    ViewBag.Subtitle = "View category information";
+}
+
+<div class="page-header">
+    <div>
+        <h2>Category Details</h2>
+        <p class="page-subtitle">View detailed information about this category</p>
+    </div>
+    <div class="header-actions">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="detail-section">
+                    <h4>Category Information</h4>
+
+                    <dl class="row detail-list">
+                        <dt class="col-sm-3">Category Name:</dt>
+                        <dd class="col-sm-9">@Model.Name</dd>
+
+                        <dt class="col-sm-3">Description:</dt>
+                        <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Description) ? "No description" : Model.Description)</dd>
+
+                        <dt class="col-sm-3">Status:</dt>
+                        <dd class="col-sm-9">
+                            <span class="status-badge status-@(Model.Status.ToString().ToLowerInvariant())">
+                                @Model.Status
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-3">Display Order:</dt>
+                        <dd class="col-sm-9">@Model.DisplayOrder</dd>
+
+                        <dt class="col-sm-3">URL Slug:</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.Slug))
+                            {
+                                <code>/category/@Model.Slug</code>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not set</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="detail-section mt-4">
+                    <h4>SEO Information</h4>
+
+                    <dl class="row detail-list">
+                        <dt class="col-sm-3">Meta Title:</dt>
+                        <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.MetaTitle) ? "Not set" : Model.MetaTitle)</dd>
+
+                        <dt class="col-sm-3">Meta Description:</dt>
+                        <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.MetaDescription) ? "Not set" : Model.MetaDescription)</dd>
+                    </dl>
+                </div>
+
+                <div class="detail-section mt-4">
+                    <h4>Media & Display</h4>
+
+                    <dl class="row detail-list">
+                        <dt class="col-sm-3">Image:</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-thumbnail" style="max-width: 200px; max-height: 150px;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">No image</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Icon:</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.IconClass))
+                            {
+                                <i class="@Model.IconClass"></i> 
+                                @Model.IconClass
+                            }
+                            else
+                            {
+                                <span class="text-muted">No icon</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h4>Statistics</h4>
+
+                <div class="stats-mini">
+                    <div class="stat-mini">
+                        <div class="stat-label">Total Products</div>
+                        <div class="stat-value">@Model.Products?.Count() ?? 0</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-label">Created</div>
+                        <div class="stat-value">@Model.CreatedAt.ToString("dd MMM yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4>Audit Information</h4>
+
+                <div class="audit-info">
+                    <div class="audit-item">
+                        <strong>Created By:</strong>
+                        <span>@(string.IsNullOrEmpty(Model.CreatedBy) ? "System" : Model.CreatedBy)</span>
+                    </div>
+                    <div class="audit-item">
+                        <strong>Created On:</strong>
+                        <span>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm:ss")</span>
+                    </div>
+
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="audit-item">
+                            <strong>Last Updated By:</strong>
+                            <span>@(string.IsNullOrEmpty(Model.UpdatedBy) ? "System" : Model.UpdatedBy)</span>
+                        </div>
+                        <div class="audit-item">
+                            <strong>Last Updated On:</strong>
+                            <span>@Model.UpdatedAt.Value.ToString("dd MMM yyyy HH:mm:ss")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4>Quick Actions</h4>
+                <div class="quick-actions">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Edit Category
+                    </a>
+                    <button class="btn btn-outline-danger btn-block mb-2" onclick="confirmDelete(@Model.Id, '@Model.Name')">
+                        <i class="fas fa-trash"></i> Delete Category
+                    </button>
+                    <a href="#" class="btn btn-outline-secondary btn-block">
+                        <i class="fas fa-eye"></i> View on Website
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+                window.location.href = '@Url.Action("Delete", "Categories")/' + id;
+            }
+        }
+    </script>
+}

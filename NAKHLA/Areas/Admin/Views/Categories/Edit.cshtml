@@ -1,0 +1,161 @@
+﻿@model NAKHLA.Models.Category
+
+@{
+    ViewBag.Title = "Edit Category";
+    ViewBag.PageTitle = "Edit Category";
+    ViewBag.Subtitle = "Update category information";
+}
+
+<div class="page-header">
+    <div>
+        <h2>Edit Category</h2>
+        <p class="page-subtitle">Update category details</p>
+    </div>
+    <div class="header-actions">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" id="editCategoryForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="CreatedBy" />
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-section">
+                        <h4>Category Information</h4>
+
+                        <div class="form-group">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Status" class="form-label"></label>
+                                    <select asp-for="Status" class="form-control">
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                        <option value="Archived">Archived</option>
+                                        <option value="Draft">Draft</option>
+                                    </select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="DisplayOrder" class="form-label"></label>
+                                    <input asp-for="DisplayOrder" class="form-control" type="number" min="0" max="1000" />
+                                    <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-section">
+                        <h4>SEO & Additional Info</h4>
+
+                        <div class="form-group">
+                            <label asp-for="Slug" class="form-label"></label>
+                            <input asp-for="Slug" class="form-control" />
+                            <span asp-validation-for="Slug" class="text-danger"></span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="generateSlug()">
+                                <i class="fas fa-magic"></i> Regenerate Slug
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="ImageUrl" class="form-label"></label>
+                            <input asp-for="ImageUrl" class="form-control" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="IconClass" class="form-label"></label>
+                            <input asp-for="IconClass" class="form-control" />
+                            <span asp-validation-for="IconClass" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-section mt-4">
+                        <h4>Meta Information</h4>
+
+                        <div class="form-group">
+                            <label asp-for="MetaTitle" class="form-label"></label>
+                            <input asp-for="MetaTitle" class="form-control" />
+                            <span asp-validation-for="MetaTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MetaDescription" class="form-label"></label>
+                            <textarea asp-for="MetaDescription" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="MetaDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-section mt-4">
+                        <h4>Audit Information</h4>
+                        <div class="audit-info">
+                            <div class="audit-item">
+                                <strong>Created:</strong>
+                                <span>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</span>
+                            </div>
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <div class="audit-item">
+                                    <strong>Last Updated:</strong>
+                                    <span>@Model.UpdatedAt.Value.ToString("dd MMM yyyy HH:mm")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Category
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+                function generateSlug() {
+            const name = document.getElementById('Name').value;
+            if (name) {
+                // Proper slug generation in JavaScript
+                const slug = name
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, '') // Remove special chars
+                    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+                    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+
+                document.getElementById('Slug').value = slug;
+            }
+        }
+    </script>
+}
