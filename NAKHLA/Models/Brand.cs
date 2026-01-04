@@ -4,6 +4,10 @@ namespace NAKHLA.Models
 {
     public class Brand
     {
+        public Brand()
+        {
+            Products = new List<Product>(); // Initialize as empty list
+        }
         public int Id { get; set; }
 
         [Required]
@@ -32,7 +36,7 @@ namespace NAKHLA.Models
         public DateTime? UpdatedDate { get; set; }
 
 
-        public List<Product> Products { get; set; }
+        public ICollection<Product> Products { get; set; }
 
 
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NAKHLA.DataAccess;
+using NAKHLA.Utitltiy;
 
 namespace NAKHLA.Areas.Admin.Controllers
 {
@@ -48,56 +49,194 @@ namespace NAKHLA.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(Brand brand)
         {
-            Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
+            if (!ModelState.IsValid)
+                return View(brand);
 
-            // Log all validation errors
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            _context.Add(brand);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var brand = _context.Brands.Find(id);
+            if (brand == null)
             {
-                Console.WriteLine($"Error: {error.ErrorMessage}");
+                return NotFound();
+            }
+
+            // Return a partial view for modal
+            return PartialView("_EditPartial", brand);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Website,Status,IsFeatured")] Brand brand)
+        {
+            if (id != brand.Id)
+            {
+                return NotFound();
+            }
+
+            // Remove Products from validation
+            ModelState.Remove("Products");
+
+            // Fix for checkbox binding
+            var isFeaturedValue = Request.Form["IsFeatured"].ToString();
+            if (isFeaturedValue.Contains("true"))
+            {
+                brand.IsFeatured = true;
+            }
+            else
+            {
+                brand.IsFeatured = false;
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Brands.Add(brand);
-                    _context.SaveChanges();
+                    // Get existing brand
+                    var existingBrand = await _context.Brands.FindAsync(id);
+                    if (existingBrand == null)
+                    {
+                        return NotFound();
+                    }
 
-                    TempData["SuccessMessage"] = $"Brand '{brand.Name}' created successfully!";
-                    return RedirectToAction("Index");
+                    // Update only specific properties
+                    existingBrand.Name = brand.Name;
+                    existingBrand.Description = brand.Description;
+                    existingBrand.Website = brand.Website;
+                    existingBrand.Status = brand.Status;
+                    existingBrand.IsFeatured = brand.IsFeatured;
+                    existingBrand.UpdatedDate = DateTime.Now;
+
+                    _context.Update(existingBrand);
+                    await _context.SaveChangesAsync();
+
+                    return Json(new { success = true, message = "Brand updated successfully!" });
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception: {ex.Message}");
-                    ModelState.AddModelError("", $"Error saving brand: {ex.Message}");
+                    return Json(new { success = false, error = ex.Message });
                 }
             }
 
-            return View(brand);
+            // Return validation errors
+            return PartialView("_EditPartial", brand);
+        }
+        private bool BrandExists(int id)
+        {
+            return _context.Brands.Any(e => e.Id == id);
+        }
+        //[HttpGet]
+        //[HttpPost]
+
+
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            // Find the brand by ID
+            var brand = _context.Brands
+                .FirstOrDefault(b => b.Id == id);
+
+            if (brand == null)
+            {
+                // Return 404 if brand not found
+                return NotFound();
+            }
+
+            // Return a partial view for modal
+            return PartialView("_DetailsPartial", brand);
         }
 
 
 
+        // POST: /Admin/Brands/Delete/5
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var brand = await _context.Brands.FindAsync(id);
+                if (brand == null)
+                {
+                    return Json(new { success = false, message = "Brand not found." });
+                }
 
-        //[HttpGet]
-        //public IActionResult Edit()
-        //{
-        //    return View();
-        //}
-        //[HttpPost]
-        //public IActionResult Edit()
-        //{
-        //    return View();
-        //}
+                _context.Brands.Remove(brand);
+                await _context.SaveChangesAsync();
 
-        //[HttpGet]
-        //[HttpPost]
+                return Json(new
+                {
+                    success = true,
+                    message = $"Brand '{brand.Name}' deleted successfully.",
+                    id = id
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"Error deleting brand: {ex.Message}"
+                });
+            }
+        }
 
+        // For bulk deletion
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMultiple([FromBody] List<int> ids)
+        {
+            try
+            {
+                var brands = _context.Brands.Where(b => ids.Contains(b.Id)).ToList();
 
+                if (!brands.Any())
+                {
+                    return Json(new { success = false, message = "No brands found to delete." });
+                }
 
+                // Check for brands with products
+                var brandsWithProducts = brands.Where(b => b.Products != null && b.Products.Any()).ToList();
+                if (brandsWithProducts.Any())
+                {
+                    var brandNames = string.Join(", ", brandsWithProducts.Select(b => b.Name));
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Cannot delete brands with associated products: {brandNames}"
+                    });
+                }
+
+                _context.Brands.RemoveRange(brands);
+                await _context.SaveChangesAsync();  
+
+                var deletedNames = string.Join(", ", brands.Select(b => b.Name));
+                return Json(new
+                {
+                    success = true,
+                    message = $"Deleted {brands.Count} brands: {deletedNames}",
+                    ids = ids
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"Error deleting brands: {ex.Message}"
+                });
+            }
+        }
 
     }
 }

@@ -1,27 +1,44 @@
 ﻿@model List<Brand>
 @{
+    // ===========================================================================
+    // PAGE METADATA SECTION
+    // ===========================================================================
+    // This section defines metadata for the page layout and title display
     ViewBag.Title = "Brand Management";
     ViewBag.PageTitle = "Brands";
     ViewBag.Subtitle = "Manage product brands";
 }
 
-<!-- Mobile Table Hint (Visible only on mobile) -->
+<!-- =========================================================================== -->
+<!-- MOBILE TABLE HINT -->
+<!-- =========================================================================== -->
+<!--
+    This hint is only visible on mobile devices to inform users they can swipe
+    horizontally to see all table columns on smaller screens
+-->
 <div class="mobile-scroll-hint" style="display: none; background: #f1f5f9; padding: 8px; text-align: center; color: #64748b; font-size: 12px; border-radius: 6px; margin-bottom: 15px;">
     <i class="fas fa-arrows-left-right"></i> Swipe horizontally to view all columns
 </div>
 
-<!-- Page Header -->
+<!-- =========================================================================== -->
+<!-- PAGE HEADER SECTION -->
+<!-- =========================================================================== -->
+<!--
+    Contains the main page title, subtitle, and action buttons.
+    The "Add Brand" button now navigates to /admin/brands/create instead of opening a modal
+-->
 <div class="page-header">
     <div>
         <h2>Product Brands</h2>
         <p class="page-subtitle">Manage brands for your products</p>
     </div>
     <div class="header-actions">
+        <!-- Filter button (functionality not implemented yet) -->
         <button class="btn btn-secondary">
             <i class="fas fa-filter"></i>
             <span class="desktop-text">Filter</span>
         </button>
-        <!-- "Add Brand" button - Now links to create page -->
+        <!-- "Add Brand" button - Navigates to create page -->
         <a href="/admin/brands/create" class="btn btn-primary">
             <i class="fas fa-plus"></i>
             <span class="desktop-text">Add Brand</span>
@@ -29,8 +46,15 @@
     </div>
 </div>
 
-<!-- Stats Cards -->
+<!-- =========================================================================== -->
+<!-- STATS CARDS SECTION -->
+<!-- =========================================================================== -->
+<!--
+    Displays key metrics and statistics about brands.
+    Currently uses static data but can be connected to real database values
+-->
 <div class="stats-container">
+    <!-- Total Brands Card -->
     <div class="stat-card">
         <div class="stat-header">
             <div class="stat-title">Total Brands</div>
@@ -45,6 +69,7 @@
         </div>
     </div>
 
+    <!-- Active Brands Card -->
     <div class="stat-card">
         <div class="stat-header">
             <div class="stat-title">Active Brands</div>
@@ -56,6 +81,7 @@
         <div class="stat-desc">Visible on website</div>
     </div>
 
+    <!-- Featured Brands Card -->
     <div class="stat-card">
         <div class="stat-header">
             <div class="stat-title">Featured Brands</div>
@@ -67,6 +93,7 @@
         <div class="stat-desc">Highlighted on homepage</div>
     </div>
 
+    <!-- Products per Brand Card -->
     <div class="stat-card">
         <div class="stat-header">
             <div class="stat-title">Products/Brand</div>
@@ -79,19 +106,29 @@
     </div>
 </div>
 
-<!-- Brands Table -->
+<!-- =========================================================================== -->
+<!-- BRANDS TABLE SECTION -->
+<!-- =========================================================================== -->
+<!--
+    Main data table displaying all brands with sorting, selection, and action buttons.
+    Includes pagination for navigating through multiple pages of results
+-->
 <div class="data-table-container">
+    <!-- Table header with title and action buttons -->
     <div class="table-header">
         <h2>All Brands</h2>
         <div class="table-actions">
+            <!-- Export All button -->
             <button class="table-action" onclick="exportAllBrands()">
                 <i class="fas fa-file-export"></i>
                 <span class="desktop-text">Export All</span>
             </button>
+            <!-- Print button -->
             <button class="table-action" onclick="window.print()">
                 <i class="fas fa-print"></i>
                 <span class="desktop-text">Print</span>
             </button>
+            <!-- Refresh button -->
             <button class="table-action" onclick="refreshBrands()">
                 <i class="fas fa-sync-alt"></i>
                 <span class="desktop-text">Refresh</span>
@@ -99,12 +136,15 @@
         </div>
     </div>
 
+    <!-- Main brands table -->
     <table class="data-table">
         <thead>
             <tr>
+                <!-- Checkbox column for selecting multiple rows -->
                 <th style="width: 40px;">
                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
                 </th>
+                <!-- Sortable columns with sort icons -->
                 <th data-sortable="true">Brand Name <i class="fas fa-sort"></i></th>
                 <th data-sortable="true">Products <i class="fas fa-sort"></i></th>
                 <th data-sortable="true">Status <i class="fas fa-sort"></i></th>
@@ -115,19 +155,25 @@
         <tbody>
             @if (Model != null && Model.Any())
             {
+                <!-- Loop through each brand in the model -->
                 @foreach (var item in Model)
                 {
+                    <!-- Table row for each brand with click handler for selection -->
                     <tr class="table-row" data-item-id="@item.Id" onclick="selectRow(event, this)">
+                        <!-- Checkbox for row selection -->
                         <td>
                             <input type="checkbox" class="row-select" value="@item.Id" onchange="updateSelection(this)">
                         </td>
+                        <!-- Brand name and description -->
                         <td>
                             <div class="customer-name">@item.Name</div>
                             <div class="text-muted">@(item.Description ?? "No description")</div>
                         </td>
+                        <!-- Products count with badge -->
                         <td>
                             <span class="badge badge-primary">@(item.Products?.Count() ?? 0) products</span>
                         </td>
+                        <!-- Status with colored dot indicator -->
                         <td>
                             @if (item.Status == "Active")
                             {
@@ -139,13 +185,14 @@
                             }
                             <span class="mobile-text">@item.Status</span>
                         </td>
+                        <!-- Website link with safe URL parsing -->
                         <td>
                             <div class="website-link">
                                 @if (!string.IsNullOrEmpty(item.Website))
                                 {
                                     <a href="@item.Website" target="_blank" onclick="event.stopPropagation()">
                                         @{
-                                            // Safely display domain name
+                                            // Safely extract and display domain name from URL
                                             if (!string.IsNullOrEmpty(item.Website) &&
                                             Uri.TryCreate(item.Website, UriKind.Absolute, out Uri uri))
                                             {
@@ -164,17 +211,21 @@
                                 }
                             </div>
                         </td>
+                        <!-- Action buttons (View, Edit, Delete) -->
                         <td onclick="event.stopPropagation()">
                             <div class="row-actions">
+                                <!-- View button - opens modal with brand details -->
                                 <button class="row-action view" onclick="loadViewModal('@item.Id', event)">
                                     <i class="fas fa-eye"></i>
                                     <span class="desktop-text">View</span>
                                 </button>
+                                <!-- Edit button - opens modal with edit form -->
                                 <button class="row-action edit" onclick="loadEditModal('@item.Id', event)">
                                     <i class="fas fa-edit"></i>
                                     <span class="desktop-text">Edit</span>
                                 </button>
-                                <button class="row-action delete" onclick="deleteBrand('@item.Id', '@item.Name.Replace("'", "\\'")')">
+                                <!-- Delete button - shows confirmation then deletes brand -->
+                                <button class="row-action delete" onclick="deleteBrand('@item.Id', '@item.Name.Replace("'", "\\'")', event)">
                                     <i class="fas fa-trash"></i>
                                     <span class="desktop-text">Delete</span>
                                 </button>
@@ -185,6 +236,7 @@
             }
             else
             {
+                <!-- Empty state when no brands exist -->
                 <tr>
                     <td colspan="6" class="text-center">
                         <div class="empty-state">
@@ -201,25 +253,37 @@
         </tbody>
     </table>
 
-    <!-- Pagination -->
+    <!-- =========================================================================== -->
+    <!-- PAGINATION SECTION -->
+    <!-- =========================================================================== -->
+    <!--
+        Pagination controls for navigating between pages of brands.
+        Shows previous/next buttons and numbered page links
+    -->
     <nav aria-label="Page navigation example ">
         <ul class="pagination d-flex justify-content-center">
+            <!-- Previous page link -->
             @if (ViewBag.currentPage > 1)
             {
                 <li class="page-item"><a class="page-link" href="/admin/brands?page=@(ViewBag.currentPage - 1)">Previous</a></li>
             }
 
+            <!-- Page number links -->
             @for (var i = 1; i <= ViewBag.totalHodsOfPage; i++)
             {
                 if (i == ViewBag.currentPage)
                 {
-                    <li class="page-item active"><a class="page-link" href="https://localhost:7286/Admin/Brands?page=@i">@i</a></li>
+                    <!-- Current page (active) -->
+                    <li class="page-item active"><a class="page-link" href="/admin/brands?page=@i">@i</a></li>
                 }
                 else
                 {
-                    <li class="page-item"><a class="page-link" href="https://localhost:7286/Admin/Brands?page=@i">@i</a></li>
+                    <!-- Other pages -->
+                    <li class="page-item"><a class="page-link" href="/admin/brands?page=@i">@i</a></li>
                 }
             }
+
+            <!-- Next page link -->
             @if (ViewBag.currentPage != ViewBag.totalHodsOfPage && Model.Any())
             {
                 <li class="page-item"><a class="page-link" href="/admin/brands?page=@(ViewBag.currentPage + 1)">Next</a></li>
@@ -228,20 +292,29 @@
     </nav>
 </div>
 
-<!-- Selection Actions Bar -->
+<!-- =========================================================================== -->
+<!-- SELECTION ACTIONS BAR -->
+<!-- =========================================================================== -->
+<!--
+    Appears when one or more brands are selected.
+    Provides actions for the selected items (export, delete, clear)
+-->
 <div class="selection-actions" id="selectionActions">
     <div class="selected-count">
         <span id="selectedCount">0</span> brands selected
     </div>
     <div class="selection-buttons">
+        <!-- Export selected brands -->
         <button class="btn btn-secondary btn-sm" onclick="exportSelectedBrands()">
             <i class="fas fa-file-export"></i>
             <span class="desktop-text">Export</span>
         </button>
+        <!-- Delete selected brands -->
         <button class="btn btn-danger btn-sm" onclick="deleteSelectedBrands()">
             <i class="fas fa-trash"></i>
             <span class="desktop-text">Delete</span>
         </button>
+        <!-- Clear selection -->
         <button class="btn btn-secondary btn-sm" onclick="clearSelection()">
             <i class="fas fa-times"></i>
             <span class="desktop-text">Clear</span>
@@ -249,128 +322,43 @@
     </div>
 </div>
 
-<!-- Keep View and Edit modals if you still want those as modals -->
+<!-- =========================================================================== -->
+<!-- MODAL CONTAINER -->
+<!-- =========================================================================== -->
+<!--
+    Modal container for View and Edit operations.
+    Content is loaded dynamically via AJAX when buttons are clicked
+-->
 <div id="brandModalContainer" class="modal" style="display: none;">
     <div class="modal-content">
         <!-- Content will be loaded dynamically via AJAX -->
     </div>
 </div>
 
-<style>
-    /* Modal Backdrop */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Modal Content */
-    .modal-content {
-        background: white;
-        border-radius: 8px;
-        width: 500px;
-        max-width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Modal Header */
-    .modal-header {
-        padding: 20px;
-        border-bottom: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-    .modal-close {
-        background: none;
-        border: none;
-        color: #64748b;
-        cursor: pointer;
-        font-size: 1.25rem;
-        padding: 5px;
-    }
-
-        .modal-close:hover {
-            color: #334155;
-        }
-
-    /* Modal Body */
-    .modal-body {
-        padding: 20px;
-    }
-
-    /* Modal Footer */
-    .modal-footer {
-        padding: 20px;
-        border-top: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
-    /* Loading and error states */
-    .modal-loading,
-    .modal-error {
-        padding: 40px;
-        text-align: center;
-        color: #64748b;
-        font-size: 16px;
-    }
-
-    .modal-error {
-        color: #dc2626;
-    }
-
-    /* Empty state */
-    .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: #64748b;
-    }
-
-        .empty-state i {
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state h4 {
-            margin: 10px 0;
-            color: #475569;
-        }
-
-        .empty-state p {
-            margin-bottom: 20px;
-        }
-</style>
-
+<!-- =========================================================================== -->
+<!-- JAVASCRIPT SECTION -->
+<!-- =========================================================================== -->
 @section Scripts {
     <script>
-        // Initialize brand-specific functionality
+        // ===========================================================================
+        // INITIALIZATION
+        // ===========================================================================
+
+        /**
+         * Initializes the page when DOM is fully loaded
+         */
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Brands page loaded');
             initBrandsPage();
             setupModalEvents();
         });
 
-        // Brand-specific functions
+        /**
+         * Initializes brand-specific functionality
+         * Sets up event listeners for checkboxes
+         */
         function initBrandsPage() {
-            // Add brand-specific event listeners
+            // Add event listeners to all row selection checkboxes
             const checkboxes = document.querySelectorAll('.row-select');
             checkboxes.forEach(cb => {
                 cb.addEventListener('change', function() {
@@ -379,67 +367,149 @@
             });
         }
 
-        // ==================== MODAL FUNCTIONS (FOR VIEW/EDIT) ====================
-        // Keep these for View and Edit operations if you still want them as modals
+        // ===========================================================================
+        // MODAL FUNCTIONS (VIEW/EDIT)
+        // ===========================================================================
+
+        /**
+         * Loads the edit modal for a specific brand
+         * param {number} brandId - The ID of the brand to edit
+         * param {Event} event - The click event
+         */
         function loadEditModal(brandId, event) {
             if (event) event.stopPropagation();
 
             const modalContainer = document.getElementById('brandModalContainer');
             const modalContent = modalContainer.querySelector('.modal-content');
-            modalContent.innerHTML = '<div class="modal-loading">Loading...</div>';
+            modalContent.innerHTML = '<div class="modal-loading">Loading edit form...</div>';
             modalContainer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            // Load Edit.cshtml with brand data
+            console.log('Loading edit form for brand ID:', brandId);
+
+            // Load Edit.cshtml with brand data via AJAX
             $.ajax({
-                url: '/Brands/Edit/' + brandId,
+                url: '/Admin/Brands/Edit/' + brandId,
                 type: 'GET',
                 success: function(response) {
+                    console.log('Edit form loaded successfully');
                     const tempDiv = $('<div>').html(response);
-                    if (tempDiv.find('.modal-header').length > 0) {
+
+                    // Check if we got proper modal content
+                    if (tempDiv.find('.modal-header').length > 0 ||
+                        response.includes('modal-header') ||
+                        response.includes('form-control')) {
                         modalContent.innerHTML = response;
                     } else {
-                        const modalHtml = tempDiv.find('#brandModalContainer').html() || response;
-                        modalContent.innerHTML = modalHtml;
+                        // Wrap the response in modal structure
+                        modalContent.innerHTML = `
+                            <div class="modal-header">
+                                <h3>Edit Brand</h3>
+                                <button type="button" class="modal-close" onclick="closeModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                ${response}
+                            </div>
+                        `;
                     }
+
                     setupModalEvents();
-                    attachEditFormHandlers();
+                    attachEditFormHandlers(); // Attach form submission handler
                 },
-                error: function() {
-                    modalContent.innerHTML = '<div class="modal-error">Error loading form. Please try again.</div>';
+                error: function(xhr, status, error) {
+                    console.error('Error loading edit form:', error);
+                    modalContent.innerHTML = `
+                        <div class="modal-error">
+                            <h4>Error Loading Edit Form</h4>
+                            <p>Status: ${xhr.status} - ${xhr.statusText}</p>
+                            <p>Error: ${error}</p>
+                            <button class="btn btn-primary mt-3" onclick="closeModal()">Close</button>
+                        </div>`;
                 }
             });
         }
 
+        /**
+         * Loads the view modal for a specific brand
+         * param {number} brandId - The ID of the brand to view
+         * param {Event} event - The click event
+         */
         function loadViewModal(brandId, event) {
             if (event) event.stopPropagation();
 
+            console.log('Loading brand details for ID:', brandId);
+
             const modalContainer = document.getElementById('brandModalContainer');
             const modalContent = modalContainer.querySelector('.modal-content');
-            modalContent.innerHTML = '<div class="modal-loading">Loading...</div>';
+            modalContent.innerHTML = '<div class="modal-loading">Loading brand details...</div>';
             modalContainer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            // Load Details.cshtml
+            // Make AJAX request to get brand details
             $.ajax({
-                url: '/Brands/Details/' + brandId,
+                url: '/Admin/Brands/Details/' + brandId,
                 type: 'GET',
                 success: function(response) {
-                    const tempDiv = $('<div>').html(response);
-                    if (tempDiv.find('.modal-header').length > 0) {
+                    console.log('Success! Response received');
+
+                    // If we get a partial view, display it directly
+                    if (response.trim().startsWith('<') || response.includes('modal-header')) {
                         modalContent.innerHTML = response;
                     } else {
-                        const modalHtml = tempDiv.find('#brandModalContainer').html() || response;
-                        modalContent.innerHTML = modalHtml;
+                        // Wrap simple responses in modal structure
+                        modalContent.innerHTML = `
+                            <div class="modal-header">
+                                <h3>Brand Details</h3>
+                                <button type="button" class="modal-close" onclick="closeModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                ${response}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                            </div>
+                        `;
                     }
+
+                    // Re-setup modal events for the new content
                     setupModalEvents();
                 },
-                error: function() {
-                    modalContent.innerHTML = '<div class="modal-error">Error loading brand details.</div>';
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        error: error
+                    });
+
+                    if (xhr.status === 404) {
+                        modalContent.innerHTML = `
+                            <div class="modal-error">
+                                <h4>Brand Not Found</h4>
+                                <p>The brand with ID ${brandId} was not found.</p>
+                                <p>It may have been deleted or the URL is incorrect.</p>
+                                <button class="btn btn-primary mt-3" onclick="closeModal()">Close</button>
+                            </div>`;
+                    } else {
+                        modalContent.innerHTML = `
+                            <div class="modal-error">
+                                <h4>Error Loading Details</h4>
+                                <p><strong>Status:</strong> ${xhr.status} - ${xhr.statusText}</p>
+                                <p><strong>Error:</strong> ${error}</p>
+                                <p>Please check if the Details action exists in your controller.</p>
+                                <button class="btn btn-primary mt-3" onclick="closeModal()">Close</button>
+                            </div>`;
+                    }
                 }
             });
         }
 
+        /**
+         * Closes the modal
+         */
         function closeModal() {
             const modalContainer = document.getElementById('brandModalContainer');
             if (modalContainer) {
@@ -448,6 +518,12 @@
             }
         }
 
+        /**
+         * Sets up event listeners for the modal
+         * - Close on backdrop click
+         * - Close on Escape key
+         * - Prevent clicks inside modal from closing it
+         */
         function setupModalEvents() {
             const modalContainer = document.getElementById('brandModalContainer');
             if (!modalContainer) return;
@@ -475,85 +551,414 @@
             }
         }
 
+        /**
+         * Attaches form submission handlers to the edit form
+         * Handles AJAX submission and response processing
+         */
         function attachEditFormHandlers() {
             // Handle edit form submission
             const editForm = document.getElementById('editBrandForm');
             if (editForm) {
+                console.log('Edit form found, attaching submit handler');
+
+                // Handle checkbox to ensure proper value submission
+                const checkbox = editForm.querySelector('input[name="IsFeatured"][type="checkbox"]');
+                const hiddenCheckbox = editForm.querySelector('input[name="IsFeatured"][type="hidden"]');
+
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        if (hiddenCheckbox) {
+                            hiddenCheckbox.value = this.checked ? 'false' : 'false';
+                        }
+                    });
+                }
+
                 editForm.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    console.log('Edit form submitted');
+
+                    // Show loading state
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    submitBtn.disabled = true;
+
+                    // Fix checkbox value for submission
+                    if (checkbox) {
+                        checkbox.value = checkbox.checked ? 'true' : 'false';
+                    }
 
                     $.ajax({
                         url: this.action,
                         type: 'POST',
                         data: $(this).serialize(),
                         success: function(response) {
+                            console.log('Edit response:', response);
+
                             if (response.success) {
+                                // Show success message
+                                alert(response.message || 'Brand updated successfully!');
                                 closeModal();
+                                // Reload the page to show updated data
                                 window.location.reload();
                             } else {
-                                // Replace form with validation errors
-                                const modalContent = document.querySelector('#brandModalContainer .modal-content');
-                                modalContent.innerHTML = response;
-                                attachEditFormHandlers();
+                                // Show validation errors or error message
+                                if (response.error) {
+                                    alert('Error: ' + response.error);
+                                } else {
+                                    // Assume response contains HTML with validation errors
+                                    const modalContent = document.querySelector('#brandModalContainer .modal-content');
+                                    modalContent.innerHTML = response;
+                                    // Re-attach handlers to the new form
+                                    attachEditFormHandlers();
+                                }
                             }
                         },
-                        error: function() {
-                            alert('Error saving brand. Please try again.');
+                        error: function(xhr, status, error) {
+                            console.error('Edit AJAX error:', error);
+                            alert('Error updating brand. Please try again.');
+
+                            // Reset button
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        },
+                        complete: function() {
+                            // Reset button if not already reset
+                            if (submitBtn.disabled) {
+                                submitBtn.innerHTML = originalText;
+                                submitBtn.disabled = false;
+                            }
                         }
                     });
                 });
+            } else {
+                console.log('Edit form not found');
             }
         }
 
-        // ==================== BRAND OPERATIONS ====================
-        function deleteBrand(brandId, brandName) {
-            if (confirm(`Are you sure you want to delete "${brandName}"? This action cannot be undone.`)) {
-                console.log('Deleting brand:', brandId);
-                // Remove from UI
-                const row = document.querySelector(`tr[data-item-id="${brandId}"]`);
-                if (row) row.remove();
-                updateSelectionUI();
+        // ===========================================================================
+        // DELETE FUNCTIONS
+        // ===========================================================================
+
+        /**
+         * Deletes a single brand after confirmation
+         * param {number} brandId - The ID of the brand to delete
+         * param {string} brandName - The name of the brand (for confirmation message)
+         * param {Event} event - The click event
+         */
+        function deleteBrand(brandId, brandName, event) {
+            // Show confirmation dialog
+            if (!confirm(`Are you sure you want to delete "${brandName}"?\n\nThis action cannot be undone.`)) {
+                return;
             }
+
+            console.log('Deleting brand:', brandId);
+
+            // Show loading on the delete button
+            const deleteBtn = event.target.closest('.delete');
+            if (deleteBtn) {
+                const originalHtml = deleteBtn.innerHTML;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                deleteBtn.disabled = true;
+            }
+
+            // Get anti-forgery token for security
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            // FIX FOR DELETE: Make sure we're using the correct content type
+            // Send AJAX request to delete from database
+            $.ajax({
+                url: '/Admin/Brands/Delete/' + brandId,
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                // Send token as form data
+                data: {
+                    __RequestVerificationToken: token,
+                    id: brandId  // Explicitly send the ID
+                },
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function(response) {
+                    console.log('Delete response:', response);
+
+                    if (response.success) {
+                        // Show success message
+                        alert(response.message || 'Brand deleted successfully!');
+
+                        // Remove from UI with fade animation
+                        const row = document.querySelector(`tr[data-item-id="${brandId}"]`);
+                        if (row) {
+                            row.style.transition = 'opacity 0.3s';
+                            row.style.opacity = '0';
+
+                            setTimeout(() => {
+                                row.remove();
+                                updateSelectionUI();
+
+                                // Check if table is now empty
+                                if (document.querySelectorAll('.data-table tbody tr').length === 0) {
+                                    showEmptyState();
+                                }
+                            }, 300);
+                        }
+                    } else {
+                        // Show error message
+                        alert(response.message || 'Error deleting brand.');
+
+                        // Reset button
+                        if (deleteBtn) {
+                            deleteBtn.innerHTML = '<i class="fas fa-trash"></i><span class="desktop-text">Delete</span>';
+                            deleteBtn.disabled = false;
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Delete error:', error);
+                    console.error('Response:', xhr.responseText);
+                    alert('Error deleting brand. Please check console for details.');
+
+                    // Reset button
+                    if (deleteBtn) {
+                        deleteBtn.innerHTML = '<i class="fas fa-trash"></i><span class="desktop-text">Delete</span>';
+                        deleteBtn.disabled = false;
+                    }
+                }
+            });
         }
 
-        // Bulk actions for brands
+        /**
+         * Deletes multiple selected brands after confirmation
+         */
         function deleteSelectedBrands() {
             const selected = document.querySelectorAll('.row-select:checked');
             if (selected.length === 0) {
-                alert('Please select at least one brand');
+                alert('Please select at least one brand to delete.');
                 return;
             }
 
-            if (confirm(`Delete ${selected.length} selected brands?`)) {
-                selected.forEach(checkbox => {
-                    const row = checkbox.closest('tr');
-                    if (row) row.remove();
-                });
-                clearSelection();
+            const brandIds = Array.from(selected).map(checkbox => checkbox.value);
+            const count = selected.length;
+
+            // Show confirmation dialog
+            if (!confirm(`Are you sure you want to delete ${count} selected brand(s)?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            // Show loading on delete button
+            const deleteBtn = document.querySelector('#selectionActions .btn-danger');
+            if (deleteBtn) {
+                const originalHtml = deleteBtn.innerHTML;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                deleteBtn.disabled = true;
+            }
+
+            // Get anti-forgery token
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            // Send AJAX request for bulk deletion
+            $.ajax({
+                url: '/Admin/Brands/DeleteMultiple',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': token,
+                    'Content-Type': 'application/json'
+                },
+                // Send as JSON with IDs array
+                data: JSON.stringify({
+                    ids: brandIds,
+                    __RequestVerificationToken: token
+                }),
+                success: function(response) {
+                    console.log('Bulk delete response:', response);
+
+                    if (response.success) {
+                        // Show success message
+                        alert(response.message || `${count} brand(s) deleted successfully!`);
+
+                        // Remove selected rows from UI with fade animation
+                        selected.forEach(checkbox => {
+                            const row = checkbox.closest('tr');
+                            if (row) {
+                                row.style.transition = 'opacity 0.3s';
+                                row.style.opacity = '0';
+
+                                setTimeout(() => {
+                                    row.remove();
+                                }, 300);
+                            }
+                        });
+
+                        // Clear selection and update UI
+                        setTimeout(() => {
+                            clearSelection();
+
+                            // Check if table is now empty
+                            if (document.querySelectorAll('.data-table tbody tr').length === 0) {
+                                showEmptyState();
+                            }
+                        }, 400);
+                    } else {
+                        // Show error message
+                        alert(response.message || 'Error deleting brands.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Bulk delete error:', error);
+                    alert('Error deleting brands. Please try again.');
+                },
+                complete: function() {
+                    // Reset button
+                    if (deleteBtn) {
+                        deleteBtn.innerHTML = '<i class="fas fa-trash"></i><span class="desktop-text">Delete</span>';
+                        deleteBtn.disabled = false;
+                    }
+                }
+            });
+        }
+
+        /**
+         * Shows empty state when no brands exist
+         */
+        function showEmptyState() {
+            const tbody = document.querySelector('.data-table tbody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox fa-3x text-muted"></i>
+                                <h4>No Brands Found</h4>
+                                <p>Get started by creating your first brand.</p>
+                                <a href="/admin/brands/create" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add First Brand
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             }
         }
 
+        /**
+         * Gets the anti-forgery token from the page
+         * returns {string} The anti-forgery token value
+         */
+        function getAntiForgeryToken() {
+            // Try to find the token in the page
+            const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (tokenElement) {
+                return tokenElement.value;
+            }
+
+            // If not found, try to get it from the form
+            const form = document.querySelector('form input[name="__RequestVerificationToken"]');
+            if (form) {
+                return form.value;
+            }
+
+            console.warn('Anti-forgery token not found');
+            return '';
+        }
+
+        /**
+         * Sets up AJAX to include anti-forgery token in all requests
+         */
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                const token = getAntiForgeryToken();
+                if (token) {
+                    xhr.setRequestHeader('RequestVerificationToken', token);
+                }
+            }
+        });
+
+        // ===========================================================================
+        // OTHER BRAND OPERATIONS
+        // ===========================================================================
+
+        /**
+         * Exports selected brands (simulated)
+         */
         function exportSelectedBrands() {
             const selected = document.querySelectorAll('.row-select:checked');
             if (selected.length === 0) {
-                alert('Please select at least one brand');
+                alert('Please select at least one brand to export.');
                 return;
             }
-            alert(`Exporting ${selected.length} selected brands...`);
+
+            const brandIds = Array.from(selected).map(checkbox => checkbox.value);
+            const count = selected.length;
+
+            // Show loading
+            const exportBtn = document.querySelector('#selectionActions .btn-secondary');
+            const originalText = exportBtn ? exportBtn.innerHTML : '';
+
+            if (exportBtn) {
+                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+                exportBtn.disabled = true;
+            }
+
+            // Simulate export (you can implement actual export here)
+            setTimeout(() => {
+                alert(`Exporting ${count} selected brands...\nBrand IDs: ${brandIds.join(', ')}`);
+
+                // Reset button
+                if (exportBtn) {
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                }
+            }, 1000);
         }
 
+        /**
+         * Exports all brands (simulated)
+         */
         function exportAllBrands() {
-            alert('Exporting all brands...');
+            // Get all brand IDs from the table
+            const allBrandIds = Array.from(document.querySelectorAll('.row-select')).map(cb => cb.value);
+
+            if (allBrandIds.length === 0) {
+                alert('No brands to export.');
+                return;
+            }
+
+            alert(`Exporting all ${allBrandIds.length} brands...\nBrand IDs: ${allBrandIds.join(', ')}`);
         }
 
+        /**
+         * Refreshes the brands table
+         */
         function refreshBrands() {
-            alert('Refreshing brands data...');
+            // Show loading
+            const refreshBtn = document.querySelector('.table-action:nth-child(3)');
+            const originalText = refreshBtn ? refreshBtn.innerHTML : '';
+
+            if (refreshBtn) {
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                refreshBtn.disabled = true;
+            }
+
+            // Reload the page
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         }
 
-        // ==================== SELECTION FUNCTIONS ====================
+        // ===========================================================================
+        // SELECTION MANAGEMENT FUNCTIONS
+        // ===========================================================================
+
+        // Set to store selected item IDs
         let selectedItems = new Set();
 
+        /**
+         * Handles row selection when clicking on a table row
+         * param {Event} event - The click event
+         * param {HTMLElement} row - The table row element
+         */
         function selectRow(event, row) {
+            // Don't trigger selection if clicking on checkbox, action buttons, or links
             if (event.target.type === 'checkbox' ||
                 event.target.closest('.row-actions') ||
                 event.target.tagName === 'A') {
@@ -567,6 +972,10 @@
             }
         }
 
+        /**
+         * Updates the selection state when a checkbox changes
+         * param {HTMLInputElement} checkbox - The checkbox element
+         */
         function updateSelection(checkbox) {
             const itemId = checkbox.value;
 
@@ -583,6 +992,10 @@
             updateSelectionUI();
         }
 
+        /**
+         * Toggles selection of all rows
+         * param {HTMLInputElement} selectAllCheckbox - The "select all" checkbox
+         */
         function toggleSelectAll(selectAllCheckbox) {
             const checkboxes = document.querySelectorAll('.row-select');
             checkboxes.forEach(checkbox => {
@@ -591,6 +1004,9 @@
             });
         }
 
+        /**
+         * Updates the selection UI (counter and actions bar)
+         */
         function updateSelectionUI() {
             const count = selectedItems.size;
             const selectedCountEl = document.getElementById('selectedCount');
@@ -609,6 +1025,9 @@
             }
         }
 
+        /**
+         * Clears all selections
+         */
         function clearSelection() {
             selectedItems.clear();
             document.querySelectorAll('.row-select').forEach(cb => {
@@ -620,12 +1039,21 @@
             updateSelectionUI();
         }
 
-        // ==================== MOBILE FUNCTIONS ====================
+        // ===========================================================================
+        // MOBILE FUNCTIONS
+        // ===========================================================================
+
+        /**
+         * Checks if the device is mobile
+         * returns {boolean} True if mobile, false otherwise
+         */
         function isMobile() {
             return window.innerWidth <= 768;
         }
 
-        // Show mobile hint
+        /**
+         * Shows/hides mobile hint based on screen size
+         */
         document.addEventListener('DOMContentLoaded', function() {
             const mobileHint = document.querySelector('.mobile-scroll-hint');
             if (mobileHint && isMobile()) {
