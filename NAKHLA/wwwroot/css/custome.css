@@ -5,6 +5,8 @@
 
 /* Pagination */
 
+
+
 /* Products specific styles */
 .product-info {
     max-width: 250px;
@@ -135,6 +137,10 @@
     color: #94a3b8;
     font-size: 14px;
 }
+
+
+
+
 
 /* Mobile responsive styles */
 @media (max-width: 768px) {
@@ -412,6 +418,12 @@ textarea.form-control {
         font-size: 13px;
     }
 }
+
+
+
+
+
+
 
 
 /* Modal Container */

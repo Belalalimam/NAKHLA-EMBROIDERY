@@ -28,13 +28,13 @@ namespace NAKHLA.Areas.Customer.Controllers
 
             if (filterVM.MinPrice is not null)
             {
-                products = products.Where(e => e.Price - e.Price * (e.Discount / 100) >= filterVM.MinPrice);
+                products = products;
                 ViewBag.MinPrice = filterVM.MinPrice;
             }
 
             if (filterVM.MaxPrice is not null)
             {
-                products = products.Where(e => e.Price - e.Price * (e.Discount / 100) <= filterVM.MaxPrice);
+                products = products;
                 ViewBag.MaxPrice = filterVM.MaxPrice;
             }
 

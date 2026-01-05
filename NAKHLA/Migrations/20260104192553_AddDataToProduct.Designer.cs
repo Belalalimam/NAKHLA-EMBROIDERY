@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NAKHLA.DataAccess;
 
@@ -11,9 +12,11 @@ using NAKHLA.DataAccess;
 namespace NAKHLA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260104192553_AddDataToProduct")]
+    partial class AddDataToProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,172 +372,40 @@ namespace NAKHLA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AverageRating")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("BackordersAllowed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Barcode")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
 
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("GalleryImagesJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("HasVariations")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal?>("Height")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsBestSeller")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDownloadable")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFeatured")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsInStock")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsNew")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVirtual")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal?>("Length")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MainImage")
+                    b.Property<string>("MainImg")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ManageStock")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("MetaDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MetaKeywords")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MetaTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ModelNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<int>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<bool>("RequiresShipping")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ReviewCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShortDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("SpecialPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("SpecialPriceEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("SpecialPriceStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Specifications")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TaxClass")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Taxable")
                         .HasColumnType("bit");
 
                     b.Property<int>("Traffic")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VideoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ViewsCount")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("Width")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -545,7 +416,7 @@ namespace NAKHLA.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("NAKHLA.Models.ProductAttribute", b =>
+            modelBuilder.Entity("NAKHLA.Models.ProductSubImage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -553,45 +424,7 @@ namespace NAKHLA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AttributeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttributeValue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("PriceAdjustment")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StockAdjustment")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("productAttributes");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.ProductImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AltText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("Img")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -603,65 +436,6 @@ namespace NAKHLA.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductSubImages");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.ProductReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CustomerEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReviewText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("productReviews");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.ProductTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("productTags");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.UserOTP", b =>
@@ -691,21 +465,6 @@ namespace NAKHLA.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("UserOTPs");
-                });
-
-            modelBuilder.Entity("ProductProductTag", b =>
-                {
-                    b.Property<int>("ProductTagsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductTagsId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("ProductProductTag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -797,32 +556,10 @@ namespace NAKHLA.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("NAKHLA.Models.ProductAttribute", b =>
+            modelBuilder.Entity("NAKHLA.Models.ProductSubImage", b =>
                 {
                     b.HasOne("NAKHLA.Models.Product", "Product")
-                        .WithMany("ProductAttributes")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.ProductImage", b =>
-                {
-                    b.HasOne("NAKHLA.Models.Product", "Product")
-                        .WithMany("ProductImages")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.ProductReview", b =>
-                {
-                    b.HasOne("NAKHLA.Models.Product", "Product")
-                        .WithMany("Reviews")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -841,21 +578,6 @@ namespace NAKHLA.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("ProductProductTag", b =>
-                {
-                    b.HasOne("NAKHLA.Models.ProductTag", null)
-                        .WithMany()
-                        .HasForeignKey("ProductTagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NAKHLA.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("NAKHLA.Models.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -864,15 +586,6 @@ namespace NAKHLA.Migrations
             modelBuilder.Entity("NAKHLA.Models.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.Product", b =>
-                {
-                    b.Navigation("ProductAttributes");
-
-                    b.Navigation("ProductImages");
-
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

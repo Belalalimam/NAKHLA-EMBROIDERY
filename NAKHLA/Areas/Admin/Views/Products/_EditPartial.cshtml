@@ -1,0 +1,404 @@
+﻿@model NAKHLA.Models.Product
+@{
+    var categories = ViewBag.Categories as List<NAKHLA.Models.Category> ?? new List<NAKHLA.Models.Category>();
+    var brands = ViewBag.Brands as List<NAKHLA.Models.Brand> ?? new List<NAKHLA.Models.Brand>();
+}
+
+<div class="modal-header">
+    <h3>Edit Product: @Model.Name</h3>
+    <button type="button" class="modal-close" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<form id="editProductForm" method="post" action="/Admin/Products">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="CreatedAt" value="@Model.CreatedAt" />
+    <input type="hidden" name="CreatedBy" value="@Model.CreatedBy" />
+
+    <div class="modal-body">
+        <div class="validation-summary">
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger", style = "display: none;" })
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.Name, "Product Name", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.Name, new {
+                    @class = "form-control",
+                                        placeholder = "Enter product name",
+                                        required = "required"
+                                        })
+                    @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.SKU, "SKU", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.SKU, new {
+                                        @class = "form-control",
+                                        placeholder = "PROD-001",
+                                        required = "required"
+                                        })
+                    @Html.ValidationMessageFor(model => model.SKU, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.CategoryId, "Category", new { @class = "form-label" })
+                    @{
+                        var categoryList = new SelectList(categories, "Id", "Name", Model.CategoryId);
+                    }
+                    @Html.DropDownListFor(model => model.CategoryId, categoryList, "Select Category", new { @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(model => model.CategoryId, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.BrandId, "Brand", new { @class = "form-label" })
+                    @{
+                        var brandList = new SelectList(brands, "Id", "Name", Model.BrandId);
+                    }
+                    @Html.DropDownListFor(model => model.BrandId, brandList, "Select Brand", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.BrandId, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(model => model.ShortDescription, "Short Description", new { @class = "form-label" })
+            @Html.TextAreaFor(model => model.ShortDescription, new {
+            @class = "form-control",
+                        rows = "2",
+                        placeholder = "Brief description for product listings"
+                        })
+            @Html.ValidationMessageFor(model => model.ShortDescription, null, new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(model => model.Description, "Full Description", new { @class = "form-label" })
+            @Html.TextAreaFor(model => model.Description, new {
+                        @class = "form-control",
+                        rows = "3",
+                        placeholder = "Detailed product description"
+                        })
+            @Html.ValidationMessageFor(model => model.Description, null, new { @class = "text-danger" })
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.Price, "Price ($)", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.Price, new {
+                                        @class = "form-control",
+                                        type = "number",
+                                        step = "0.01",
+                                        min = "0",
+                                        placeholder = "0.00",
+                                        required = "required"
+                                        })
+                    @Html.ValidationMessageFor(model => model.Price, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.CostPrice, "Cost Price ($)", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.CostPrice, new {
+                                        @class = "form-control",
+                                        type = "number",
+                                        step = "0.01",
+                                        min = "0",
+                                        placeholder = "0.00"
+                                        })
+                    @Html.ValidationMessageFor(model => model.CostPrice, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.SpecialPrice, "Special Price ($)", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.SpecialPrice, new {
+                                        @class = "form-control",
+                                        type = "number",
+                                        step = "0.01",
+                                        min = "0",
+                                        placeholder = "0.00"
+                                        })
+                    @Html.ValidationMessageFor(model => model.SpecialPrice, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.StockQuantity, "Stock Quantity", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.StockQuantity, new {
+                                        @class = "form-control",
+                                        type = "number",
+                                        min = "0",
+                                        placeholder = "0",
+                                        required = "required"
+                                        })
+                    @Html.ValidationMessageFor(model => model.StockQuantity, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.LowStockThreshold, "Low Stock Threshold", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.LowStockThreshold, new {
+                                        @class = "form-control",
+                                        type = "number",
+                                        min = "0",
+                                        placeholder = "10"
+                                        })
+                    @Html.ValidationMessageFor(model => model.LowStockThreshold, null, new { @class = "text-danger" })
+                    <small class="text-muted">Alert when stock falls below this number</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.MainImage, "Main Image URL", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.MainImage, new {
+                                        @class = "form-control",
+                                        placeholder = "https://example.com/image.jpg"
+                                        })
+                    @Html.ValidationMessageFor(model => model.MainImage, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.Slug, "URL Slug", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.Slug, new {
+                                        @class = "form-control",
+                                        placeholder = "product-name"
+                                        })
+                    @Html.ValidationMessageFor(model => model.Slug, null, new { @class = "text-danger" })
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="generateProductSlug()">
+                            <i class="fas fa-magic"></i> Regenerate Slug
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.MetaTitle, "Meta Title", new { @class = "form-label" })
+                    @Html.TextBoxFor(model => model.MetaTitle, new {
+                                        @class = "form-control",
+                                        placeholder = "SEO title for search engines"
+                                        })
+                    @Html.ValidationMessageFor(model => model.MetaTitle, null, new { @class = "text-danger" })
+                    <small class="text-muted">Appears in browser tab and search results</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    @Html.LabelFor(model => model.MetaDescription, "Meta Description", new { @class = "form-label" })
+                    @Html.TextAreaFor(model => model.MetaDescription, new {
+                                        @class = "form-control",
+                                        rows = "2",
+                                        placeholder = "SEO description for search engines"
+                                        })
+                    @Html.ValidationMessageFor(model => model.MetaDescription, null, new { @class = "text-danger" })
+                    <small class="text-muted">Appears in search results (max 160 characters)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-check mb-3">
+                    @Html.CheckBoxFor(model => model.Status, new { @class = "form-check-input" })
+                    @Html.LabelFor(model => model.Status, "Active", new { @class = "form-check-label" })
+                    <small class="text-muted d-block">Visible to customers</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check mb-3">
+                    @Html.CheckBoxFor(model => model.IsFeatured, new { @class = "form-check-input" })
+                    @Html.LabelFor(model => model.IsFeatured, "Featured", new { @class = "form-check-label" })
+                    <small class="text-muted d-block">Highlighted on homepage</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check mb-3">
+                    @Html.CheckBoxFor(model => model.IsBestSeller, new { @class = "form-check-input" })
+                    @Html.LabelFor(model => model.IsBestSeller, "Best Seller", new { @class = "form-check-label" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+    </div>
+</form>
+
+
+
+<script>
+    $(document).ready(function() {
+        // Form validation
+        $('#editProductForm').validate({
+            // your validation rules...
+        });
+
+        // Handle form submission via AJAX
+        $('#editProductForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (!$(this).valid()) {
+                return false;
+            }
+
+            const form = this;
+            const submitBtn = $(form).find('button[type="submit"]');
+            const originalHtml = submitBtn.html();
+
+            // Show loading
+            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+            submitBtn.prop('disabled', true);
+
+            // AJAX submission
+            $.ajax({
+                url: $(form).attr('action'),  // This should be /Admin/Categories/Edit/{id}
+                type: 'POST',
+                data: $(form).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        // Show success message
+                        alert(response.message || 'Product updated successfully!');
+                        closeModal();
+                        // Reload the page to show updated data
+                        window.location.reload();
+                    } else {
+                        // Show error
+                        alert(response.error || 'Error updating category');
+                        submitBtn.html(originalHtml);
+                        submitBtn.prop('disabled', false);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Edit AJAX error:', error);
+                    alert('Error updating category. Please try again.');
+                    submitBtn.html(originalHtml);
+                    submitBtn.prop('disabled', false);
+                }
+            });
+
+            return false;
+        });
+    });
+</script>
+
+<script>
+
+
+    $(document).ready(function() {
+        // Form validation
+        $('#editProductForm').validate({
+            rules: {
+                Name: {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 100
+                },
+                SKU: {
+                    required: true,
+                    minlength: 3
+                },
+                CategoryId: {
+                    required: true
+                },
+                Price: {
+                    required: true,
+                    min: 0.01
+                },
+                StockQuantity: {
+                    required: true,
+                    min: 0
+                }
+            },
+            messages: {
+                Name: {
+                    required: "Product name is required",
+                    minlength: "Product name must be at least 3 characters",
+                    maxlength: "Product name cannot exceed 100 characters"
+                },
+                SKU: {
+                    required: "SKU is required",
+                    minlength: "SKU must be at least 3 characters"
+                },
+                CategoryId: {
+                    required: "Category is required"
+                },
+                Price: {
+                    required: "Price is required",
+                    min: "Price must be greater than 0"
+                },
+                StockQuantity: {
+                    required: "Stock quantity is required",
+                    min: "Stock cannot be negative"
+                }
+            },
+            errorElement: 'span',
+            errorClass: 'text-danger',
+            highlight: function(element) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function(element) {
+                $(element).removeClass('is-invalid');
+            },
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+            }
+        });
+
+
+
+        // Auto-generate slug from product name
+        $('#Name').on('blur', function() {
+            const name = $(this).val();
+            const slugField = $('#Slug');
+
+            if (name && (!slugField.val() || slugField.val().trim() === '')) {
+                generateProductSlugFromName(name);
+            }
+        });
+    });
+
+    // Generate product slug
+    function generateProductSlug() {
+        const name = $('#Name').val();
+        if (name) {
+            generateProductSlugFromName(name);
+        } else {
+            alert('Please enter a product name first');
+        }
+    }
+
+    function generateProductSlugFromName(name) {
+        const slug = name
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        $('#Slug').val(slug);
+    }
+</script>

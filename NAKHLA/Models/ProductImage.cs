@@ -1,11 +1,13 @@
 ﻿namespace NAKHLA.Models
 {
-    public class ProductSubImage
+    public class ProductImage
     {
         public int Id { get; set; }
-
         public int ProductId { get; set; }
-        public string Img { get; set; }
+        public string ImageUrl { get; set; }
+        public int DisplayOrder { get; set; }
+        public string? AltText { get; set; }
+
         public Product Product { get; set; }
     }
 }

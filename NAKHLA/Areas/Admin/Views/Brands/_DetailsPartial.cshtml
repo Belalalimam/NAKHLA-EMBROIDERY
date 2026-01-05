@@ -98,9 +98,12 @@
     <button type="button" class="btn btn-secondary" onclick="closeModal()">
         <i class="fas fa-times"></i> Close
     </button>
-    <a href="@Url.Action("Edit", "Brands", new { id = Model.Id })"
+    @* <a href="@Url.Action("Edit", "Brands", new { id = Model.Id })"
        class="btn btn-primary"
        onclick="loadEditModal('@Model.Id', event)">
         <i class="fas fa-edit"></i> Edit
-    </a>
+    </a> *@
+    <button type="button" class="btn btn-primary" onclick="loadEditModal('@Model.Id', event)">
+        <i class="fas fa-edit"></i> Edit Brand
+    </button>
 </div>

@@ -7,58 +7,74 @@ using System.Threading.Tasks;
 namespace NAKHLA.Controllers.Admin
 {
     [Area("Admin")]
-    public class CategoriseController : Controller  // Fixed name: CategoriseController
+    public class CategoriesController : Controller  // Fixed name: CategoriseController
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoriseController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // GET: Admin/Categorise
-        public async Task<IActionResult> Index()
+        // In CategoriesController.cs - Update Index action:
+        public async Task<IActionResult> Index(int page = 1)
         {
             ViewBag.Title = "Category Management";
-            ViewBag.PageTitle = "Categorise";
-            ViewBag.Subtitle = "Manage product Categorise";
+            ViewBag.PageTitle = "Category";
+            ViewBag.Subtitle = "Manage product category";
 
-            var Categorise = await _context.Categorise  // Fixed: Categorise not Categorise
+            var categories = _context.Categorise
                 .Include(c => c.Products)
                 .Where(c => !c.IsDeleted)
                 .OrderBy(c => c.DisplayOrder)
                 .ThenBy(c => c.Name)
-                .ToListAsync();
+                .AsQueryable();
 
-            return View(Categorise);
+            // Fix this line - use enum, not string:
+            var activeCount = categories.Count(c => c.Status == CategoryStatus.Active);
+            // OR if you want to get it from Model later:
+            // var activeCount = categories.ToList().Count(c => c.Status == CategoryStatus.Active);
+
+            var totalHodsOfPage = Math.Ceiling(categories.Count() / 8.0);
+            var currentPage = page;
+            ViewBag.totalHodsOfPage = totalHodsOfPage;
+            ViewBag.currentPage = currentPage;
+
+            categories = categories.Skip((page - 1) * 8).Take(8);
+
+            return View(categories.ToList());
         }
 
-        // GET: Admin/Categorise/Details/5 (for regular page)
+        // GET: Admin/Categories/Details/5 (for regular page)
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            var category = await _context.Categorise  // Fixed: Categorise not Categorise
+            var category = await _context.Categorise
                 .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (category == null) return NotFound();
 
+            // Check if it's an AJAX request (for modal)
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_DetailsPartial", category);
+            }
+
             return View(category);
         }
 
-        // GET: Admin/Categorise/GetDetails/5 (for modal - AJAX)
+        // GET: Admin/Categories/GetDetails/5 (for modal - AJAX)
         [HttpGet]
         public async Task<IActionResult> GetDetails(int id)
         {
-            var category = await _context.Categorise  // Fixed: Categorise not Categorise
+            var category = await _context.Categorise
                 .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
 
             return PartialView("_DetailsPartial", category);
         }

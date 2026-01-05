@@ -4,10 +4,10 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
-            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="~/images/@Model.Product.MainImg" alt="..." /></div>
+            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="~/images/@Model.Product.MainImage" alt="..." /></div>
             <div class="col-md-6">
                 <div class="badge bg-primary text-white position-relative" style="top: 0.5rem; right: 0.5rem">@Model.Product.Category.Name</div>
-                <div class="badge bg-danger text-white position-relative" style="top: 0.5rem; right: 0.5rem">Quantity: @Model.Product.Quantity</div>
+                <div class="badge bg-danger text-white position-relative" style="top: 0.5rem; right: 0.5rem">Quantity: @Model.Product.StockQuantity</div>
                 <h1 class="display-5 fw-bolder">@Model.Product.Name</h1>
                 @* <div class="fs-5 mb-5">
                     <span class="text-decoration-line-through">@Model.Product.Price.ToString("c")</span>
@@ -40,7 +40,7 @@
                     <a href="https://localhost:7286/customer/home/Details/@item.Id">
                         <div class="badge">HOT SALE</div>
                         <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
                         </div>
                         <div class="info">
                             <div class="cat">High-Performance Laptop</div>
@@ -96,7 +96,7 @@
                     <a href="https://localhost:7286/customer/home/Details/@item.Id">
                         <div class="badge">HOT SALE</div>
                         <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
                         </div>
                         <div class="info">
                             <div class="cat">High-Performance Laptop</div>
@@ -152,7 +152,7 @@
                     <a href="https://localhost:7286/customer/home/Details/@item.Id">
                         <div class="badge">HOT SALE</div>
                         <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImg" alt="Premium Laptop"></div>
+                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
                         </div>
                         <div class="info">
                             <div class="cat">High-Performance Laptop</div>
