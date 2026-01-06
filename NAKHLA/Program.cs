@@ -1,23 +1,29 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NAKHLA;
+using NAKHLA.Configurations;
 using NAKHLA.DataAccess;
+using NAKHLA.Utitlies.DBInitilizer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connectionString =
+                    builder.Configuration.GetConnectionString("DefaultConnection")
+                        ?? throw new InvalidOperationException("Connection string"
+                        + "'DefaultConnection' not found.");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 
-builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
 
-
+builder.Services.RegisterConfig(connectionString);
+builder.Services.RegisterMapsterConfig();
 var app = builder.Build();
+
+//var scope = app.Services.CreateScope();
+//var service = scope.ServiceProvider.GetService<IDBInitializer>();
+//service!.Initialize();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -31,6 +37,10 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
+
+
 
 app.MapStaticAssets();
 //app.UseStaticFiles();

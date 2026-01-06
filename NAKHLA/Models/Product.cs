@@ -95,6 +95,7 @@ namespace NAKHLA.Models
         public ICollection<ProductAttribute> ProductAttributes { get; set; } = new List<ProductAttribute>();
         public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
+
         // Calculated Properties
         [NotMapped]
         public decimal FinalPrice

@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NAKHLA.DataAccess;
-using NAKHLA.Utitltiy;
+using NAKHLA.Utitlies;
 using NAKHLA.ViewModels;
 
 namespace NAKHLA.Areas.Customer.Controllers
 {
-    [Area(SD.CustomerArea)]
+    [Area("Customer")]
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _context;

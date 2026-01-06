@@ -24,5 +24,25 @@ namespace NAKHLA.DataAccess
         public DbSet<ProductAttribute> productAttributes { get; set; }
         public DbSet<ProductTag> productTags { get; set; }
         public DbSet<ProductReview> productReviews  { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //modelBuilder.Entity<ProductColor>()
+            //    .HasKey(e => new { e.ProductId, e.Color });
+
+            //modelBuilder.Entity<ProductSubImage>()
+            //    .HasKey(e => new { e.ProductId, e.Img });
+
+            //new ProductColorEntityTypeConfiguration().Configure(modelBuilder.Entity<ProductColor>());
+            //new ProductImgEntityTypeConfiguration().Configure(modelBuilder.Entity<ProductSubImage>());
+
+            //modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductColorEntityTypeConfiguration).Assembly);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
+
+
+
+    
 }

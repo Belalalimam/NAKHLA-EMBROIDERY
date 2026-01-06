@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NAKHLA.DataAccess;
-using NAKHLA.Utitltiy;
+using NAKHLA.Utitlies;
 
 namespace NAKHLA.Areas.Admin.Controllers
 {
