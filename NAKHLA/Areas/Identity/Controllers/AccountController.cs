@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding; 
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Threading.Tasks;
+using NAKHLA.ViewModels;
+//using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+
 
 namespace NAKHLA.Areas.Identity.Controllers
 {
@@ -11,12 +15,14 @@ namespace NAKHLA.Areas.Identity.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly IRepository<UserOTP> _UserOTPRepository;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IRepository<UserOTP> UserOTPRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _UserOTPRepository = UserOTPRepository;
         }
 
         public IActionResult Index()
@@ -147,7 +153,124 @@ namespace NAKHLA.Areas.Identity.Controllers
 
 
 
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordVM forgetPasswordVM)
+        {
+            if (!ModelState.IsValid)
+                return View(forgetPasswordVM);
+
+            var user = await _userManager.FindByNameAsync(forgetPasswordVM.UserNameOREmail) ?? await _userManager.FindByEmailAsync(forgetPasswordVM.UserNameOREmail);
+
+            if (user is null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid User Name / Email");
+                return View(forgetPasswordVM);
+            }
+
+            var userOTPs = await _UserOTPRepository.GetAsync(e => e.ApplicationUserId == user.Id);
+
+            var totalOTPs = userOTPs.Count(e => (DateTime.UtcNow - e.CreateAt).TotalHours < 24);
+
+            if (totalOTPs > 3)
+            {
+                ModelState.AddModelError(string.Empty, "Too Many Attemps");
+                return View(forgetPasswordVM);
+            }
+
+            var otp = new Random().Next(1000, 9999).ToString(); // 1000 - 9999
+
+            await _UserOTPRepository.AddAsync(new()
+            {
+                Id = Guid.NewGuid().ToString(),
+                ApplicationUserId = user.Id,
+                CreateAt = DateTime.UtcNow,
+                IsValid = true,
+                OTP = otp,
+                ValidTo = DateTime.UtcNow.AddDays(1),
+            });
+            await _UserOTPRepository.CommitAsync();
+
+            await _emailSender.SendEmailAsync(user.Email!, "Ecommerce 519 - Reset Your Password"
+                , $"<h1>Use This OTP: {otp} To Reset Your Account. Don't share it.</h1>");
+
+            return RedirectToAction("ValidateOTP", new { userId = user.Id });
+        }
+
+        public IActionResult ValidateOTP(string userId)
+        {
+            return View(new ValidateOTPVM
+            {
+                ApplicationUserId = userId
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ValidateOTP(ValidateOTPVM validateOTPVM)
+        {
+            if (!ModelState.IsValid)
+                return View(validateOTPVM); // Add this check
+
+            var result = await _UserOTPRepository.GetOneAsync(e =>
+                e.ApplicationUserId == validateOTPVM.ApplicationUserId &&
+                e.OTP == validateOTPVM.OTP &&
+                e.IsValid &&
+                e.ValidTo >= DateTime.UtcNow); // Add expiration check
+
+            if (result is null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid or expired OTP");
+                return View(validateOTPVM); // Return with error
+            }
+
+            // Mark OTP as used
+            result.IsValid = false;
+            _UserOTPRepository.Update(result);
+            await _UserOTPRepository.CommitAsync();
+
+            return RedirectToAction("NewPassword", new { userId = validateOTPVM.ApplicationUserId });
+        }
+
+        public IActionResult NewPassword(string userId)
+        {
+            return View(new NewPasswordVM
+            {
+                ApplicationUserId = userId
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NewPassword(NewPasswordVM newPasswordVM)
+        {
+            var user = await _userManager.FindByIdAsync(newPasswordVM.ApplicationUserId);
+
+            if (user is null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid User Name / Email");
+                return View(newPasswordVM);
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, newPasswordVM.Password);
+
+
+            if (!result.Succeeded)
+            {
+                foreach (var item in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, item.Code);
+                }
+
+                return View(newPasswordVM);
+            }
+
+            return RedirectToAction("Login");
+        }
 
 
 
