@@ -1,1 +1,486 @@
-﻿﻿
+﻿@model IEnumerable<NAKHLA.Models.Cart>
+@{
+    ViewData["Title"] = "Shopping Cart";
+    decimal subtotal = 0;
+    decimal total = 0;
+    var cartItems = Model.ToList();
+}
+
+<div class="min-vh-100 bg-light py-5">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="mb-5">
+            <h1 class="display-6 fw-bold mb-3">Your Shopping Cart</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Cart</li>
+                </ol>
+            </nav>
+        </div>
+
+        @if (!cartItems.Any())
+        {
+            <!-- Empty Cart State -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#6c757d" class="bi bi-cart-x" viewBox="0 0 16 16">
+                            <path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793z" />
+                            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                        </svg>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-3">Your cart is empty</h2>
+                    <p class="text-muted mb-4">Looks like you haven't added any items to your cart yet.</p>
+                    <a href="/" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                <!-- Cart Items Column -->
+                <div class="col-lg-8 w-100 border1">
+                    <!-- Cart Items Card -->
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden border1 ">
+                        <div class="card-header bg-white py-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-shopping-bag me-2 text-primary"></i>
+                                    Shopping Bag
+                                    <span class="badge bg-primary rounded-pill ms-2">@cartItems.Count items</span>
+                                </h5>
+                                <button onclick="location.href='@Url.Action("ClearCart")'"
+                                        class="btn btn-sm btn-outline-danger rounded-pill"
+                                        onclick="return confirm('Clear all items from your cart?')">
+                                    <i class="fas fa-trash me-1"></i>Clear All
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col" class="ps-4 py-3 border-0" style="width: 50%;">Product</th>
+                                            <th scope="col" class="py-3 border-0 text-center">Price</th>
+                                            <th scope="col" class="py-3 border-0 text-center">Quantity</th>
+                                            <th scope="col" class="py-3 border-0 text-center">Total</th>
+                                            <th scope="col" class="pe-4 py-3 border-0 text-end"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in cartItems)
+                                        {
+                                            var itemTotal = item.Price * item.Count;
+                                            subtotal += itemTotal;
+
+                                            <tr class="cart-item-row border-top">
+                                                <td class="ps-4 py-4">
+                                                    <div class="d-flex align-items-start">
+                                                        <!-- Product Image -->
+                                                        <div class="position-relative me-3">
+                                                            @if (!string.IsNullOrEmpty(item.Product?.MainImage))
+                                                            {
+                                                                <img src="~/images/@item.Product.MainImage"
+                                                                     class="rounded-3 object-fit-cover cart-product-image"
+                                                                     alt="@item.Product.Name"
+                                                                     onerror="this.src='https://via.placeholder.com/100x100?text=Product'">
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center"
+                                                                     style="width: 100px; height: 100px;">
+                                                                    <i class="fas fa-image text-muted fa-2x"></i>
+                                                                </div>
+                                                            }
+                                                            @if (item.Product?.IsOnSale == true)
+                                                            {
+                                                                <span class="badge bg-danger position-absolute top-0 start-0 m-2">SALE</span>
+                                                            }
+                                                    </div>
+
+                                                    <!-- Product Details -->
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold">
+                                                            <a href="@Url.Action("Details", "Product", new { id = item.ProductId, area = "" })"
+                                                               class="text-decoration-none text-dark hover-primary">
+                                                                @item.Product?.Name
+                                                            </a>
+                                                        </h6>
+                                                        <p class="text-muted small mb-2">
+                                                            @(item.Product?.ShortDescription?.Length > 60 ?
+                                                                                                                    item.Product.ShortDescription.Substring(0, 60) + "..." :
+                                                                                                                    item.Product?.ShortDescription)
+                                                            </p>
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                @if (item.Product?.IsLowStock == true)
+                                                                {
+                                                                    <span class="badge bg-warning text-dark">
+                                                                        <i class="fas fa-exclamation-triangle me-1"></i>Low Stock
+                                                                    </span>
+                                                                }
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-barcode me-1"></i>@item.Product?.SKU
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <!-- Price -->
+                                                <td class="text-center">
+                                                    <div class="d-flex flex-column">
+                                                        @if (item.Product?.IsOnSale == true && item.Product.FinalPrice < item.Product.Price)
+                                                        {
+                                                            <span class="text-muted text-decoration-line-through small">
+                                                                $@item.Product.Price.ToString("N2")
+                                                            </span>
+                                                            <span class="fw-bold text-danger">
+                                                                $@item.Product.FinalPrice.ToString("N2")
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="fw-bold text-dark">
+                                                                $@item.Price.ToString("N2")
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                </td>
+
+                                                <!-- Quantity Controls -->
+                                                <td class="text-center">
+                                                    <div class="d-inline-flex align-items-center border rounded-3 px-2">
+                                                        <a href="@Url.Action("DecrementProduct", new { productId = item.ProductId })"
+                                                           class="btn btn-sm btn-link text-decoration-none text-dark px-2 py-1">                                                            
+                                                            <i class="ri-subtract-line"></i>
+                                                        </a>
+                                                        <span class="fw-bold mx-2" style="min-width: 30px;">@item.Count</span>
+                                                        <a href="@Url.Action("IncrementProduct", new { productId = item.ProductId })"
+                                                           class="btn btn-sm btn-link text-decoration-none text-dark px-2 py-1">
+                                                            <i class="ri-add-line"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+
+                                                <!-- Total -->
+                                                <td class="text-center">
+                                                    <span class="fw-bold text-dark">$@itemTotal.ToString("N2")</span>
+                                                </td>
+
+                                                <!-- Remove Button -->
+                                                <td class="pe-4 text-end">
+                                                    <a href="@Url.Action("DeleteProduct", new { productId = item.ProductId })"
+                                                       class="btn btn-sm btn-outline-danger rounded-circle"
+                                                       onclick="return confirm('Remove this item from cart?')"
+                                                       data-bs-toggle="tooltip" title="Remove item">
+                                                        <i class="ri-close-line"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white py-4">
+                            <div class="d-flex justify-content-between">
+                                <a href="/" class="btn btn-outline-dark rounded-pill px-4">
+                                    <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                                </a>
+                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#couponModal">
+                                    <i class="fas fa-tag me-2"></i>Have a coupon?
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security & Shipping Info -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100 rounded-4">
+                                <div class="card-body text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Secure Payment</h6>
+                                    <p class="text-muted small mb-0">All transactions are secure and encrypted</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100 rounded-4">
+                                <div class="card-body text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fas fa-shipping-fast fa-2x text-primary"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Free Shipping</h6>
+                                    <p class="text-muted small mb-0">Free delivery on orders over $50</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100 rounded-4">
+                                <div class="card-body text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="fas fa-undo-alt fa-2x text-primary"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Easy Returns</h6>
+                                    <p class="text-muted small mb-0">30-day return policy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- Order Summary Column -->
+                <div class="col-lg-4">
+                    <div class="sticky-top" style="top: 100px;">
+                        <!-- Order Summary Card -->
+                        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                            <div class="card-header bg-primary text-white py-4">
+                                <h5 class="mb-0 fw-bold">
+                                    <i class="fas fa-receipt me-2"></i>
+                                    Order Summary
+                                </h5>
+                            </div>
+
+                            <div class="card-body p-4">
+                                <!-- Price Breakdown -->
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span class="text-muted">Subtotal</span>
+                                        <span class="fw-bold">$@subtotal.ToString("N2")</span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span class="text-muted">Shipping</span>
+                                        <span class="fw-bold">
+                                            @if (subtotal >= 50)
+                                            {
+                                                <span class="text-success">FREE</span>
+                                            }
+                                            else
+                                            {
+                                                <span>$5.99</span>
+                                            }
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span class="text-muted">Tax</span>
+                                        <span class="fw-bold">$@((subtotal * 0.08m).ToString("N2"))</span>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(Context.Request.Query["code"]))
+                                    {
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="text-muted">
+                                                <i class="fas fa-tag me-1"></i>
+                                                Discount (@Context.Request.Query["code"])
+                                            </span>
+                                            <span class="fw-bold text-success">-$5.00</span>
+                                        </div>
+                                    }
+
+                                    <hr class="my-3">
+
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <span class="h5 mb-0 fw-bold">Total</span>
+                                        <span class="h4 mb-0 fw-bold text-primary">
+                                            $@{
+                                            var shipping = subtotal >= 50 ? 0 : 5.99m;
+                                            var tax = subtotal * 0.08m;
+                                            var discount = !string.IsNullOrEmpty(Context.Request.Query["code"]) ? 5.00m : 0;
+                                            total = subtotal + shipping + tax - discount;
+                                            @total.ToString("N2")
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <div class="d-grid gap-3">
+                                <a href="@Url.Action("Pay")" class="btn btn-success btn-lg rounded-pill py-3 fw-bold">
+                                    <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                                </a>
+                                <a href="/" class="btn btn-outline-dark rounded-pill py-3">
+                                    Continue Shopping
+                                </a>
+                            </div>
+
+                            <!-- Payment Methods -->
+                            <div class="mt-4 pt-3 border-top">
+                                <p class="text-muted small mb-2">We accept:</p>
+                                <div class="d-flex gap-2">
+                                    <i class="fab fa-cc-visa fa-2x text-dark"></i>
+                                    <i class="fab fa-cc-mastercard fa-2x text-dark"></i>
+                                    <i class="fab fa-cc-amex fa-2x text-dark"></i>
+                                    <i class="fab fa-cc-paypal fa-2x text-dark"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Need Help Card -->
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle p-3 me-3">
+                                    <i class="fas fa-headset fa-lg text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Need help?</h6>
+                                    <p class="text-muted small mb-0">We're here for you</p>
+                                </div>
+                            </div>
+                            <a href="tel:+1234567890" class="btn btn-outline-primary w-100 rounded-pill">
+                                <i class="fas fa-phone me-2"></i>Call Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                }
+    </div>
+</div>
+
+<!-- Coupon Modal -->
+<div class="modal fade" id="couponModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-tag me-2 text-primary"></i>Apply Coupon Code
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="get" class="modal-body">
+                <div class="mb-4">
+                    <label for="couponCode" class="form-label fw-bold mb-3">Enter your coupon code</label>
+                    <input type="text"
+                           class="form-control form-control-lg rounded-pill border-2"
+                           id="couponCode"
+                           name="code"
+                           placeholder="e.g., SAVE20"
+                           value="@Context.Request.Query["code"]"
+                           style="border-color: #e0e0e0;">
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold">
+                        Apply Coupon
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Auto-focus coupon input when modal opens
+            $('#couponModal').on('shown.bs.modal', function () {
+                $('#couponCode').focus();
+            });
+
+            // Add loading animation to checkout button
+            const checkoutBtn = document.querySelector('a[href*="Pay"]');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function(e) {
+                    this.innerHTML = '<span class="loading-spinner me-2"></span>Processing...';
+                    this.classList.add('disabled');
+                });
+            }
+
+            // Update quantity with AJAX
+            document.querySelectorAll('.btn-link').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const isIncrement = this.querySelector('.fa-plus');
+                    const isDecrement = this.querySelector('.fa-minus');
+
+                    if (isIncrement || isDecrement) {
+                        e.preventDefault();
+
+                        const url = this.href;
+                        const row = this.closest('tr');
+                        const quantitySpan = row.querySelector('.fw-bold');
+
+                        // Show loading
+                        const originalContent = this.innerHTML;
+                        this.innerHTML = '<span class="loading-spinner"></span>';
+
+                        fetch(url)
+                            .then(response => {
+                                if (response.ok) {
+                                    window.location.reload();
+                                }
+                            })
+                            .catch(error => {
+                                this.innerHTML = originalContent;
+                                alert('An error occurred. Please try again.');
+                            });
+                    }
+                });
+            });
+
+            // Cart count update
+            function updateCartCount() {
+                fetch('/Customer/Cart/GetCartCount')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.querySelector('.cart-badge');
+                        if (badge) {
+                            badge.textContent = data.count;
+                            badge.classList.toggle('invisible', data.count === 0);
+                        }
+                    });
+            }
+
+            // Update cart count every 30 seconds
+            setInterval(updateCartCount, 30000);
+        });
+    </script>
+}

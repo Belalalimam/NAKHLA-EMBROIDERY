@@ -25,11 +25,12 @@ namespace NAKHLA.Areas.Identity.Controllers
             _UserOTPRepository = UserOTPRepository;
         }
 
-        public IActionResult Index()
+        
+        public async Task<IActionResult> Logout()
         {
-            return View();
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
         }
-
         [HttpGet]
         public ViewResult Register()
         {

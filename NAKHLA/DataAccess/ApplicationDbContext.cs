@@ -23,6 +23,7 @@ namespace NAKHLA.DataAccess
         public DbSet<Cart> Carts { get; set; } = default!;
         public DbSet<ProductAttribute> productAttributes { get; set; }
         public DbSet<ProductTag> productTags { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
         public DbSet<ProductReview> productReviews  { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

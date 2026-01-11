@@ -32,7 +32,7 @@
                 <div class="content">
                     <div class="left">
                         <a  class="trigger"><i class="ri-menu-line"></i></a>
-                        <div class="logo"><a href="https://localhost:7286">.shoper</a></div>
+                        <div class="logo"><a href="/">.shoper</a></div>
                     </div>
                     <div class="middle">
                         <nav>
@@ -48,9 +48,22 @@
                     <div class="right">
                         <ul>
                             <li><a href="#"><i class="ri-search-line"></i></a></li>
-                            <li><a href="#"><span class="num">0</span><i class="ri-shopping-bag-2-line"></i></a></li>
+                            <li><a href="/Customer/Cart"><span class="num">0</span><i class="ri-shopping-bag-2-line"></i></a></li>
+                            @* <li class="nav-item">
+                                <a class="nav-link position-relative" href="@Url.Action("Index", "Cart", new { area = "Customer" })">
+                                    <i class="ri-shopping-bag-2-line"></i>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
+                                              id="cartBadge" style="font-size: 0.6rem;">
+                                            0
+                                        </span>
+                                    }
+                                </a>
+                            </li> *@
                             <li><a href="#"><span class="num">3</span><i class="ri-heart-line"></i></a></li>
-                            <li><a href="https://localhost:7286/Identity/Profile/index"><i class="ri-user-line"></i></a></li>
+                            <li><a href="/Identity/Account/Logout"><i class="ri-door-line"></i></a></li>
+                            <li><a href="/Identity/Profile/index"><i class="ri-user-line"> @User.Identity.Name </i></a></li>
                         </ul>
                     </div>
                 </div>
@@ -77,11 +90,11 @@
                             <li><a href="#"data-target="bag"><span class="num">0</span><i class="ri-shopping-bag-2-line"></i></a></li>
                             <li><a href="#"data-target="wishlist"><span class="num">3</span><i class="ri-heart-line"></i></a></li>
                             <li><a href="#"data-target="compare"><span class="num">0</span><i class="ri-arrow-left-right-line"></i></a></li>
-                            <li><a href="https://localhost:7286/Identity/home/Account" data-target="account"><i class="ri-user-line"></i></a></li>
+                            <li><a href="/Identity/home/Account" data-target="account"><i class="ri-user-line"></i></a></li>
                             <li><a href="#"data-target="lunguage"><i class="ri-globe-line"></i></a></li>
                         </ul>
                     </div>
-                    <div class="logo"><a href="https://localhost:7286">.shoper</a></div>
+                    <div class="logo"><a href="/">.shoper</a></div>
                     <div class="socials">
                         <ul>
                             <li><a href="#"><i class="ri-instagram-line"></i></a></li>
@@ -188,6 +201,23 @@
 
 
     </div>
+
+    <script>
+        // Update cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (@User.Identity.IsAuthenticated.ToString().ToLower()) {
+                fetch('/Customer/Cart/GetCartCount')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('cartBadge');
+                        if (badge) {
+                            badge.textContent = data.count;
+                            badge.classList.toggle('invisible', data.count === 0);
+                        }
+                    });
+            }
+        });
+    </script>
 
     <script src="~/js/site.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

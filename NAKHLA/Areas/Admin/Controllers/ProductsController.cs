@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NAKHLA.DataAccess;
 using NAKHLA.Models;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace NAKHLA.Controllers.Admin
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE},{SD.ADMIN_ROLE},{SD.EMPLOYEE_ROLE}")]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;

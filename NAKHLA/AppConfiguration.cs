@@ -42,6 +42,7 @@ namespace NAKHLA
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IRepository<UserOTP>, Repository<UserOTP>>();
             services.AddScoped<IRepository<Cart>, Repository<Cart>>();
+            services.AddScoped<IRepository<Promotion>, Repository<Promotion>>();
 
             services.AddScoped<IDBInitializer, DBInitializer>();
         }

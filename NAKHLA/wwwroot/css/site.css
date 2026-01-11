@@ -735,3 +735,186 @@ header .trigger {
 }
 
 /*End Nav*/
+
+
+
+
+
+
+
+
+:root {
+    --primary-color: #4361ee;
+    --primary-hover: #3a56d4;
+    --success-color: #06d6a0;
+    --danger-color: #ef476f;
+    --warning-color: #ffd166;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    --border-radius: 12px;
+    --box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    --transition: all 0.3s ease;
+}
+
+.cart-product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+    .cart-product-image:hover {
+        transform: scale(1.05);
+    }
+
+.cart-item-row:hover {
+    background-color: rgba(67, 97, 238, 0.03);
+}
+
+.hover-primary:hover {
+    color: var(--primary-color) !important;
+}
+
+.badge.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color), #6c63ff) !important;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, var(--success-color), #0cb87c) !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    border: none;
+    transition: var(--transition);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(67, 97, 238, 0.3);
+    }
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color), #0cb87c);
+    border: none;
+    transition: var(--transition);
+}
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(6, 214, 160, 0.3);
+    }
+
+.btn-outline-danger:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(67, 97, 238, 0.03);
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: var(--transition);
+    width:100% !important;
+}
+
+    .card:hover {
+        box-shadow: var(--box-shadow);
+    }
+
+.sticky-top {
+    position: sticky;
+    top: 20px;
+    z-index: 1;
+}
+
+.object-fit-cover {
+    object-fit: cover;
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+    }
+
+/* Quantity controls */
+.btn-link.text-dark:hover {
+    color: var(--primary-color) !important;
+    background-color: rgba(67, 97, 238, 0.1);
+}
+
+/* Modal styling */
+.modal-content {
+    border: none;
+    box-shadow: var(--box-shadow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cart-product-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .table td, .table th {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .display-6 {
+        font-size: 1.75rem;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .cart-product-image {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Loading animation */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(67, 97, 238, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
