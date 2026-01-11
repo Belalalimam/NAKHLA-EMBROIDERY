@@ -817,7 +817,7 @@ header .trigger {
 .card {
     border: 1px solid rgba(0,0,0,0.05);
     transition: var(--transition);
-    width:100% !important;
+    
 }
 
     .card:hover {
