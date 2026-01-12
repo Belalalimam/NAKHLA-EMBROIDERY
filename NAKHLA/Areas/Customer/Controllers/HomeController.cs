@@ -14,7 +14,12 @@ namespace NAKHLA.Areas.Customer.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(FilterVM filterVM, int page = 1)
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+        public IActionResult Product(FilterVM filterVM, int page = 1)
         {
             const int discount = 50;
             var products = _context.Products.AsQueryable();

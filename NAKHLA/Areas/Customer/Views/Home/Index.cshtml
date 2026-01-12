@@ -1,155 +1,195 @@
-﻿@model List<Product>
-
-
-@if (Model.Any())
-{
-    <div class="container-fluid d-flex">
-
-        @* (قسم الفلتر (انا ماكملت تعديله او تزبيطه لبعدين *@
-        <div class="row">
-            <div class="filter-col">
-                <button class="btn btn-outline-secondary d-lg-none mb-2" type="button" data-toggle="collapse" data-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
-                    Filters
-                </button>
-
-                <div class="collapse d-lg-block" id="filtersCollapse">
-                    <aside class="filters p-3 bg-white rounded shadow-sm">
-                        <form id="product-filters" class="d-flex flex-column">
-                            <div class="filter-section mb-3">
-                                <h6 class="filter-title mb-2">Category</h6>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="laptops" id="catLaptops">
-                                    <label class="form-check-label" for="catLaptops">Laptops</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="accessories" id="catAcc">
-                                    <label class="form-check-label" for="catAcc">Accessories</label>
-                                </div>
-                            </div>
-
-                            <div class="filter-section mb-3">
-                                <h6 class="filter-title mb-2">Price</h6>
-                                <div class="d-flex align-items-center mb-2">
-                                    <input type="number" class="form-control mr-2" id="priceMin" placeholder="Min" style="width:95px;">
-                                    <span class="mx-1 text-muted">-</span>
-                                    <input type="number" class="form-control ml-2" id="priceMax" placeholder="Max" style="width:95px;">
-                                </div>
-                                <input type="range" class="form-control-range" id="priceRange" min="0" max="5000" step="10">
-                            </div>
-
-                            <div class="filter-section mb-3">
-                                <h6 class="filter-title mb-2">Brand</h6>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="brandA" id="brandA">
-                                    <label class="form-check-label" for="brandA">Brand A</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="brandB" id="brandB">
-                                    <label class="form-check-label" for="brandB">Brand B</label>
-                                </div>
-                            </div>
-
-                            <div class="filter-actions mt-auto d-flex justify-content-between">
-                                <button type="submit" class="btn btn-primary">Apply</button>
-                                <button type="button" id="clearFilters" class="btn btn-outline-secondary">Clear</button>
-                            </div>
-                        </form>
-                    </aside>
-                </div>
-            </div>
-        </div>
-
-        @* قسم المنتجات لسا بده شوي تعديلات *@
-        <div class="row d-flex align-items-start justify-content-center">
-            @foreach (var item in Model)    
-            {
-                <div class="card">
-                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
-                    <div class="badge">HOT SALE</div>
-                    <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
-                    </div>
-                    <div class="info">
-                        <div class="cat">@item.Category.Name</div>
-                        <h2 class="title">@item.Name</h2>
-                        @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p>
-                        <div class="feats">
-                            <span class="feat">4K Display</span>
-                            <span class="feat">16-Hour Battery</span>
-                            <span class="feat">Thunderbolt 4</span>
-                        </div> *@
-                        <div class="bottom">
-                            <div class="price">
-                                    <span class="old">@item.Price.ToString("c")</span>
-                                    <span class="new"> @((item.Price - (item.Price * (item.Discount / 100))).ToString("c"))</span>
-                            </div>
-
-
-
-                            <button class="btn">
-                                <span>Add to Cart</span>
-                                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
-                                    <line x1="3" y1="6" x2="21" y2="6" />
-                                    <path d="M16 10a4 4 0 01-8 0" />
-                                </svg>
-                            </button>
-
-
-
-                        </div>
-                        <div class="meta">
-                            <div class="rating">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <span class="rcount">@item.Traffic Reviews</span>
-                            </div>
-                            <div class="stock">In Stock</div>
-                        </div>
-                    </div>
-                    </a>
-                </div>
-            }
-                </div>  
-        </div>  
-
-
-
-    <div class="row">
-        <div class="col-12 d-flex justify-content-center">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    @if (ViewBag.currentPage > 1)
-                    {
-                        <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage - 1)">Previous</a></li>
-                    }
-
-                    @for (var i = 1; i <= ViewBag.totalNumberOfPages; i++)
-                    {
-                        @if (i == ViewBag.currentPage)
-                        {
-                            <li class="page-item active"><a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
-                        }
-                        else
-                        {
-                            <li class="page-item"><a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
-                        }
-
-                    }
-
-                    @if (ViewBag.currentPage != ViewBag.totalNumberOfPages && Model.Any())
-                    {
-                        <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage + 1)">Next</a></li>
-                    }
-                </ul>
-            </nav>
-        </div>
-
-       
-    </div>
+﻿@{
+    ViewBag.Title = "Home";
 }
 
+<section class="hero">
+    <div class="hero-overlay"></div>
 
+    <div class="hero-content container-fluid">
+        <h1>Find High-Quality Textiles<br />In our Online Fabric Store</h1>
+        <p>
+            Design your dreams and make them come true with our online fabrics.
+        </p>
+
+        <a href="@Url.Action("Index", "Products")" class="btn-hero">
+            Browse Our Fabrics
+        </a>
+    </div>
+</section>
+
+
+<section class="categories container-fluid">
+    <div class="category-grid">
+
+        <a href="@Url.Action("FlashSale", "Products")" class="category-card">
+            <img src="~/images/warm-coating-fabrics.webp" alt="Flash Sale" />
+            <div class="category-overlay">
+                <h3>Flash Sale</h3>
+            </div>
+        </a>
+
+        <a href="@Url.Action("Solids", "Products")" class="category-card">
+            <img src="~/images/Silk-Crepe-Satin-Fabric-033374_02.webp" alt="Solid Fabrics" />
+            <div class="category-overlay">
+                <h3>Solid Fabrics Always in Stock</h3>
+            </div>
+        </a>
+
+        <a href="@Url.Action("Furnishing", "Products")" class="category-card">
+            <img src="~/images/BROCHIER-online-deadstock-decor-fabrics.webp" alt="Furnishing Fabrics" />
+            <div class="category-overlay">
+                <h3>Furnishing Fabrics</h3>
+            </div>
+        </a>
+
+    </div>
+</section>
+
+
+
+
+
+
+<!-- Search Section -->
+<h1>Search for the fabric you desire:</h1>
+
+<form class="search-box">
+    <input type="text" placeholder="Type & hit 'enter'" />
+</form>
+
+<!-- Divider -->
+<h2 class="or-text">Or start from here</h2>
+<p class="sub-text">
+    What are you making? Choose the fabrics best suited to your project.
+</p>
+
+<!-- Categories -->
+<div class="categories2">
+    <div class="cat">👗 Formal Wear</div>
+    <div class="cat">🧥 Coat</div>
+    <div class="cat">👗 Dress</div>
+    <div class="cat">🧥 Jacket</div>
+    <div class="cat">🧥 Light Coat</div>
+    <div class="cat">👖 Pants</div>
+
+    <div class="cat">🎉 Party Dress</div>
+    <div class="cat">👕 Shirt</div>
+    <div class="cat">👗 Skirt</div>
+    <div class="cat">🤵 Suit</div>
+    <div class="cat">🩲 Underwear</div>
+    <div class="cat">👰 Wedding Dress</div>
+</div>
+
+
+
+
+
+<!-- COLOR FILTER SECTION -->
+<section class="color-filter container">
+    <div class="color-row">
+        <a href="#" class="color-circle" style="background:#f4f7d9;"></a>
+        <a href="#" class="color-circle" style="background:#000;"></a>
+        <a href="#" class="color-circle" style="background:#3f51b5;"></a>
+        <a href="#" class="color-circle" style="background:#7a5243;"></a>
+        <a href="#" class="color-circle" style="background:#ff00ff;"></a>
+        <a href="#" class="color-circle" style="background:#a9a9a9;"></a>
+        <a href="#" class="color-circle" style="background:#4caf50;"></a>
+        <a href="#" class="color-circle" style="background:#ff9800;"></a>
+        <a href="#" class="color-circle" style="background:#ffc0cb;"></a>
+        <a href="#" class="color-circle" style="background:#673ab7;"></a>
+        <a href="#" class="color-circle" style="background:#f44336;"></a>
+        <a href="#" class="color-circle" style="background:#c0c0c0;"></a>
+        <a href="#" class="color-circle border"></a>
+        <a href="#" class="color-circle" style="background:#ffeb3b;"></a>
+    </div>
+</section>
+
+<!-- FABRIC TYPES -->
+<section class="fabric-types container-fluid">
+    <h2>What material do you need? Browse our fabrics by type</h2>
+
+    <div class="fabric-grid">
+        <a class="fabric-card" href="#">
+            <img src="~/images/c1.webp">
+            <span>Bouclé - Tweed</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/c2.webp">
+            <span>Coat</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/c3.jpg">
+            <span>Fine Suit</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/c4.webp">
+            <span>Jacquard</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/c5.webp">
+            <span>Laces - Embroidery</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/6.jpg">
+            <span>Plain</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/c7.webp">
+            <span>Print</span>
+        </a>
+
+        <a class="fabric-card" href="#">
+            <img src="~/images/c8.webp">
+            <span>Shirting</span>
+        </a>
+        <a class="fabric-card" href="#">
+            <img src="~/images/c9.jpg">
+            <span>Shirting</span>
+        </a>
+        <a class="fabric-card" href="#">
+            <img src="~/images/c10.webp">
+            <span>Shirting</span>
+        </a>
+    </div>
+</section>
+
+
+<section class="seo-section">
+    <div class="seo-container">
+
+        <h2>Discover Quality Fabrics for Every Project</h2>
+
+        <p>
+            We provide a carefully curated selection of high-quality fabrics designed to
+            meet the needs of designers, tailors, and fashion enthusiasts. Whether you are
+            creating formal wear, casual clothing, or custom pieces, our platform helps
+            you find the right materials with confidence.
+        </p>
+
+        <p>
+            Our fabric collection includes options for dresses, suits, shirts, coats,
+            and lightweight garments, allowing you to choose based on texture, weight,
+            and purpose. Each product is selected with attention to quality, durability,
+            and comfort.
+        </p>
+
+        <p>
+            We believe that a great shopping experience should be simple and enjoyable.
+            That’s why our platform is designed with intuitive search tools, clear
+            categorization, and a smooth browsing experience across all devices.
+        </p>
+
+        <p>
+            From discovering new materials to selecting trusted classics, we aim to
+            support your creative journey by offering reliable products and a seamless
+            online experience.
+        </p>
+
+    </div>
+</section>
