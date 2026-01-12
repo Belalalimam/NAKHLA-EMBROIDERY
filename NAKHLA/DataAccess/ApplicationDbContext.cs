@@ -25,6 +25,8 @@ namespace NAKHLA.DataAccess
         public DbSet<ProductTag> productTags { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<ProductReview> productReviews  { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

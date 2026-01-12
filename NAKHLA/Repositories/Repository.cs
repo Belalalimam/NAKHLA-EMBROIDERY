@@ -77,5 +77,36 @@ namespace NAKHLA.Repositories
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
+        // Update existing entity - ADD THIS METHOD
+        public async Task UpdateAsync(T entity)
+        {
+            _dbSet.Update(entity);
+            await Task.CompletedTask; // Update doesn't need async but we keep the signature
+        }
+        
+        // Count entities
+        public async Task<int> CountAsync(Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.CountAsync();
+        }
+        // Check if any entity matches condition
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> filter)
+        {
+            return await _dbSet.AnyAsync(filter);
+        }
+
+        // Find by primary key
+        public async Task<T?> FindAsync(params object[] keyValues)
+        {
+            return await _dbSet.FindAsync(keyValues);
+        }
+
     }
 }

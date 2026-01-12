@@ -14,6 +14,7 @@ namespace NAKHLA.Models
         public string? ZipCode { get; set; }
         public string? Country { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now; 
-        public ICollection<Cart>? Carts { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
+using NAKHLA.Models;
 using Stripe.Checkout;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace NAKHLA.Areas.Customer.Controllers
 {
@@ -15,168 +15,643 @@ namespace NAKHLA.Areas.Customer.Controllers
         private readonly IRepository<Cart> _cartRepository;
         private readonly IRepository<Promotion> _promotionRepository;
         private readonly IProductRepository _productRepository;
+        private readonly ILogger<CartController> _logger;
 
-        public CartController(UserManager<ApplicationUser> userManager, IRepository<Cart> cartRepository, IRepository<Promotion> promotionRepository, IProductRepository productRepository)
+        public CartController(
+            UserManager<ApplicationUser> userManager,
+            IRepository<Cart> cartRepository,
+            IRepository<Promotion> promotionRepository,
+            IProductRepository productRepository,
+            ILogger<CartController> logger)
         {
             _userManager = userManager;
             _cartRepository = cartRepository;
             _promotionRepository = promotionRepository;
             _productRepository = productRepository;
+            _logger = logger;
         }
 
-        public async Task<IActionResult> Index(string code)
+        // GET: /Customer/Cart
+        [HttpGet]
+        public async Task<IActionResult> Index(string? code = null, bool clear = false)
         {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user is null)
-                return NotFound();
-
-            var cart = await _cartRepository.GetAsync(e => e.ApplicationUserId == user.Id, includes: [e => e.Product, e => e.ApplicationUser]);
-
-            var promotion = await _promotionRepository.GetOneAsync(e => e.Code == code && e.IsValid);
-
-            if (promotion is not null)
+            try
             {
-                var result = cart.FirstOrDefault(e => e.ProductId == promotion.ProductId);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["error-notification"] = "Please login to view your cart";
+                    return RedirectToAction("Login", "Account", new { area = "Identity" });
+                }
 
-                if (result is not null)
-                    result.Price -= result.Product.Price * (promotion.Discount / 100);
+                // Clear cart if requested
+                if (clear)
+                {
+                    return await ClearCart();
+                }
 
-                await _cartRepository.CommitAsync();
+                // Get cart items with product details
+                var cartItems = await _cartRepository.GetAsync(
+                    e => e.ApplicationUserId == userId,
+                    includes: [e => e.Product, e => e.Product.Category, e => e.Product.Brand]
+                );
+
+                // Apply promotion if code provided
+                // Apply promotion if code provided
+                if (!string.IsNullOrEmpty(code))
+                {
+                    var promotion = await _promotionRepository.GetOneAsync(
+                        e => e.Code.ToLower() == code.ToLower() &&
+                             e.IsCurrentlyActive);
+
+                    if (promotion != null)
+                    {
+                        // Check if promotion can be combined with existing discounts
+                        if (!promotion.CanCombineWithOtherPromotions && cartItems.Any(e => e.Price < e.Product.Price))
+                        {
+                            TempData["error-notification"] = "This promotion cannot be combined with other discounts";
+                        }
+                        else
+                        {
+                            // Check minimum purchase amount
+                            var cartTotal = cartItems.Sum(e => e.Product.Price * e.Count);
+                            if (promotion.MinimumPurchaseAmount.HasValue && cartTotal < promotion.MinimumPurchaseAmount.Value)
+                            {
+                                TempData["error-notification"] = $"Minimum purchase of ${promotion.MinimumPurchaseAmount.Value} required for this promotion";
+                            }
+                            else
+                            {
+                                bool promotionApplied = false;
+
+                                foreach (var item in cartItems)
+                                {
+                                    if (promotion.IsApplicableToProduct(item.Product))
+                                    {
+                                        decimal discount = promotion.CalculateDiscount(item.Product.Price, item.Count);
+
+                                        if (discount > 0)
+                                        {
+                                            // Store original price in a temporary field if needed
+                                            item.Price = item.Product.Price - (discount / item.Count);
+                                            promotionApplied = true;
+
+                                            await _cartRepository.UpdateAsync(item);
+                                        }
+                                    }
+                                }
+
+                                if (promotionApplied)
+                                {
+                                    await _cartRepository.CommitAsync();
+
+                                    // Store promotion in session for checkout
+                                    HttpContext.Session.SetString("AppliedPromotionCode", promotion.Code);
+                                    HttpContext.Session.SetString("AppliedPromotionName", promotion.Name);
+
+                                    TempData["success-notification"] = $"Promo code '{promotion.Code}' applied successfully! {promotion.DiscountValue}% discount";
+                                }
+                                else
+                                {
+                                    TempData["error-notification"] = "Promotion not applicable to any items in your cart";
+                                }
+                            }
+                        }
+
+                        // Refresh cart items after applying promotion
+                        cartItems = await _cartRepository.GetAsync(
+                            e => e.ApplicationUserId == userId,
+                            includes: [e => e.Product, e => e.Product.Category, e => e.Product.Brand]
+                        );
+                    }
+                    else
+                    {
+                        TempData["error-notification"] = "Invalid or expired promo code";
+                    }
+                }
+
+                ViewBag.Subtotal = cartItems.Sum(e => e.Price * e.Count);
+                ViewBag.Tax = 0; // Add tax calculation if needed
+                ViewBag.Shipping = 0; // Add shipping calculation if needed
+                ViewBag.Total = ViewBag.Subtotal + ViewBag.Tax + ViewBag.Shipping;
+
+                return View(cartItems.ToList());
             }
-
-            return View(cart);
-        }
-
-        public async Task<IActionResult> AddToCart(int count, int productId, CancellationToken cancellationToken)
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user is null)
-                return NotFound();
-
-            var productInDb = await _cartRepository.GetOneAsync(e => e.ApplicationUserId == user.Id && e.ProductId == productId);
-
-            if (productInDb is not null)
+            catch (Exception ex)
             {
-                productInDb.Count += count;
-                await _cartRepository.CommitAsync(cancellationToken);
-
-                TempData["success-notification"] = "Update Product Count to cart successfully";
-
+                _logger.LogError(ex, "Error loading cart");
+                TempData["error-notification"] = "An error occurred while loading your cart";
                 return RedirectToAction("Index", "Home");
             }
+        }
 
-            await _cartRepository.AddAsync(new()
+        // POST: /Customer/Cart/AddToCart
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddToCart(int productId, int count = 1, CancellationToken cancellationToken = default)
+        {
+            try
             {
-                ProductId = productId,
-                Count = count,
-                ApplicationUserId = user.Id,
-                Price = (await _productRepository.GetOneAsync(e => e.Id == productId)!).Price
-            }, cancellationToken: cancellationToken);
-            await _cartRepository.CommitAsync(cancellationToken);
+                if (count <= 0)
+                {
+                    TempData["error-notification"] = "Quantity must be at least 1";
+                    return RedirectToAction("Details", "Product", new { id = productId, area = "" });
+                }
 
-            TempData["success-notification"] = "Add Product to cart successfully";
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["error-notification"] = "Please login to add items to cart";
+                    return RedirectToAction("Login", "Account", new { area = "Identity", returnUrl = Url.Action("Details", "Product", new { id = productId, area = "" }) });
+                }
 
-            return RedirectToAction("Index", "Home");
+                var product = await _productRepository.GetOneAsync(e => e.Id == productId);
+                if (product == null)
+                {
+                    TempData["error-notification"] = "Product not found";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                if (!product.Status || product.IsDeleted)
+                {
+                    TempData["error-notification"] = "Product is not available";
+                    return RedirectToAction("Details", "Product", new { id = productId, area = "" });
+                }
+
+                if (product.ManageStock && product.StockQuantity < count)
+                {
+                    TempData["error-notification"] = $"Only {product.StockQuantity} items available in stock";
+                    return RedirectToAction("Details", "Product", new { id = productId, area = "" });
+                }
+
+                var existingCartItem = await _cartRepository.GetOneAsync(
+                    e => e.ApplicationUserId == userId && e.ProductId == productId);
+
+                if (existingCartItem != null)
+                {
+                    // Update existing cart item
+                    var newCount = existingCartItem.Count + count;
+
+                    if (product.ManageStock && product.StockQuantity < newCount)
+                    {
+                        TempData["error-notification"] = $"Cannot add {count} more items. Only {product.StockQuantity - existingCartItem.Count} available in stock";
+                        return RedirectToAction("Details", "Product", new { id = productId, area = "" });
+                    }
+
+                    existingCartItem.Count = newCount;
+                    existingCartItem.UpdatedAt = DateTime.Now;
+
+                    await _cartRepository.UpdateAsync(existingCartItem);
+                    await _cartRepository.CommitAsync(cancellationToken);
+
+                    TempData["success-notification"] = "Product quantity updated in cart";
+                }
+                else
+                {
+                    // Add new cart item
+                    var cartItem = new Cart
+                    {
+                        ProductId = productId,
+                        ApplicationUserId = userId,
+                        Count = count,
+                        Price = product.FinalPrice, // Use the final price (with discounts)
+                        CreatedAt = DateTime.Now
+                    };
+
+                    await _cartRepository.AddAsync(cartItem, cancellationToken: cancellationToken);
+                    await _cartRepository.CommitAsync(cancellationToken);
+
+                    TempData["success-notification"] = "Product added to cart successfully";
+                }
+
+                return RedirectToAction("index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding product to cart");
+                TempData["error-notification"] = "An error occurred while adding product to cart";
+                return RedirectToAction("Details", "Product", new { id = productId, area = "" });
+            }
         }
 
-        public async Task<IActionResult> IncrementProduct(int productId, CancellationToken cancellationToken)
+        // POST: /Customer/Cart/UpdateQuantity
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateQuantity(int productId, int quantity, CancellationToken cancellationToken = default)
         {
-            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                if (quantity <= 0)
+                {
+                    return await DeleteProduct(productId, cancellationToken);
+                }
 
-            if (user is null)
-                return NotFound();
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
 
-            var product = await _cartRepository.GetOneAsync(e => e.ApplicationUserId == user.Id && e.ProductId == productId);
+                var cartItem = await _cartRepository.GetOneAsync(
+                    e => e.ApplicationUserId == userId && e.ProductId == productId,
+                    includes: [e => e.Product]);
 
-            if (product is null) return NotFound();
+                if (cartItem == null)
+                {
+                    return NotFound();
+                }
 
-            product.Count += 1;
-            await _cartRepository.CommitAsync(cancellationToken);
+                // Check stock availability
+                if (cartItem.Product.ManageStock && cartItem.Product.StockQuantity < quantity)
+                {
+                    TempData["error-notification"] = $"Only {cartItem.Product.StockQuantity} items available in stock";
+                    return RedirectToAction("Index");
+                }
 
-            return RedirectToAction("Index");
+                cartItem.Count = quantity;
+                cartItem.UpdatedAt = DateTime.Now;
+
+                await _cartRepository.UpdateAsync(cartItem);
+                await _cartRepository.CommitAsync(cancellationToken);
+
+                TempData["success-notification"] = "Quantity updated successfully";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating cart quantity");
+                TempData["error-notification"] = "An error occurred while updating quantity";
+                return RedirectToAction("Index");
+            }
         }
 
-        public async Task<IActionResult> DecrementProduct(int productId, CancellationToken cancellationToken)
+        // GET: /Customer/Cart/IncrementProduct
+        [HttpGet]
+        public async Task<IActionResult> IncrementProduct(int productId, CancellationToken cancellationToken = default)
         {
-            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
 
-            if (user is null)
-                return NotFound();
+                var cartItem = await _cartRepository.GetOneAsync(
+                    e => e.ApplicationUserId == userId && e.ProductId == productId,
+                    includes: [e => e.Product]);
 
-            var product = await _cartRepository.GetOneAsync(e => e.ApplicationUserId == user.Id && e.ProductId == productId);
+                if (cartItem == null)
+                {
+                    TempData["error-notification"] = "Product not found in cart";
+                    return RedirectToAction("Index");
+                }
 
-            if (product is null) return NotFound();
+                // Check stock availability
+                if (cartItem.Product.ManageStock && cartItem.Product.StockQuantity <= cartItem.Count)
+                {
+                    TempData["error-notification"] = "No more items available in stock";
+                    return RedirectToAction("Index");
+                }
 
-            if (productId <= 1)
-                _cartRepository.Delete(product);
-            else
-                product.Count -= 1;
+                cartItem.Count++;
+                cartItem.UpdatedAt = DateTime.Now;
 
-            await _cartRepository.CommitAsync(cancellationToken);
+                await _cartRepository.UpdateAsync(cartItem);
+                await _cartRepository.CommitAsync(cancellationToken);
 
-            return RedirectToAction("Index");
+                TempData["success-notification"] = "Quantity increased";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error incrementing product quantity");
+                TempData["error-notification"] = "An error occurred";
+                return RedirectToAction("Index");
+            }
         }
 
-        public async Task<IActionResult> DeleteProduct(int productId, CancellationToken cancellationToken)
+        // GET: /Customer/Cart/DecrementProduct
+        [HttpGet]
+        public async Task<IActionResult> DecrementProduct(int productId, CancellationToken cancellationToken = default)
         {
-            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
 
-            if (user is null)
-                return NotFound();
+                var cartItem = await _cartRepository.GetOneAsync(
+                    e => e.ApplicationUserId == userId && e.ProductId == productId);
 
-            var product = await _cartRepository.GetOneAsync(e => e.ApplicationUserId == user.Id && e.ProductId == productId);
+                if (cartItem == null)
+                {
+                    TempData["error-notification"] = "Product not found in cart";
+                    return RedirectToAction("Index");
+                }
 
-            if (product is null) return NotFound();
+                if (cartItem.Count <= 1)
+                {
+                    return await DeleteProduct(productId, cancellationToken);
+                }
 
-            _cartRepository.Delete(product);
-            await _cartRepository.CommitAsync(cancellationToken);
+                cartItem.Count--;
+                cartItem.UpdatedAt = DateTime.Now;
 
-            return RedirectToAction("Index");
+                await _cartRepository.UpdateAsync(cartItem);
+                await _cartRepository.CommitAsync(cancellationToken);
+
+                TempData["success-notification"] = "Quantity decreased";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error decrementing product quantity");
+                TempData["error-notification"] = "An error occurred";
+                return RedirectToAction("Index");
+            }
         }
 
+        // GET: /Customer/Cart/DeleteProduct
+        [HttpGet]
+        public async Task<IActionResult> DeleteProduct(int productId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
+
+                var cartItem = await _cartRepository.GetOneAsync(
+                    e => e.ApplicationUserId == userId && e.ProductId == productId);
+
+                if (cartItem == null)
+                {
+                    TempData["error-notification"] = "Product not found in cart";
+                    return RedirectToAction("Index");
+                }
+
+                _cartRepository.Delete(cartItem);
+                await _cartRepository.CommitAsync(cancellationToken);
+
+                TempData["success-notification"] = "Product removed from cart";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product from cart");
+                TempData["error-notification"] = "An error occurred while removing product";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // GET: /Customer/Cart/ClearCart
+        [HttpGet]
+        public async Task<IActionResult> ClearCart(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
+
+                var cartItems = await _cartRepository.GetAsync(e => e.ApplicationUserId == userId);
+
+                foreach (var item in cartItems)
+                {
+                    _cartRepository.Delete(item);
+                }
+
+                await _cartRepository.CommitAsync(cancellationToken);
+
+                TempData["success-notification"] = "Cart cleared successfully";
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error clearing cart");
+                TempData["error-notification"] = "An error occurred while clearing cart";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // GET: /Customer/Cart/GetCartCount
+        [HttpGet]
+        public async Task<JsonResult> GetCartCount()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { count = 0 });
+                }
+
+                var count = await _cartRepository.CountAsync(e => e.ApplicationUserId == userId);
+                return Json(new { count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting cart count");
+                return Json(new { count = 0 });
+            }
+        }
+
+        // GET: /Customer/Cart/GetCartTotal
+        [HttpGet]
+        public async Task<JsonResult> GetCartTotal()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { total = 0 });
+                }
+
+                var cartItems = await _cartRepository.GetAsync(
+                    e => e.ApplicationUserId == userId,
+                    includes: [e => e.Product]);
+
+                var total = cartItems.Sum(e => e.Price * e.Count);
+                return Json(new { total = total.ToString("N2") });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting cart total");
+                return Json(new { total = "0.00" });
+            }
+        }
+
+        // GET: /Customer/Cart/Pay
+        [HttpGet]
         public async Task<IActionResult> Pay()
         {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user is null)
-                return NotFound();
-
-            var cart = await _cartRepository.GetAsync(e => e.ApplicationUserId == user.Id, includes: [e => e.Product]);
-
-            if (cart is null) return NotFound();
-
-            var options = new SessionCreateOptions
+            try
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>(),
-                Mode = "payment",
-                SuccessUrl = $"{Request.Scheme}://{Request.Host}/customer/checkout/success",
-                CancelUrl = $"{Request.Scheme}://{Request.Host}/customer/checkout/cancel",
-            };
-
-            foreach (var item in cart)
-            {
-                options.LineItems.Add(new SessionLineItemOptions
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
                 {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        Currency = "egp",
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = item.Product.Name,
-                            Description = item.Product.Description,
-                        },
-                        UnitAmount = (long)item.Price * 100,
-                    },
-                    Quantity = item.Count,
-                });
-            }
+                    TempData["error-notification"] = "Please login to proceed to checkout";
+                    return RedirectToAction("Login", "Account", new { area = "Identity" });
+                }
 
-            var service = new SessionService();
-            var session = service.Create(options);
-            return Redirect(session.Url);
+                var cartItems = await _cartRepository.GetAsync(
+                    e => e.ApplicationUserId == userId,
+                    includes: [e => e.Product]);
+
+                if (!cartItems.Any())
+                {
+                    TempData["error-notification"] = "Your cart is empty";
+                    return RedirectToAction("Index");
+                }
+
+                // Validate stock availability
+                var outOfStockItems = cartItems
+                    .Where(e => e.Product.ManageStock && e.Product.StockQuantity < e.Count)
+                    .ToList();
+
+                if (outOfStockItems.Any())
+                {
+                    var productNames = string.Join(", ", outOfStockItems.Select(e => e.Product.Name));
+                    TempData["error-notification"] = $"The following items have insufficient stock: {productNames}";
+                    return RedirectToAction("Index");
+                }
+
+                // Create Stripe checkout session
+                var options = new SessionCreateOptions
+                {
+                    PaymentMethodTypes = new List<string> { "card" },
+                    LineItems = new List<SessionLineItemOptions>(),
+                    Mode = "payment",
+                    SuccessUrl = $"{Request.Scheme}://{Request.Host}/Customer/Cart/Success?session_id={{CHECKOUT_SESSION_ID}}",
+                    CancelUrl = $"{Request.Scheme}://{Request.Host}/Customer/Cart",
+                    CustomerEmail = User.FindFirstValue(ClaimTypes.Email),
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "userId", userId }
+                    }
+                };
+
+                foreach (var item in cartItems)
+                {
+                    options.LineItems.Add(new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            Currency = "usd", // Change to your currency
+                            UnitAmount = (long)(item.Price * 100), // Convert to cents
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = item.Product.Name,
+                                Description = item.Product.ShortDescription,
+                                Images = !string.IsNullOrEmpty(item.Product.MainImage) ?
+                                    new List<string> { item.Product.MainImage } : null
+                            }
+                        },
+                        Quantity = item.Count,
+                    });
+                }
+
+                // Add shipping fee if applicable
+                var shipping = 0m; // Calculate shipping here
+                if (shipping > 0)
+                {
+                    options.LineItems.Add(new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            Currency = "usd",
+                            UnitAmount = (long)(shipping * 100),
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = "Shipping Fee",
+                                Description = "Standard shipping"
+                            }
+                        },
+                        Quantity = 1,
+                    });
+                }
+
+                var service = new SessionService();
+                var session = await service.CreateAsync(options);
+
+                // Store session ID temporarily
+                HttpContext.Session.SetString("StripeSessionId", session.Id);
+
+                return Redirect(session.Url);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating payment session");
+                TempData["error-notification"] = "An error occurred while processing payment";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // GET: /Customer/Cart/Success
+        [HttpGet]
+        public async Task<IActionResult> Success(string session_id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(session_id))
+                {
+                    TempData["error-notification"] = "Invalid payment session";
+                    return RedirectToAction("Index");
+                }
+
+                var service = new SessionService();
+                var session = await service.GetAsync(session_id);
+
+                if (session.PaymentStatus != "paid")
+                {
+                    TempData["error-notification"] = "Payment not completed";
+                    return RedirectToAction("Index");
+                }
+
+                // Get user ID from session metadata
+                var userId = session.Metadata["userId"];
+
+                // Clear cart after successful payment
+                var cartItems = await _cartRepository.GetAsync(e => e.ApplicationUserId == userId);
+                foreach (var item in cartItems)
+                {
+                    _cartRepository.Delete(item);
+                }
+                await _cartRepository.CommitAsync();
+
+                // Here you should create an order record in your database
+                // TODO: Create order logic
+
+                TempData["success-notification"] = "Payment successful! Thank you for your order.";
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing successful payment");
+                TempData["error-notification"] = "An error occurred while processing your order";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // GET: /Customer/Cart/Cancel
+        [HttpGet]
+        public IActionResult Cancel()
+        {
+            TempData["warning-notification"] = "Payment cancelled. You can continue shopping.";
+            return RedirectToAction("Index");
         }
     }
 }

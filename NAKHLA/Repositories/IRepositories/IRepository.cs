@@ -20,7 +20,14 @@ namespace NAKHLA.Repositories.IRepositories
             Expression<Func<T, object>>[]? includes = null,
             bool tracked = true,
             CancellationToken cancellationToken = default);
+        // Add this UpdateAsync method
+        Task UpdateAsync(T entity);
 
         Task CommitAsync(CancellationToken cancellationToken = default);
+
+        // Utility Methods
+        Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> filter);
+        Task<T?> FindAsync(params object[] keyValues);
     }
 }
