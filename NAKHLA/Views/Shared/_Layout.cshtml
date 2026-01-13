@@ -21,25 +21,31 @@
 
 
 </head>
+
+@{
+            var categories = ViewBag.Categories as List<NAKHLA.Models.Category> ?? new List<NAKHLA.Models.Category>();
+            var brands = ViewBag.Brands as List<NAKHLA.Models.Brand> ?? new List<NAKHLA.Models.Brand>();
+            var validationErrors = ViewBag.ValidationErrors as List<string> ?? new List<string>();
+}
 <body>
 
 
-   <div class="bg-dark text-black text-center py-2 small">
+    <div class="bg-dark text-black text-center py-2 small">
         <u>شحن مجاني</u> للطلبات المحلية بقيمة 1000 جنيه أو أكثر
     </div>
     <div class="site">
-        <header>
-            <div class="container1">
+        <header class="">
+            <div class="container1 ">
                 <div class="content">
                     <div class="left">
-                        <a  class="trigger"><i class="ri-menu-line"></i></a>
+                        <a class="trigger"><i class="ri-menu-line"></i></a>
                         <div class="logo"><a href="/">NAKHLA EMBROIDERY</a></div>
                     </div>
                     <div class="middle">
                         <nav>
                             <ul>
                                 <li><a href="/">ِAll Fabrics</a></li>
-                                <li><a href="/Customer/home">By Type</a></li>
+                                <li><a href="/Customer/home/product">By Type</a></li>
                                 <li><a href="#">By Project</a></li>
                                 <li><a href="#">By Composition</a></li>
                                 <li><a href="#">By Color</a></li>
@@ -47,7 +53,8 @@
                                 <li><a href="#">Promo</a></li>
                             </ul>
                         </nav>
-                    </div>                   
+                        
+                    </div>
                     <div class="right">
                         <ul>
                             <li><a href="#"><i class="ri-search-line"></i></a></li>
@@ -90,11 +97,11 @@
                 <div class="menu-head">
                     <div class="top">
                         <ul>
-                            <li><a href="#"data-target="bag"><span class="num">0</span><i class="ri-shopping-bag-2-line"></i></a></li>
-                            <li><a href="#"data-target="wishlist"><span class="num">3</span><i class="ri-heart-line"></i></a></li>
-                            <li><a href="#"data-target="compare"><span class="num">0</span><i class="ri-arrow-left-right-line"></i></a></li>
+                            <li><a href="#" data-target="bag"><span class="num">0</span><i class="ri-shopping-bag-2-line"></i></a></li>
+                            <li><a href="#" data-target="wishlist"><span class="num">3</span><i class="ri-heart-line"></i></a></li>
+                            <li><a href="#" data-target="compare"><span class="num">0</span><i class="ri-arrow-left-right-line"></i></a></li>
                             <li><a href="/Identity/home/Account" data-target="account"><i class="ri-user-line"></i></a></li>
-                            <li><a href="#"data-target="lunguage"><i class="ri-globe-line"></i></a></li>
+                            <li><a href="#" data-target="lunguage"><i class="ri-globe-line"></i></a></li>
                         </ul>
                     </div>
                     <div class="logo"><a href="/">NAKHLA EMBROIDERY</a></div>
@@ -121,8 +128,11 @@
                             <li class="has-child">
                                 <a href="#"><span>Products</span><i class="ri-arrow-right-line"></i></a>
                                 <ul>
-                                    <li class="back"><a href="#"><span>Products</span><i
-                                                class="ri-arrow-left-line"></i></a></li>
+                                    <li class="back">
+                                        <a href="#">
+                                            <span>Products</span><i class="ri-arrow-left-line"></i>
+                                        </a>
+                                    </li>
                                     <li><a href="#">Automotive</a></li>
                                     <li><a href="#">Baby</a></li>
                                     <li><a href="#">Beauty</a></li>
@@ -136,12 +146,22 @@
                             <li class="has-child">
                                 <a href="#"><span>LookBook</span><i class="ri-arrow-right-line"></i></a>
                                 <ul>
-                                    <li class="back"><a href="#"><span>LookBook</span><i
-                                                class="ri-arrow-left-line"></i></a></li>
-                                    <li><a href="#">CSS</a></li>
-                                    <li><a href="#">JS</a></li>
-                                    <li><a href="#">REACTJS</a></li>
-                                    <li><a href="#">VANILLAJS</a></li>
+                                    <li class="back">
+                                        <a href="#">
+                                            <span>LookBook</span><i class="ri-arrow-left-line"></i>
+                                        </a>
+                                    </li>
+
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Category </label>
+                                        <select class="form-control" required>
+                                            <option value="">Select </option>
+                                            @foreach (var category in categories)
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        </select>
+                                    </div>
                                 </ul>
                             </li>
 
@@ -152,8 +172,11 @@
                             <li class="has-child">
                                 <a href="#"><span>Careers</span><i class="ri-arrow-right-line"></i></a>
                                 <ul>
-                                    <li class="back"><a href="#"><span>Careers</span><i
-                                                class="ri-arrow-left-line"></i></a></li>
+                                    <li class="back">
+                                        <a href="#">
+                                            <span>Careers</span><i class="ri-arrow-left-line"></i>
+                                        </a>
+                                    </li>
                                     <li><a href="#">Abroad</a></li>
                                     <li><a href="#">Urgent Positions</a></li>
                                 </ul>
@@ -164,8 +187,11 @@
                             <li class="has-child">
                                 <a href="#"><span>Product3</span><i class="ri-arrow-right-line"></i></a>
                                 <ul>
-                                    <li class="back"><a href="#"><span>Products</span><i
-                                                class="ri-arrow-left-line"></i></a></li>
+                                    <li class="back">
+                                        <a href="#">
+                                            <span>Products</span><i class="ri-arrow-left-line"></i>
+                                        </a>
+                                    </li>
                                     <li><a href="#">Product1</a></li>
                                     <li><a href="#">Product2</a></li>
                                 </ul>

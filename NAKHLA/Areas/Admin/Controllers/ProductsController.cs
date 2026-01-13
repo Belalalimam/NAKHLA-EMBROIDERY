@@ -103,7 +103,7 @@ namespace NAKHLA.Controllers.Admin
 
         // POST: Admin/Products/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product)
         {
             // Debug: Check what's coming in
@@ -265,7 +265,7 @@ namespace NAKHLA.Controllers.Admin
 
         // POST: Admin/Products/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             try

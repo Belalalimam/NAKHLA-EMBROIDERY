@@ -244,7 +244,7 @@
             <!-- Previous page link -->
             @if (ViewBag.currentPage > 1)
             {
-                <li class="page-item"><a class="page-link" href="/admin/categories?page=@(ViewBag.currentPage - 1)">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="/admin/categories/index?page=@(ViewBag.currentPage - 1)">Previous</a></li>
             }
 
             <!-- Page number links -->
@@ -253,19 +253,19 @@
                 if (i == ViewBag.currentPage)
                 {
                     <!-- Current page (active) -->
-                    <li class="page-item active"><a class="page-link" href="/admin/categories?page=@i">@i</a></li>
+                    <li class="page-item active"><a class="page-link" href="/admin/categories/index?page=@i">@i</a></li>
                 }
                 else
                 {
                     <!-- Other pages -->
-                    <li class="page-item"><a class="page-link" href="/admin/categories?page=@i">@i</a></li>
+                    <li class="page-item"><a class="page-link" href="/admin/categories'index?page=@i">@i</a></li>
                 }
             }
 
             <!-- Next page link -->
             @if (ViewBag.currentPage != ViewBag.totalHodsOfPage && Model.Any())
             {
-                <li class="page-item"><a class="page-link" href="/admin/categories?page=@(ViewBag.currentPage + 1)">Next</a></li>
+                <li class="page-item"><a class="page-link" href="/admin/categories/index?page=@(ViewBag.currentPage + 1)">Next</a></li>
             }
         </ul>
     </nav>

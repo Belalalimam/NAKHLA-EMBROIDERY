@@ -73,6 +73,61 @@ namespace NAKHLA.Areas.Customer.Controllers
             return View(products.ToList());
         }
 
+        public IActionResult CategroySearch(FilterVM filterVM, int page = 1)
+        {
+            const int discount = 50;
+            var products = _context.Products.Include(e =>e.Category).AsQueryable();
+            var category = _context.Categorise.FirstOrDefault(e => e.Id == filterVM.CategoryId);
+
+            // Filter
+            if (filterVM.Name is not null)
+            {
+                products = products.Where(e => e.Name.Contains(filterVM.Name));
+                ViewBag.ProductName = filterVM.Name;
+            }
+
+            if (filterVM.MinPrice is not null)
+            {
+                products = products;
+                ViewBag.MinPrice = filterVM.MinPrice;
+            }
+
+            if (filterVM.MaxPrice is not null)
+            {
+                products = products;
+                ViewBag.MaxPrice = filterVM.MaxPrice;
+            }
+
+            if (filterVM.CategoryId is not null)
+            {
+                products = products.Where(e => e.CategoryId == filterVM.CategoryId);
+                ViewBag.CategoryId = filterVM.CategoryId;
+            }
+
+            if (filterVM.IsHot)
+            {
+                products = products.Where(e => e.Discount >= discount);
+                ViewBag.isHot = filterVM.IsHot;
+            }
+
+
+            // Categories
+            var categories = _context.Categorise;
+            ViewData["categories"] = categories.ToList();
+            ViewBag.categories = categories.ToList();
+
+            // Paginitation
+            var totalNumberOfPages = Math.Ceiling(products.Count() / 8.0);
+            var currentPage = page;
+            ViewBag.totalNumberOfPages = totalNumberOfPages;
+            ViewBag.currentPage = currentPage;
+
+            products = products.Skip((page - 1) * 10).Take(10);
+
+
+            return View(products.ToList());
+        }
+
 
         public IActionResult Details(int id)
         {
