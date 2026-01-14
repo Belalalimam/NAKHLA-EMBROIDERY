@@ -14,6 +14,7 @@ namespace NAKHLA.Models
         public string SKU { get; set; } = GenerateSKU();
         public string? Barcode { get; set; }
         public string? ModelNumber { get; set; }
+        public string? Composition { get; set; }
 
         // Pricing - FIXED: All decimal
         public decimal CostPrice { get; set; }
@@ -29,6 +30,11 @@ namespace NAKHLA.Models
         public bool ManageStock { get; set; } = true;
         public bool IsInStock { get; set; } = true;
         public bool BackordersAllowed { get; set; } = false;
+
+
+        // Properties
+        public string? AvailableColors { get; set; }
+
 
         // Media
         public string MainImage { get; set; }

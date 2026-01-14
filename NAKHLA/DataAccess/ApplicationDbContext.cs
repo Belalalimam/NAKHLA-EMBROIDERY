@@ -16,7 +16,7 @@ namespace NAKHLA.DataAccess
         }  
 
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductImage> ProductSubImages { get; set; }
+        public DbSet<ProductImage> productImages { get; set; }
         public DbSet<Category> Categorise { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<UserOTP> UserOTPs { get; set; }

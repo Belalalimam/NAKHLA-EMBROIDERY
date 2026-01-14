@@ -1,117 +1,344 @@
 ﻿@model List<Product>
+@{
+    var category = ViewBag.SelectedCategory as Category;
+}
 
-
-@if (Model.Any())
-@* {
-    <div class="container-fluid d-flex">
-
-        <div class="container">
-            <div class="row">
-                <div class="col-4">
-                    <img src="ViewBag.categories[0].ImagUrl" alt="Alternate Text" />
-                </div>
-                <div class="col-8">
-                    word
-                </div>
-            </div>
-        </div> *@
-
-        @* (قسم الفلتر (انا ماكملت تعديله او تزبيطه لبعدين *@
-       
-        <div>
-
-        </div>
-        @* قسم المنتجات لسا بده شوي تعديلات *@
-        <div class="row d-flex align-items-start justify-content-center">
-            @foreach (var item in Model)
+<!-- Category Header Section -->
+<div class="category-header-section">
+    <div class="container">
+        <div class="category-header">
+            @if (category != null)
             {
-                <div class="card">
-                    <a href="https://localhost:7286/customer/home/product/Details/@item.Id">
-                        <div class="badge">HOT SALE</div>
-                        <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
-                        </div>
-                        <div class="info">
-                            <div class="cat">@item.Category.Name</div>
-                            <h2 class="title">@item.Name</h2>
-                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p>
-                        <div class="feats">
-                            <span class="feat">4K Display</span>
-                            <span class="feat">16-Hour Battery</span>
-                            <span class="feat">Thunderbolt 4</span>
-                        </div> *@
-                            <div class="bottom">
-                                <div class="price">
-                                    <span class="old">@item.Price.ToString("c")</span>
-                                    <span class="new"> @((item.Price - (item.Price * (item.Discount / 100))).ToString("c"))</span>
-                                </div>
+                <div class="category-image-container">
+                    <img src="~/images/@category.ImageUrl" class="category-image" alt="@category.Name">
+                </div>
 
-
-
-                                <button class="btn">
-                                    <span>Add to Cart</span>
-                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
-                                        <line x1="3" y1="6" x2="21" y2="6" />
-                                        <path d="M16 10a4 4 0 01-8 0" />
-                                    </svg>
-                                </button>
-
-
-
-                            </div>
-                            <div class="meta">
-                                <div class="rating">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <span class="rcount">@item.Traffic Reviews</span>
-                                </div>
-                                <div class="stock">In Stock</div>
-                            </div>
-                        </div>
+                <div class="category-content">
+                    <h1 class="category-title">@category.Name</h1>
+                    @if (!string.IsNullOrEmpty(category.Description))
+                    {
+                        <p class="category-subtitle">@category.Description</p>
+                    }                    
+                    <a href="#" class="read-more-link">
+                        Read more <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             }
         </div>
     </div>
+</div>
 
-
+<div class="container my-5">
+    <!-- Quick Filter Bar -->
+    
 
     <div class="row">
-        <div class="col-12 d-flex justify-content-center">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    @if (ViewBag.currentPage > 1)
-                    {
-                        <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage - 1)">Previous</a></li>
-                    }
+        <!-- Filter Sidebar -->
+        <aside class="col-lg-3 mb-4">
+            <div class="filter-sidebar">
+                <h3 class="filter-title">Filters</h3>
 
-                    @for (var i = 1; i <= ViewBag.totalNumberOfPages; i++)
-                    {
-                        @if (i == ViewBag.currentPage)
-                        {
-                            <li class="page-item active"><a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
-                        }
-                        else
-                        {
-                            <li class="page-item"><a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
-                        }
+                <div class="filter-section">
+                    <div class="filter-section-title">
+                        <span>Search Products</span>
+                        <a href="#" class="filter-reset">Clear</a>
+                    </div>
+                    <input type="text" class="filter-input" placeholder="Type & hit ENTER">
+                </div>
 
-                    }
+                <div class="filter-section">
+                    <div class="filter-section-title">
+                        <span>Sort by</span>
+                        <a href="#" class="filter-reset">Reset</a>
+                    </div>
+                    <select class="filter-input">
+                        <option>New arrivals</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Most Popular</option>
+                        <option>Customer Rating</option>
+                    </select>
+                </div>
 
-                    @if (ViewBag.currentPage != ViewBag.totalNumberOfPages && Model.Any())
+                <div class="filter-section">
+                    <div class="filter-section-title">
+                        <span>Height</span>
+                        <a href="#" class="filter-reset">Reset</a>
+                    </div>
+                    <input type="range" class="filter-range" min="100" max="200" value="140">
+                    <div class="filter-range-labels">
+                        <span>129 cm</span>
+                        <span>150 cm</span>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-section-title">
+                        <span>Weight</span>
+                        <a href="#" class="filter-reset">Reset</a>
+                    </div>
+                    <input type="range" class="filter-range" min="200" max="700" value="444">
+                    <div class="filter-range-labels">
+                        <span>232 g</span>
+                        <span>656 g</span>
+                    </div>
+                </div>
+
+                <a href="/Customer/Home/Product" class="view-all-btn">
+                    View All Products
+                </a>
+            </div>
+        </aside>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+
+            <div class="quick-filter-bar">
+                <span class="filter-label">Filter by:</span>
+                <select class="quick-filter-select">
+                    <option>Color</option>
+                    <option>Black</option>
+                    <option>White</option>
+                    <option>Red</option>
+                    <option>Blue</option>
+                    <option>Green</option>
+                </select>
+                <select class="quick-filter-select">
+                    <option>Type</option>
+                    <option>Tweed</option>
+                    <option>Bouclé</option>
+                    <option>Jacquard</option>
+                    <option>Velvet</option>
+                </select>
+                <select class="quick-filter-select">
+                    <option>Quality</option>
+                    <option>Premium</option>
+                    <option>Standard</option>
+                    <option>Economy</option>
+                </select>
+                <select class="quick-filter-select">
+                    <option>Composition</option>
+                    <option>100% Wool</option>
+                    <option>Wool Blend</option>
+                    <option>Silk</option>
+                    <option>Cotton</option>
+                </select>
+                <select class="quick-filter-select">
+                    <option>Pattern</option>
+                    <option>Solid</option>
+                    <option>Checkered</option>
+                    <option>Striped</option>
+                    <option>Floral</option>
+                </select>
+            </div>
+            @if (Model.Any())
+            {
+                <div class="products-grid-new">
+                    @foreach (var item in Model)
                     {
-                        <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage + 1)">Next</a></li>
+                        <a href="https://localhost:7286/customer/home/Details/@item.Id" class="product-card-new">
+                            <div class="product-image-container">
+                                @* @if (item.IsHot)
+                                {
+                                    <div class="product-badge">HOT SALE</div>
+                                } *@
+                                <div class="product-code">@item.SKU</div>
+                                <img src="~/images/@item.MainImage" class="product-image" alt="@item.Name">
+                            </div>
+
+                            <div class="product-info-new">
+                                <h3 class="product-title-new">@item.Name</h3>
+
+                                @if (!string.IsNullOrEmpty(item.Composition))
+                                {
+                                    <div class="product-composition">
+                                        @* Parse and display composition with color coding *@
+                                        @{
+                                            var compositionParts = item.Composition.Split(',');
+                                            foreach (var part in compositionParts)
+                                            {
+                                                var trimmed = part.Trim();
+                                                if (trimmed.Contains("PC"))
+                                                {
+                                                    <span class="composition-pc">@trimmed</span>
+                                                }
+                                                else if (trimmed.Contains("WV"))
+                                                {
+                                                    <span class="composition-wv">@trimmed</span>
+                                                }
+                                                else if (trimmed.Contains("CO"))
+                                                {
+                                                    <span class="composition-co">@trimmed</span>
+                                                }
+                                                else if (trimmed.Contains("PA"))
+                                                {
+                                                    <span class="composition-pa">@trimmed</span>
+                                                }
+                                                else if (trimmed.Contains("VI"))
+                                                {
+                                                    <span class="composition-vi">@trimmed</span>
+                                                }
+                                                else if (trimmed.Contains("LI"))
+                                                {
+                                                    <span class="composition-li">@trimmed</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@trimmed</span>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                }
+
+                                <div class="product-specs">
+                                    <div class="spec-item">
+                                        <span class="spec-value">@(item.Height.HasValue ? $"{item.Height} cm" : "150 cm")</span>
+                                        <span class="spec-label">Height</span>
+                                    </div>
+                                    <div class="spec-divider"></div>
+                                    <div class="spec-item">
+                                        <span class="spec-value">@(item.Weight.HasValue ? $"{item.Weight} g" : "560 g")</span>
+                                        <span class="spec-label">Weight / m</span>
+                                    </div>
+                                </div>
+
+                                <div class="product-pricing">
+                                    <div class="price-per-meter">
+                                        @{
+                                            var discountedPrice = item.Price - (item.Price * (item.Discount / 100));
+                                            var priceString = discountedPrice.ToString("C");
+                                        }
+                                        @priceString.Replace("$", "€") <span class="price-unit">/ m</span>
+                                    </div>
+                                    <div class="product-stock-new">
+                                        @(item.StockQuantity > 0 ? $"{item.StockQuantity} m in stock" : "Out of stock")
+                                    </div>
+                                </div>                                
+                            </div>
+                        </a>
                     }
-                </ul>
-            </nav>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            @if (ViewBag.currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/?page=@(ViewBag.currentPage - 1)" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            }
+
+                            @for (var i = 1; i <= ViewBag.totalNumberOfPages; i++)
+                            {
+                                if (i == ViewBag.currentPage)
+                                {
+                                    <li class="page-item active">
+                                        <a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a>
+                                    </li>
+                                }
+                            }
+
+                            @if (ViewBag.currentPage != ViewBag.totalNumberOfPages && Model.Any())
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/?page=@(ViewBag.currentPage + 1)" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h3>No products found in this category</h3>
+                    <p>Please check back later or browse other categories.</p>
+                </div>
+            }
         </div>
-
-
     </div>
+</div>
+
+<!-- JavaScript for interactive elements -->
+@section Scripts {
+    <script>
+        // Add to Cart functionality
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const productId = this.getAttribute('data-product-id');
+                const productName = this.closest('.product-card').querySelector('.product-title').textContent;
+
+                // Add to cart logic here
+                console.log(`Adding product ${productId} to cart`);
+
+                // Show feedback
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span>Added!</span>';
+                this.style.background = '#27ae60';
+
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 1500);
+            });
+        });
+
+        // Range slider value display
+        document.querySelectorAll('.filter-range').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const labels = this.nextElementSibling;
+                if (labels && labels.classList.contains('filter-range-labels')) {
+                    const min = this.getAttribute('min');
+                    const max = this.getAttribute('max');
+                    const value = this.value;
+
+                    // Update second label to show current value
+                    const labelSpans = labels.querySelectorAll('span');
+                    if (labelSpans.length >= 2) {
+                        labelSpans[1].textContent = `${value} ${this.previousElementSibling.textContent.includes('Height') ? 'cm' : 'g'}`;
+                    }
+                }
+            });
+        });
+
+        // Filter reset functionality
+        document.querySelectorAll('.filter-reset').forEach(resetLink => {
+            resetLink.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const section = this.closest('.filter-section');
+                const input = section.querySelector('input, select');
+
+                if (input) {
+                    if (input.type === 'range') {
+                        const min = input.getAttribute('min');
+                        const max = input.getAttribute('max');
+                        const defaultValue = Math.round((parseInt(min) + parseInt(max)) / 2);
+                        input.value = defaultValue;
+
+                        // Trigger change event
+                        input.dispatchEvent(new Event('input'));
+                    } else {
+                        input.value = '';
+                    }
+                }
+            });
+        });
+    </script>
 }
-
-

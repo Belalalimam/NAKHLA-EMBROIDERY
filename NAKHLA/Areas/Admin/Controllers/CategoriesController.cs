@@ -170,7 +170,7 @@ namespace NAKHLA.Controllers.Admin
 
         // POST: Admin/Categorise/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _context.Categorise.FindAsync(id);  // Fixed: Categorise not Categorise

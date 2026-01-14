@@ -1,198 +1,398 @@
 ﻿@model ProductWithRelatedVM
 
-<!-- Product section-->
-<section class="py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="row gx-4 gx-lg-5 align-items-center">
-            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="~/images/@Model.Product.MainImage" alt="..." /></div>
-            <div class="col-md-6">
-                <div class="badge bg-primary text-white position-relative" style="top: 0.5rem; right: 0.5rem">@Model.Product.Category.Name</div>
-                <div class="badge bg-danger text-white position-relative" style="top: 0.5rem; right: 0.5rem">Quantity: @Model.Product.StockQuantity</div>
-                <h1 class="display-5 fw-bolder">@Model.Product.Name</h1>
-                @* <div class="fs-5 mb-5">
-                    <span class="text-decoration-line-through">@Model.Product.Price.ToString("c")</span>
-                    <span>@((Model.Product.Price - (Model.Product.Price * (Model.Product.Discount / 100))).ToString("c"))</span>
-                </div> *@
-                <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium at dolorem quidem modi. Nam sequi consequatur obcaecati excepturi alias magni, accusamus eius blanditiis delectus ipsam minima ea iste laborum vero?</p>
-                <div class="d-flex">
-                    <form asp-action="AddToCart" asp-controller="Cart">
+<div class="product-detail-page">
+    <!-- Breadcrumb -->
+    <div class="container">
+        <div class="product-breadcrumb">
+            <a href="/">Home</a>
+            <span>></span>
+            <a href="/Customer/Home/Product">Shop</a>
+            <span>></span>
+            <span>@Model.Product.Name</span>
+        </div>
+    </div>
+
+    <!-- Main Product Section -->
+    <div class="container">
+        <div class="product-main-section">
+            <!-- Product Gallery -->
+            <div class="product-gallery">
+                @if (Model.ProductImages != null && Model.ProductImages.Any())
+                {
+                    var firstImage = Model.ProductImages.OrderBy(pi => pi.DisplayOrder).First();
+                    <img src="~/images/@firstImage.ImageUrl"
+                         alt="@(firstImage.AltText ?? Model.Product.Name)"
+                         class="product-main-image"
+                         id="mainProductImage">
+
+                    <div class="product-thumbnails">
+                        @foreach (var image in Model.ProductImages.OrderBy(pi => pi.DisplayOrder))
+                        {
+                            <img src="~/images/@image.ImageUrl"
+                                 alt="@(image.AltText ?? Model.Product.Name)"
+                                 class="product-thumbnail @(Model.ProductImages.OrderBy(pi => pi.DisplayOrder).First() == image ? "active" : "")"
+                                 onclick="changeImage(this.src, '@image.AltText')"
+                                 data-alt="@image.AltText">
+                        }
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(Model.Product.MainImage))
+                {
+                    <!-- Fallback to main product image if no gallery images -->
+                    <img src="~/images/@Model.Product.MainImage"
+                         alt="@Model.Product.Name"
+                         class="product-main-image"
+                         id="mainProductImage">
+
+                    <div class="product-thumbnails">
+                        <img src="~/images/@Model.Product.MainImage"
+                             alt="@Model.Product.Name"
+                             class="product-thumbnail active"
+                             onclick="changeImage(this.src, '@Model.Product.Name')">
+                    </div>
+                }
+                else
+                {
+                    <!-- Default image if no images exist -->
+                    <img src="~/images/products/default.jpg"
+                         alt="@Model.Product.Name"
+                         class="product-main-image"
+                         id="mainProductImage">
+                }
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info">
+                <div class="product-code">@Model.Product.SKU</div>
+                <h1 class="product-title">@Model.Product.Name</h1>
+
+                <div class="product-description">
+                    @if (!string.IsNullOrEmpty(Model.Product.Description))
+                    {
+                        var paragraphs = Model.Product.Description.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var paragraph in paragraphs)
+                        {
+                            <p>@paragraph</p>
+                        }
+                    }
+                    else
+                    {
+                        <p>An elegant white and silver Chanel-style tweed fabric, enriched with delicate lilac yarn inserts; sophisticated and stylish, it is perfect for both classic and modern inspired garments.</p>
+                        <p>The interlacing of the silver and lilac threads adds a discreet sheen, creating a bright and fresh effect that enhances the texture of the tweed.</p>
+                        <p>Soft and structured, it is ideal for making jackets, dusters and elegant dresses, offering a comfortable and refined fit. Perfect for those who want a chic and feminine look, this tweed brings a touch of originality to garments while maintaining a timeless elegance.</p>
+                    }
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="product-pricing-section">
+                    @{
+                        var discountedPrice = Model.Product.Price - (Model.Product.Price * (Model.Product.Discount / 100));
+                        var priceString = discountedPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
+                        var bulkPrice = discountedPrice * 0.92m;
+                        var bulkPriceString = bulkPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
+                    }
+
+                    <div class="price-main">
+                        @priceString <span class="price-unit">/ m + VAT if applicable</span>
+                    </div>
+
+                    @if (Model.Product.Discount > 0)
+                    {
+                        <div class="price-discount">
+                            Save @Model.Product.Discount% - buy 8 meters or more at @bulkPriceString / m
+                        </div>
+                    }
+                </div>
+
+                <!-- Product Specs -->
+                <div class="product-specs-grid">
+                    @if (!string.IsNullOrEmpty(Model.Product.Composition))
+                    {
+                        <div class="spec-item">
+                            <span class="spec-label">Composition:</span>
+                            <span class="spec-value">@Model.Product.Composition</span>
+                        </div>
+                    }
+
+                    @if (Model.Product.Height.HasValue)
+                    {
+                        <div class="spec-item">
+                            <span class="spec-label">Height:</span>
+                            <span class="spec-value">@Model.Product.Height cm</span>
+                        </div>
+                    }
+
+                    @if (Model.Product.Weight.HasValue)
+                    {
+                        <div class="spec-item">
+                            <span class="spec-label">Weight:</span>
+                            <span class="spec-value">@Model.Product.Weight g/m</span>
+                        </div>
+                    }
+
+                    @if (Model.Product.Category != null)
+                    {
+                        <div class="spec-item">
+                            <span class="spec-label">Category:</span>
+                            <span class="spec-value">@Model.Product.Category.Name</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Colors Section -->
+                @if (!string.IsNullOrEmpty(Model.Product.AvailableColors))
+                {
+                    <div class="colors-section">
+                        <h3 class="section-title">AVAILABLE COLORS</h3>
+                        <div class="color-options">
+                            @{
+                                var colors = Model.Product.AvailableColors.Split(',');
+                                foreach (var color in colors)
+                                {
+                                    var trimmedColor = color.Trim();
+                                    <div class="color-option @(trimmedColor == Model.Product.SKU ? "active" : "")">
+                                        <div class="color-sample" style="background-color: @GetColorHex(trimmedColor)"></div>
+                                        <span class="color-name">@trimmedColor</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Order Form -->
+                <div class="order-form">
+                    <form asp-action="AddToCart" asp-controller="Cart" method="post">
                         <input type="hidden" name="ProductId" value="@Model.Product.Id">
-                        <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" style="max-width: 3rem" name="count" />
-                        <button class="btn btn-outline-dark flex-shrink-0" type="submit">
-                            <i class="bi-cart-fill me-1"></i>
-                            Add to cart
-                        </button>
+
+                        <div class="form-group">
+                            <label class="form-label">Quantity (meters):</label>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn" onclick="decrementQuantity()">-</button>
+                                <input type="number" name="count" id="quantityInput" value="1" min="1" max="@Model.Product.StockQuantity" class="quantity-input">
+                                <button type="button" class="quantity-btn" onclick="incrementQuantity()">+</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="add-to-cart-btn-main">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
+                                    <line x1="3" y1="6" x2="21" y2="6" />
+                                    <path d="M16 10a4 4 0 01-8 0" />
+                                </svg>
+                                Add to Cart
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</section>
-<!-- Related items section-->
-<section class="py-5 bg-light">
-    <div class="container px-4 px-lg-5 mt-5">
-        <h2 class="fw-bolder mb-4">Related products</h2>
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
 
-            @foreach(var item in Model.RelatedProducts)
-            {
-                <div class="card">
-                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
-                        <div class="badge">HOT SALE</div>
-                        <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
-                        </div>
-                        <div class="info">
-                            <div class="cat">High-Performance Laptop</div>
-                            <h2 class="title">UltraBook Pro X</h2>
-                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
-                            @* <div class="feats">
-                            <span class="feat">4K Display</span>
-                            <span class="feat">16-Hour Battery</span>
-                            <span class="feat">Thunderbolt 4</span>
-                        </div> *@
-                            <div class="bottom">
-                                <div class="price">
-                                    <span class="old">$2,499</span>
-                                    <span class="new">$1,999</span>
-                                </div>
-                                <button class="btn">
-                                    <span>Add to Cart</span>
-                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
-                                        <line x1="3" y1="6" x2="21" y2="6" />
-                                        <path d="M16 10a4 4 0 01-8 0" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="meta">
-                                <div class="rating">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <span class="rcount">245 Reviews</span>
-                                </div>
-                                <div class="stock">In Stock</div>
-                            </div>
-                        </div>
+    <!-- Matching Products -->
+    @if (Model.MatchingProducts != null && Model.MatchingProducts.Any())
+    {
+        <div class="container related-products-section">
+            <div class="section-header">
+                <h2>Matching products</h2>
+                <a href="@Url.Action("Category", "Product", new { categoryId = Model.Product.CategoryId })" class="view-all-link">View all</a>
+            </div>
+
+            <div class="related-products-grid">
+                @foreach (var item in Model.MatchingProducts.Take(4))
+                {
+                    <a href="@Url.Action("Details", "Home", new { id = item.Id, area = "Customer" })" class="related-product-card">
+                        @if (item.ProductImages != null && item.ProductImages.Any())
+                        {
+                            <img src="~/images/products/@item.ProductImages.First().ImageUrl"
+                                 alt="@item.ProductImages.First().AltText"
+                                 class="related-product-image">
+                        }
+                        else if (!string.IsNullOrEmpty(item.MainImage))
+                        {
+                            <img src="~/images/@item.MainImage" alt="@item.Name" class="related-product-image">
+                        }
+                        else
+                        {
+                            <img src="~/images/products/default.jpg" alt="@item.Name" class="related-product-image">
+                        }
+                        <h3 class="related-product-title">@item.Name</h3>
+                        @{
+                            var itemDiscountedPrice = item.Price - (item.Price * (item.Discount / 100));
+                            var itemPriceString = itemDiscountedPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
+                        }
+                        <div class="related-product-price">@itemPriceString / m</div>
+                        <div class="related-product-stock">@item.StockQuantity m</div>
                     </a>
-                </div>
-            }
+                }
+            </div>
+        </div>
+    }
 
+    <!-- You May Also Like -->
+    @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+    {
+        <div class="container related-products-section">
+            <div class="section-header">
+                <h2>You may also be interested in...</h2>
+                <a href="@Url.Action("Product", "Home", new { area = "Customer" })" class="view-all-link">View all</a>
+            </div>
+
+            <div class="related-products-grid">
+                @foreach (var item in Model.RelatedProducts.Take(4))
+                {
+                    <a href="@Url.Action("Details", "Home", new { id = item.Id, area = "Customer" })" class="related-product-card">
+                        @if (item.ProductImages != null && item.ProductImages.Any())
+                        {
+                            <img src="~/images/products/@item.ProductImages.First().ImageUrl"
+                                 alt="@item.ProductImages.First().AltText"
+                                 class="related-product-image">
+                        }
+                        else if (!string.IsNullOrEmpty(item.MainImage))
+                        {
+                            <img src="~/images/@item.MainImage" alt="@item.Name" class="related-product-image">
+                        }
+                        else
+                        {
+                            <img src="~/images/products/default.jpg" alt="@item.Name" class="related-product-image">
+                        }
+                        <h3 class="related-product-title">@item.Name</h3>
+                        @{
+                            var itemDiscountedPrice = item.Price - (item.Price * (item.Discount / 100));
+                            var itemPriceString = itemDiscountedPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
+                        }
+                        <div class="related-product-price">@itemPriceString / m</div>
+                        <div class="related-product-stock">@item.StockQuantity m</div>
+                    </a>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- More Inspirations -->
+    <div class="container related-products-section">
+        <div class="section-header">
+            <h2>More inspirations</h2>
+        </div>
+
+        <div class="related-products-grid">
+            <a href="@Url.Action("Product", "Home", new { area = "Customer", IsHot = true })" class="related-product-card" style="text-align: center; background: #f9f9f9;">
+                <div style="padding: 40px 20px;">
+                    <h3 class="related-product-title">ON SALE FABRICS</h3>
+                    <div style="color: #666; font-size: 0.9rem; margin-top: 10px;">Discover our special offers</div>
+                </div>
+            </a>
+
+            <a href="@Url.Action("Product", "Home", new { area = "Customer" })" class="related-product-card" style="text-align: center; background: #f9f9f9;">
+                <div style="padding: 40px 20px;">
+                    <h3 class="related-product-title">NEW ARRIVALS</h3>
+                    <div style="color: #666; font-size: 0.9rem; margin-top: 10px;">Latest additions to our collection</div>
+                </div>
+            </a>
+
+            <a href="@Url.Action("Product", "Home", new { area = "Customer", CategoryName = "Organic" })" class="related-product-card" style="text-align: center; background: #f9f9f9;">
+                <div style="padding: 40px 20px;">
+                    <h3 class="related-product-title">ORGANIC FABRICS</h3>
+                    <div style="color: #666; font-size: 0.9rem; margin-top: 10px;">Eco-friendly and sustainable</div>
+                </div>
+            </a>
         </div>
     </div>
-</section>
-<!-- TOP items section-->
-<section class="py-5 bg-light">
-    <div class="container px-4 px-lg-5 mt-5">
-        <h2 class="fw-bolder mb-4">TOP products</h2>
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
 
-            @foreach(var item in Model.TopProducts)
-            {
-                <div class="card">
-                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
-                        <div class="badge">HOT SALE</div>
-                        <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
-                        </div>
-                        <div class="info">
-                            <div class="cat">High-Performance Laptop</div>
-                            <h2 class="title">UltraBook Pro X</h2>
-                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
-                            @* <div class="feats">
-                            <span class="feat">4K Display</span>
-                            <span class="feat">16-Hour Battery</span>
-                            <span class="feat">Thunderbolt 4</span>
-                        </div> *@
-                            <div class="bottom">
-                                <div class="price">
-                                    <span class="old">$2,499</span>
-                                    <span class="new">$1,999</span>
-                                </div>
-                                <button class="btn">
-                                    <span>Add to Cart</span>
-                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
-                                        <line x1="3" y1="6" x2="21" y2="6" />
-                                        <path d="M16 10a4 4 0 01-8 0" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="meta">
-                                <div class="rating">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <span class="rcount">245 Reviews</span>
-                                </div>
-                                <div class="stock">In Stock</div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            }
+    <!-- Newsletter -->
+    <div class="newsletter-section">
+        <div class="container">
+            <h3 class="newsletter-title">Subscribe to our Newsletter and get a bonus for your next order!</h3>
+            <p class="newsletter-subtitle">Be the first to know about new arrivals, exclusive offers, and style inspiration.</p>
 
+            <form class="newsletter-form">
+                <input type="email" placeholder="Your email address" class="newsletter-input" required>
+                <button type="submit" class="newsletter-btn">SUBSCRIBE</button>
+            </form>
         </div>
     </div>
-</section>
-<!-- Similar items section-->
-<section class="py-5 bg-light">
-    <div class="container px-4 px-lg-5 mt-5">
-        <h2 class="fw-bolder mb-4">Similar products</h2>
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+</div>
 
-            @foreach (var item in Model.SimilarProducts)
-            {
-                <div class="card">
-                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
-                        <div class="badge">HOT SALE</div>
-                        <div class="tilt">
-                            <div class="img"><img src="~/images/@item.MainImage" alt="Premium Laptop"></div>
-                        </div>
-                        <div class="info">
-                            <div class="cat">High-Performance Laptop</div>
-                            <h2 class="title">UltraBook Pro X</h2>
-                            @* <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p> *@
-                            @* <div class="feats">
-                            <span class="feat">4K Display</span>
-                            <span class="feat">16-Hour Battery</span>
-                            <span class="feat">Thunderbolt 4</span>
-                        </div> *@
-                            <div class="bottom">
-                                <div class="price">
-                                    <span class="old">$2,499</span>
-                                    <span class="new">$1,999</span>
-                                </div>
-                                <button class="btn">
-                                    <span>Add to Cart</span>
-                                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
-                                        <line x1="3" y1="6" x2="21" y2="6" />
-                                        <path d="M16 10a4 4 0 01-8 0" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="meta">
-                                <div class="rating">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                    <span class="rcount">245 Reviews</span>
-                                </div>
-                                <div class="stock">In Stock</div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+@section Scripts {
+    <script>
+        // Image gallery functionality
+        function changeImage(src, altText) {
+            const mainImage = document.getElementById('mainProductImage');
+            mainImage.src = src;
+
+            // Update alt text if available
+            if (altText) {
+                mainImage.alt = altText;
             }
 
-        </div>
-    </div>
-</section>
+            // Update active thumbnail
+            document.querySelectorAll('.product-thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Quantity controls
+        function incrementQuantity() {
+            const input = document.getElementById('quantityInput');
+            const max = parseInt(input.max);
+            if (parseInt(input.value) < max) {
+                input.value = parseInt(input.value) + 1;
+            }
+        }
+
+        function decrementQuantity() {
+            const input = document.getElementById('quantityInput');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set max quantity to stock
+            const stock = @Model.Product.StockQuantity;
+            document.getElementById('quantityInput').max = stock;
+
+            // Add click handlers to thumbnails
+            document.querySelectorAll('.product-thumbnail').forEach(thumb => {
+                thumb.addEventListener('click', function() {
+                    const src = this.src;
+                    const alt = this.getAttribute('data-alt') || this.alt;
+                    changeImage(src, alt);
+                });
+            });
+        });
+    </script>
+}
+
+@functions {
+    // Helper function to get color hex codes
+    private string GetColorHex(string colorName)
+    {
+        var colors = new Dictionary<string, string>
+        {
+            { "TC001426", "#f5f5f5" }, // White/Silver
+            { "TC001425", "#7fffd4" }, // Aquamarine
+            { "TC001403", "#8b7355" }, // Tweed
+            { "WHITE", "#ffffff" },
+            { "BLACK", "#000000" },
+            { "RED", "#ff0000" },
+            { "BLUE", "#0000ff" },
+            { "GREEN", "#00ff00" },
+            { "SILVER", "#c0c0c0" },
+            { "GOLD", "#ffd700" },
+            { "BEIGE", "#f5f5dc" },
+            { "BROWN", "#a52a2a" },
+            { "PINK", "#ffc0cb" },
+            { "PURPLE", "#800080" },
+            { "ORANGE", "#ffa500" },
+            { "YELLOW", "#ffff00" },
+            { "GRAY", "#808080" }
+        };
+
+        var key = colorName.ToUpper();
+        return colors.ContainsKey(key) ? colors[key] : "#cccccc";
+    }
+}

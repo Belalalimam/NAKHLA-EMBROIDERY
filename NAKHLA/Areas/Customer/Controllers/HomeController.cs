@@ -76,62 +76,50 @@ namespace NAKHLA.Areas.Customer.Controllers
         public IActionResult CategroySearch(FilterVM filterVM, int page = 1)
         {
             const int discount = 50;
-            var products = _context.Products.Include(e =>e.Category).AsQueryable();
-            var category = _context.Categorise.FirstOrDefault(e => e.Id == filterVM.CategoryId);
 
-            // Filter
-            if (filterVM.Name is not null)
-            {
-                products = products.Where(e => e.Name.Contains(filterVM.Name));
-                ViewBag.ProductName = filterVM.Name;
-            }
+            var products = _context.Products
+                .Include(e => e.Category)
+                .AsQueryable();
 
-            if (filterVM.MinPrice is not null)
-            {
-                products = products;
-                ViewBag.MinPrice = filterVM.MinPrice;
-            }
-
-            if (filterVM.MaxPrice is not null)
-            {
-                products = products;
-                ViewBag.MaxPrice = filterVM.MaxPrice;
-            }
+            Category? category = null;
 
             if (filterVM.CategoryId is not null)
             {
                 products = products.Where(e => e.CategoryId == filterVM.CategoryId);
+                category = _context.Categorise
+                    .FirstOrDefault(e => e.Id == filterVM.CategoryId);
+
                 ViewBag.CategoryId = filterVM.CategoryId;
             }
 
+            // باقي الفلاتر
+            if (filterVM.Name is not null)
+                products = products.Where(e => e.Name.Contains(filterVM.Name));
+
             if (filterVM.IsHot)
-            {
                 products = products.Where(e => e.Discount >= discount);
-                ViewBag.isHot = filterVM.IsHot;
-            }
 
-
-            // Categories
-            var categories = _context.Categorise;
-            ViewData["categories"] = categories.ToList();
-            ViewBag.categories = categories.ToList();
-
-            // Paginitation
+            // pagination
             var totalNumberOfPages = Math.Ceiling(products.Count() / 8.0);
-            var currentPage = page;
             ViewBag.totalNumberOfPages = totalNumberOfPages;
-            ViewBag.currentPage = currentPage;
+            ViewBag.currentPage = page;
 
             products = products.Skip((page - 1) * 10).Take(10);
 
+            // 🔴 أهم سطر
+            ViewBag.SelectedCategory = category;
 
             return View(products.ToList());
         }
 
 
+
         public IActionResult Details(int id)
         {
-            var product = _context.Products.Include(e => e.Category).FirstOrDefault(e => e.Id == id);
+            var product = _context.Products
+                .Include(e => e.Category)
+                .Include(e => e.ProductImages) // This will load the related images
+                .FirstOrDefault(e => e.Id == id);
 
             if (product is null)
                 return RedirectToAction(nameof(NotFoundPage));
@@ -139,22 +127,38 @@ namespace NAKHLA.Areas.Customer.Controllers
             product.Traffic += 1;
             _context.SaveChanges();
 
-            var relatedProducts = _context.Products.Include(e => e.Category).Where(e => e.CategoryId == product.CategoryId && e.Id != product.Id).Skip(0).Take(4);
+            var relatedProducts = _context.Products
+                .Include(e => e.Category)
+                .Where(e => e.CategoryId == product.CategoryId && e.Id != product.Id)
+                .Take(4)
+                .ToList();
 
-            var topProducts = _context.Products.Include(e => e.Category).Where(e => e.Id != product.Id).OrderByDescending(e => e.Traffic).Skip(0).Take(4);
+            var topProducts = _context.Products
+                .Include(e => e.Category)
+                .Where(e => e.Id != product.Id)
+                .OrderByDescending(e => e.Traffic)
+                .Take(4)
+                .ToList();
 
-            var similarProducts = _context.Products.Include(e => e.Category).Where(e => e.Name.Contains(product.Name) && e.Id != product.Id).Skip(0).Take(4);
+            var similarProducts = _context.Products
+                .Include(e => e.Category)
+                .Where(e => e.Name.Contains(product.Name) && e.Id != product.Id)
+                .Take(4)
+                .ToList();
 
-            //var MinMaxPriceProducts = _context.Products.Include(e => e.Category).Where(e=>e.Price >= product.Price * 0.9 && e.Price <= product.Price * 1.1 && e.Id != product.Id).Skip(0).Take(4);
+            // Get product images from the navigation property
+            var productImages = product.ProductImages?
+                .OrderBy(pi => pi.DisplayOrder)
+                .ToList() ?? new List<ProductImage>();
 
             return View(new ProductWithRelatedVM()
             {
                 Product = product,
-                RelatedProducts = relatedProducts.ToList(),
-                TopProducts = topProducts.ToList(),
-                SimilarProducts = similarProducts.ToList()
+                RelatedProducts = relatedProducts,
+                TopProducts = topProducts,
+                SimilarProducts = similarProducts,
+                ProductImages = productImages
             });
-
         }
 
 
