@@ -1,8 +1,8 @@
-﻿using NAKHLA.Utitlies;
-using NAKHLA.Utitlies.DBInitilizer;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using NAKHLA.Utitlies;
+using NAKHLA.Utitlies.DBInitilizer;
 
 namespace NAKHLA
 {
@@ -45,6 +45,7 @@ namespace NAKHLA
             services.AddScoped<IRepository<Promotion>, Repository<Promotion>>();
             services.AddScoped<IRepository<Order>, Repository<Order>>();
             services.AddScoped<IRepository<OrderItem>, Repository<OrderItem>>();
+            
 
             services.AddScoped<IDBInitializer, DBInitializer>();
         }

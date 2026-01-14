@@ -44,36 +44,28 @@ namespace NAKHLA.Areas.Customer.Controllers
                     return RedirectToAction("Login", "Account", new { area = "Identity" });
                 }
 
-                // Clear cart if requested
                 if (clear)
-                {
                     return await ClearCart();
-                }
 
-                // Get cart items with product details
                 var cartItems = await _cartRepository.GetAsync(
                     e => e.ApplicationUserId == userId,
                     includes: [e => e.Product, e => e.Product.Category, e => e.Product.Brand]
                 );
 
-                // Apply promotion if code provided
-                // Apply promotion if code provided
                 if (!string.IsNullOrEmpty(code))
                 {
                     var promotion = await _promotionRepository.GetOneAsync(
-                        e => e.Code.ToLower() == code.ToLower() &&
-                             e.IsCurrentlyActive);
+                        e => e.Code.ToLower() == code.ToLower() && e.IsCurrentlyActive
+                    );
 
                     if (promotion != null)
                     {
-                        // Check if promotion can be combined with existing discounts
                         if (!promotion.CanCombineWithOtherPromotions && cartItems.Any(e => e.Price < e.Product.Price))
                         {
                             TempData["error-notification"] = "This promotion cannot be combined with other discounts";
                         }
                         else
                         {
-                            // Check minimum purchase amount
                             var cartTotal = cartItems.Sum(e => e.Product.Price * e.Count);
                             if (promotion.MinimumPurchaseAmount.HasValue && cartTotal < promotion.MinimumPurchaseAmount.Value)
                             {
@@ -85,29 +77,23 @@ namespace NAKHLA.Areas.Customer.Controllers
 
                                 foreach (var item in cartItems)
                                 {
-                                    if (promotion.IsApplicableToProduct(item.Product))
-                                    {
-                                        decimal discount = promotion.CalculateDiscount(item.Product.Price, item.Count);
+                                    if (!promotion.IsApplicableToProduct(item.Product))
+                                        continue;
 
-                                        if (discount > 0)
-                                        {
-                                            // Store original price in a temporary field if needed
-                                            item.Price = item.Product.Price - (discount / item.Count);
-                                            promotionApplied = true;
+                                    var itemDiscount = promotion.CalculateDiscount(item.Product.Price, item.Count);
+                                    if (itemDiscount <= 0)
+                                        continue;
 
-                                            await _cartRepository.UpdateAsync(item);
-                                        }
-                                    }
+                                    item.Price = item.Product.Price - (itemDiscount / item.Count);
+                                    promotionApplied = true;
+                                    await _cartRepository.UpdateAsync(item);
                                 }
 
                                 if (promotionApplied)
                                 {
                                     await _cartRepository.CommitAsync();
-
-                                    // Store promotion in session for checkout
                                     HttpContext.Session.SetString("AppliedPromotionCode", promotion.Code);
                                     HttpContext.Session.SetString("AppliedPromotionName", promotion.Name);
-
                                     TempData["success-notification"] = $"Promo code '{promotion.Code}' applied successfully! {promotion.DiscountValue}% discount";
                                 }
                                 else
@@ -129,12 +115,31 @@ namespace NAKHLA.Areas.Customer.Controllers
                     }
                 }
 
-                ViewBag.Subtotal = cartItems.Sum(e => e.Price * e.Count);
-                ViewBag.Tax = 0; // Add tax calculation if needed
-                ViewBag.Shipping = 0; // Add shipping calculation if needed
-                ViewBag.Total = ViewBag.Subtotal + ViewBag.Tax + ViewBag.Shipping;
+                // ================== CALCULATIONS ==================
+                var subtotal = cartItems.Sum(e => e.Price * e.Count);
+                var discount = cartItems.Sum(e => (e.Product.Price - e.Price) * e.Count);
+                var shipping = 0m;
+                var tax = 0m;
+                var total = subtotal + shipping + tax;
 
-                return View(cartItems.ToList());
+                var suggestedProducts = await _productRepository.GetAsync(
+                    p => p.Status && !p.IsDeleted && p.IsFeatured
+                );
+
+                var vm = new CartVM
+                {
+                    CartItems = cartItems.ToList(),
+                    Subtotal = subtotal,
+                    Discount = discount,
+                    Shipping = shipping,
+                    Tax = tax,
+                    Total = total,
+                    PromotionCode = HttpContext.Session.GetString("AppliedPromotionCode"),
+                    PromotionName = HttpContext.Session.GetString("AppliedPromotionName"),
+                    SuggestedProducts = suggestedProducts.ToList()
+                };
+
+                return View(vm);
             }
             catch (Exception ex)
             {
@@ -143,6 +148,7 @@ namespace NAKHLA.Areas.Customer.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+
 
         // POST: /Customer/Cart/AddToCart
         [HttpPost]

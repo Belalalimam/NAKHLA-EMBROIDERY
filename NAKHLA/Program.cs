@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NAKHLA;
 using NAKHLA.Configurations;
@@ -8,20 +8,30 @@ using NAKHLA.Utitlies.DBInitilizer;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString =
-                    builder.Configuration.GetConnectionString("DefaultConnection")
-                        ?? throw new InvalidOperationException("Connection string"
-                        + "'DefaultConnection' not found.");
+    builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// ================== Session Configuration ==================
+builder.Services.AddDistributedMemoryCache(); // Required for Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+// ==========================================================
 
-
+// Register your custom configurations
 builder.Services.RegisterConfig(connectionString);
 builder.Services.RegisterMapsterConfig();
+
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
+// Initialize the database
+using var scope = app.Services.CreateScope();
 var service = scope.ServiceProvider.GetService<IDBInitializer>();
 service!.Initialize();
 
@@ -29,20 +39,22 @@ service!.Initialize();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // Move this here to serve static files
+
 app.UseRouting();
 
-app.UseAuthentication();   
+app.UseAuthentication();
 app.UseAuthorization();
 
-
+// ===== Add Session Middleware =====
+app.UseSession();
+// ================================
 
 app.MapStaticAssets();
-//app.UseStaticFiles();
 
 app.MapControllerRoute(
     name: "areas",
@@ -59,7 +71,5 @@ app.MapControllerRoute(
     pattern: "",
     defaults: new { area = "Customer", controller = "Home", action = "Index" }
 );
-
-
 
 app.Run();

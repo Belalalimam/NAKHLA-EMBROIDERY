@@ -1,0 +1,159 @@
+﻿.cart-page {
+    padding: 60px 0;
+    background: #fff;
+}
+
+.cart-container {
+    max-width: 1400px;
+    margin: auto;
+    display: flex;
+    gap: 40px;
+}
+
+.cart-left {
+    flex: 3;
+}
+
+.cart-title {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.cart-header,
+.cart-item {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1.5fr 1fr;
+    align-items: center;
+    gap: 20px;
+}
+
+.cart-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    font-size: 13px;
+    color: #777;
+}
+
+.cart-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.remove {
+    position: absolute;
+    left: -20px;
+    top: 30px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.product {
+    display: flex;
+    gap: 15px;
+}
+
+    .product img {
+        width: 70px;
+        border-radius: 4px;
+    }
+
+.price,
+.subtotal {
+    font-weight: 500;
+}
+
+.quantity {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+    .quantity a {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ddd;
+        text-align: center;
+        line-height: 28px;
+        text-decoration: none;
+        color: #333;
+    }
+
+.cart-actions {
+    margin-top: 20px;
+}
+
+    .cart-actions input {
+        padding: 10px;
+        width: 200px;
+        border: 1px solid #ddd;
+    }
+
+    .cart-actions button {
+        padding: 10px 20px;
+        background: #666;
+        color: #fff;
+        border: none;
+    }
+
+/* RIGHT */
+.cart-right {
+    flex: 1;
+    border-left: 1px solid #eee;
+    padding-left: 30px;
+}
+
+    .cart-right h3 {
+        margin-bottom: 20px;
+    }
+
+.totals-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.discount {
+    color: #c0392b;
+}
+
+.total {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.checkout-btn {
+    display: block;
+    background: #c0397a;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.continue {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #c0397a;
+    text-decoration: none;
+}
+
+/* SUGGESTED */
+.suggested {
+    max-width: 1200px;
+    margin: 80px auto 0;
+}
+
+.suggested-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.suggested-item img {
+    width: 100%;
+    border-radius: 6px;
+}
