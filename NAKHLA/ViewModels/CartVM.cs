@@ -15,6 +15,14 @@
         public string? PromotionCode { get; set; }
         public string? PromotionName { get; set; }
 
+
+        // Add formatted properties for view
+        public string FormattedSubtotal => Subtotal.ToString("N2");
+        public string FormattedDiscount => Discount.ToString("N2");
+        public string FormattedShipping => Shipping.ToString("N2");
+        public string FormattedTax => Tax.ToString("N2");
+        public string FormattedTotal => Total.ToString("N2");
+
         // Suggested products
         public List<Product> SuggestedProducts { get; set; } = new();
     }

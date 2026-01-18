@@ -152,11 +152,12 @@ namespace NAKHLA.Areas.Customer.Controllers
 
         // POST: /Customer/Cart/AddToCart
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int count = 1, CancellationToken cancellationToken = default)
         {
             try
             {
+              
                 if (count <= 0)
                 {
                     TempData["error-notification"] = "Quantity must be at least 1";
@@ -229,7 +230,7 @@ namespace NAKHLA.Areas.Customer.Controllers
                     TempData["success-notification"] = "Product added to cart successfully";
                 }
 
-                return RedirectToAction("index");
+                return RedirectToAction("Index", "Cart", new { area = "Customer" });
             }
             catch (Exception ex)
             {
@@ -238,6 +239,8 @@ namespace NAKHLA.Areas.Customer.Controllers
                 return RedirectToAction("Details", "Product", new { id = productId, area = "" });
             }
         }
+
+        
 
         // POST: /Customer/Cart/UpdateQuantity
         [HttpPost]

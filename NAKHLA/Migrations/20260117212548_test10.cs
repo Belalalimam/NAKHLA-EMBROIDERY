@@ -5,18 +5,25 @@
 namespace NAKHLA.Migrations
 {
     /// <inheritdoc />
-    public partial class InsartDataToProductImages : Migration
+    public partial class test10 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("insert into productImages (ProductId, ImageUrl, DisplayOrder) values ('22', '7-2.jpg', 1);");
+            migrationBuilder.DropColumn(
+                name: "Unit",
+                table: "Carts");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("TRUNCATE TABLE productImages");
+            migrationBuilder.AddColumn<string>(
+                name: "Unit",
+                table: "Carts",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
     }
 }

@@ -162,7 +162,7 @@
 
                 <!-- Order Form -->
                 <div class="order-form">
-                    <form asp-action="AddToCart" asp-controller="Cart" method="post">
+                    <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
                         <input type="hidden" name="ProductId" value="@Model.Product.Id">
 
                         <div class="form-group">

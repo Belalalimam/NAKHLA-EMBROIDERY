@@ -1,215 +1,311 @@
 ﻿@model NAKHLA.ViewModels.CartVM
 
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
 <div class="container">
     <div class="basket-section">
         <h1>Basket</h1>
 
-        <div class="cart-table">
-            <div class="cart-header">
-                <div></div>
-                <div>PRODUCT</div>
-                <div>PRICE</div>
-                <div>QUANTITY</div>
-                <div>SUBTOTAL</div>
-                <div></div>
+        @if (!Model.CartItems.Any())
+        {
+            <div class="empty-cart">
+                <h3>Your cart is empty</h3>
+                <p>Add some products to your cart to see them here!</p>
+                <a href="@Url.Action("Index", "Home", new { area = "Customer" })" class="continue-shopping-btn">
+                    Continue Shopping
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-table">
+                <div class="cart-header">
+                    <div class="header-product">PRODUCT</div>
+                    <div class="header-price">PRICE</div>
+                    <div class="header-quantity">QUANTITY</div>
+                    <div class="header-subtotal">SUBTOTAL</div>
+                    <div class="header-remove"></div>
+                </div>
+
+                @foreach (var item in Model.CartItems)
+                {
+                    var itemSubtotal = item.Price * item.Count;
+
+                    <div class="cart-item" id="cart-item-@item.ProductId">
+                        <div class="product-info">
+                            <img src="~/images/@item.Product.MainImage" alt="@item.Product.Name" class="product-image">
+                            <div class="product-details">
+                                <a href="@Url.Action("Details", "Home", new { id = item.ProductId, area = "Customer" })"
+                                   class="product-name">@item.Product.Name</a>
+                                @if (!string.IsNullOrEmpty(item.Product.SKU))
+                                {
+                                    <div class="product-sku">SKU: @item.Product.SKU</div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="price-col">
+                            <div class="price-amount">€ @item.Price.ToString("N2")</div>
+                            @if (item.Price < item.Product.Price)
+                            {
+                                <div class="original-price">€ @item.Product.Price.ToString("N2")</div>
+                            }
+                        </div>
+
+                        <div class="quantity-col">
+                            <div class="quantity-control">
+                                <a class="qty-btn" asp-action="DecrementProduct" asp-route-productId="@item.ProductId">-</a>
+
+                                <form method="post" asp-action="UpdateQuantity" class="quantity-form">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="number" name="quantity" value="@item.Count"
+                                           min="1" max="@(item.Product.ManageStock? item.Product.StockQuantity : 999)"
+                                           class="qty-input"
+                                           onchange="this.form.submit()"
+                                           title="@(item.Product.ManageStock ? $"Max available: {item.Product.StockQuantity}" : "")" />
+                                </form>
+
+                                <a class="qty-btn" asp-action="IncrementProduct" asp-route-productId="@item.ProductId">+</a>
+                            </div>
+                        </div>
+
+                        <div class="subtotal-col">
+                            <div class="item-subtotal">€ @itemSubtotal.ToString("N2")</div>
+                        </div>
+
+                        <div class="remove-col">
+                            <a class="remove-btn" asp-action="DeleteProduct" asp-route-productId="@item.ProductId"
+                               onclick="return confirm('Are you sure you want to remove this item from your cart?')">
+                                ×
+                            </a>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <div class="cart-item">
-                <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=100&h=100&fit=crop" alt="Georgette Floreale" class="product-image">
-                <div>
-                    <a href="#" class="product-name">Georgette Floreale ST000698</a>
-                </div>
-                <div>€ 45,10 / m</div>
-                <div class="quantity-control">
-                    <button class="qty-btn" onclick="updateQty(-1)">-</button>
-                    <input type="text" class="qty-input" value="0" id="qty-input">
-                    <span>m</span>
-                    <button class="qty-btn" onclick="updateQty(1)">+</button>
-                </div>
-                <div>€ 22,55</div>
-                <button class="remove-btn" onclick="removeItem()">×</button>
-            </div>
-        </div>
-
-        <div class="coupon-section">
-            <input type="text" class="coupon-input" placeholder="Coupon code">
-            <button class="apply-btn">Apply</button>
-        </div>
-
-        <button class="update-basket-btn">UPDATE BASKET</button>
-
-        <div class="recommendations">
-            <h2>You may also be interested in...</h2>
-            <p>Plain fabrics matching the ones you have in your cart:</p>
-
-            <div class="product-grid">
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&h=300&fit=crop" alt="Crêpe Satin">
-                    <div class="product-info">
-                        <div class="product-title">Crêpe Satin 000672</div>
-                        <div class="product-price">
-                            <span class="price">€ 49,50</span>
-                            <span class="stock">-</span>
+            <div class="cart-actions">
+                <div class="coupon-section">
+                    @if (!string.IsNullOrEmpty(Model.PromotionCode))
+                    {
+                        <div class="applied-promotion">
+                            <span>Applied Promotion: <strong>@Model.PromotionName (@Model.PromotionCode)</strong></span>
+                            <a href="@Url.Action("Index", new { clearPromo = true })" class="remove-promo">Remove</a>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <form method="get" class="coupon-form">
+                            <input type="text" name="code" class="coupon-input" placeholder="Enter coupon code">
+                            <button type="submit" class="apply-btn">Apply Coupon</button>
+                        </form>
+                    }
                 </div>
 
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1558769132-cb1aea8f2128?w=400&h=300&fit=crop" alt="Silk Satin Stretch">
-                    <div class="product-info">
-                        <div class="product-title">Silk Satin Stretch 020757</div>
-                        <div class="product-price">
-                            <span class="price">€ 37,45</span>
-                            <span class="stock">84.5 m</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1560155477-4b78cf6889b0?w=400&h=300&fit=crop" alt="Crêpe de Chine">
-                    <div class="product-info">
-                        <div class="product-title">Crêpe de Chine 000672</div>
-                        <div class="product-price">
-                            <span class="price">€ 44,70</span>
-                            <span class="stock">236.25 m</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=300&fit=crop" alt="Drap">
-                    <div class="product-info">
-                        <div class="product-title">Drap 000672</div>
-                        <div class="product-price">
-                            <span class="price">€ 84,50</span>
-                            <span class="stock">7 m</span>
-                        </div>
-                    </div>
-                </div>
+                <a asp-action="ClearCart" class="clear-cart-btn"
+                   onclick="return confirm('Are you sure you want to clear your entire cart?')">
+                    Clear Cart
+                </a>
             </div>
 
-            <div class="carousel-nav">
-                <span class="carousel-dot active"></span>
-                <span class="carousel-dot"></span>
-            </div>
+            @if (Model.SuggestedProducts.Any())
+            {
+                <div class="recommendations">
+                    <h2>You may also be interested in...</h2>
 
-            <h3 class="section-title">Fabrics on sale:</h3>
-
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="sale-badge">ON SALE</div>
-                    <img src="https://images.unsplash.com/photo-1603217039863-aa43d8a8f298?w=400&h=300&fit=crop" alt="Fabric on sale">
-                    <div class="product-info">
-                        <div class="product-title">Premium Fabric</div>
-                        <div class="product-price">
-                            <span class="price">€ 29,90</span>
-                        </div>
+                    <div class="product-grid">
+                        @foreach (var product in Model.SuggestedProducts.Take(4))
+                        {
+                            <div class="product-card">
+                                <img src="~/images/@product.MainImage" alt="@product.Name" class="suggested-product-image">
+                                <div class="product-info">
+                                    <div class="product-title">@product.Name</div>
+                                    <div class="product-price">
+                                        <span class="price">€ @product.Price.ToString("N2")</span>
+                                        @if (product.SpecialPrice.HasValue &&
+                                                                    product.SpecialPriceStart.HasValue &&
+                                                                    product.SpecialPriceEnd.HasValue &&
+                                                                    DateTime.Now >= product.SpecialPriceStart.Value &&
+                                                                    DateTime.Now <= product.SpecialPriceEnd.Value)
+                                        {
+                                            <span class="original-price">€ @product.Price.ToString("N2")</span>
+                                            <span class="special-price">€ @product.SpecialPrice.Value.ToString("N2")</span>
+                                        }
+                                    </div>
+                                    <a href="@Url.Action("Details", "Product", new { id = product.Id, area = "" })"
+                                       class="view-product-btn">View Product</a>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
-
-                <div class="product-card">
-                    <div class="sale-badge">ON SALE</div>
-                    <img src="https://images.unsplash.com/photo-1560155477-4b78cf6889b0?w=400&h=300&fit=crop" alt="Fabric on sale">
-                    <div class="product-info">
-                        <div class="product-title">Luxury Satin</div>
-                        <div class="product-price">
-                            <span class="price">€ 34,50</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="sale-badge">ON SALE</div>
-                    <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=300&fit=crop" alt="Fabric on sale">
-                    <div class="product-info">
-                        <div class="product-title">Elegant Silk</div>
-                        <div class="product-price">
-                            <span class="price">€ 39,90</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="sale-badge">ON SALE</div>
-                    <img src="https://images.unsplash.com/photo-1558769132-cb1aea8f2128?w=400&h=300&fit=crop" alt="Fabric on sale">
-                    <div class="product-info">
-                        <div class="product-title">Designer Fabric</div>
-                        <div class="product-price">
-                            <span class="price">€ 27,50</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            }
+        }
     </div>
 
-    <div class="totals-section">
-        <h2>Basket Totals</h2>
+    @if (Model.CartItems.Any())
+    {
+        <div class="totals-section">
+            <h2>Basket Totals</h2>
 
-        <div class="total-row subtotal">
-            <span>SUBTOTAL</span>
-            <span>€ 22,55</span>
-        </div>
-
-        <div class="shipping-info">
-            <div class="shipping-label">
-                SHIPPING
-                <span class="shipping-price">€ 35,00</span>
+            <div class="total-row subtotal">
+                <span>SUBTOTAL</span>
+                <span>€ @Model.FormattedSubtotal</span>
             </div>
-            <div class="shipping-address">
-                Shipping to <strong>848 Oak Road, Animi exercitatione, Dolore ut cupidatat harum, Egypt, 86462, French Polynesia.</strong>
-                <br>
-                <a href="#" class="change-address">Change address</a>
+
+            @if (Model.Discount > 0)
+            {
+                <div class="total-row discount">
+                    <span>DISCOUNT</span>
+                    <span>-€ @Model.FormattedDiscount</span>
+                </div>
+            }
+
+            <div class="shipping-info">
+                <div class="shipping-label">
+                    SHIPPING
+                    <span class="shipping-price">€ @Model.FormattedShipping</span>
+                </div>
+                <div class="shipping-address">
+                    Shipping to <strong>Your Address</strong>
+                    <br>
+                    <a href="#" class="change-address">Change address</a>
+                </div>
+                <div class="shipping-methods">
+                    <div class="shipping-method">
+                        <input type="radio" id="standard" name="shipping" checked value="5.99">
+                        <label for="standard">Standard Shipping: € 5.99</label>
+                    </div>
+                    <div class="shipping-method">
+                        <input type="radio" id="express" name="shipping" value="12.99">
+                        <label for="express">Express Shipping: € 12.99</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-row">
+                <span>CUSTOMS DUTIES AND TAXES</span>
+                <span>€ @Model.FormattedTax</span>
+            </div>
+
+            <div class="total-row final">
+                <span>TOTAL</span>
+                <div class="total-amount">
+                    <div class="final-total">€ @Model.FormattedTotal</div>
+                    <div class="usd-estimate">about US $@((Model.Total * 1.08m).ToString("N2"))</div>
+                </div>
+            </div>
+
+            <div class="checkout-actions">
+                <a asp-action="Pay" class="checkout-btn">
+                    PROCEED TO CHECKOUT
+                </a>
+
+                <div class="alternative-payments">
+                    <p>Or checkout with:</p>
+                    <button type="button" class="paypal-btn" onclick="processPayPal()">PayPal</button>
+                    <button type="button" class="apple-pay-btn" onclick="processApplePay()">Apple Pay</button>
+                </div>
+            </div>
+
+            <div class="paypal-info">
+                Paga in 3 rate da 19,94€ senza interessi con PayPal.<br>
+                TAEG 0%. <a href="#" style="color: #e91e63;">Scopri di più</a>
+            </div>
+
+            <div class="continue-shopping">
+                OR<br><br>
+                <a href="@Url.Action("Index", "Home", new { area = "" })">CONTINUE SHOPPING</a>
             </div>
         </div>
-
-        <div class="total-row">
-            <span>CUSTOMS DUTIES AND TAXES</span>
-            <span>€ 2,26</span>
-        </div>
-
-        <div class="total-row final">
-            <span>TOTAL</span>
-            <div>
-                <div>€ 59,81</div>
-                <div class="usd-estimate">about US $73.57</div>
-            </div>
-        </div>
-
-        <button class="checkout-btn">PROCEED TO CHECKOUT</button>
-
-        <div class="paypal-info">
-            Paga in 3 rate da 19,94€ senza interessi con PayPal.<br>
-            TAEG 0%. <a href="#" style="color: #e91e63;">Scopri di più</a>
-        </div>
-
-        <div class="continue-shopping">
-            OR<br><br>
-            <a href="#">CONTINUE SHOPPING</a>
-        </div>
-    </div>
+    }
 </div>
 
-<script>
-    function updateQty(change) {
-        const input = document.getElementById('qty-input');
-        let value = parseFloat(input.value) || 0;
-        value = Math.max(0, value + change);
-        input.value = value;
-    }
 
-    function removeItem() {
-        if (confirm('Remove this item from cart?')) {
-            alert('Item removed!');
+<script>
+    // Update shipping when method changes
+    document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const shippingCost = parseFloat(this.value);
+                // Update shipping display - you might want to AJAX update
+                console.log('Shipping updated to:', shippingCost);
+
+                // Show loading state
+                const shippingPrice = document.querySelector('.shipping-price');
+                if (shippingPrice) {
+                    shippingPrice.textContent = '€ ' + shippingCost.toFixed(2);
+                }
+            }
+        });
+    });
+
+    // Validate quantity input
+    document.querySelectorAll('.qty-input').forEach(input => {
+        input.addEventListener('change', function() {
+            let value = parseInt(this.value);
+            const min = parseInt(this.getAttribute('min')) || 1;
+            const max = parseInt(this.getAttribute('max')) || 999;
+
+            if (isNaN(value) || value < min) {
+                value = min;
+                this.value = min;
+            } else if (value > max) {
+                value = max;
+                this.value = max;
+                alert('Cannot add more than available stock: ' + max);
+            }
+        });
+    });
+
+    // Smooth item removal
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('Are you sure you want to remove this item from your cart?')) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Calculate USD conversion
+    function updateUSDConversion() {
+        const total = @Model.Total;
+        const usdRate = 1.08; // Example conversion rate
+        const usdTotal = (total * usdRate).toFixed(2);
+
+        const usdElement = document.querySelector('.usd-estimate');
+        if (usdElement) {
+            usdElement.textContent = 'about US $' + usdTotal;
         }
     }
 
-    // Carousel functionality
-    const dots = document.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            dots.forEach(d => d.classList.remove('active'));
-            dot.classList.add('active');
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateUSDConversion();
+
+        // Add fade-in animation for cart items
+        const cartItems = document.querySelectorAll('.cart-item');
+        cartItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 100);
         });
     });
+
+    // Payment methods
+    function processPayPal() {
+        alert('PayPal checkout would be initiated here');
+        // Implement PayPal integration
+    }
+
+    function processApplePay() {
+        alert('Apple Pay checkout would be initiated here');
+        // Implement Apple Pay integration
+    }
 </script>
