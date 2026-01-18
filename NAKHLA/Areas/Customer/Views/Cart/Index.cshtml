@@ -34,14 +34,14 @@
                     var itemSubtotal = item.Price * item.Count;
 
                     <div class="cart-item" id="cart-item-@item.ProductId">
-                        <div class="product-info">
-                            <img src="~/images/@item.Product.MainImage" alt="@item.Product.Name" class="product-image">
-                            <div class="product-details">
+                        <div class="product-info1">
+                            <img src="~/images/@item.Product.MainImage" alt="@item.Product.Name" class="product-image1">
+                            <div class="product-details1">
                                 <a href="@Url.Action("Details", "Home", new { id = item.ProductId, area = "Customer" })"
-                                   class="product-name">@item.Product.Name</a>
+                                   class="product-name1">@item.Product.Name</a>
                                 @if (!string.IsNullOrEmpty(item.Product.SKU))
                                 {
-                                    <div class="product-sku">SKU: @item.Product.SKU</div>
+                                    <div class="product-sku1">SKU: @item.Product.SKU</div>
                                 }
                             </div>
                         </div>
