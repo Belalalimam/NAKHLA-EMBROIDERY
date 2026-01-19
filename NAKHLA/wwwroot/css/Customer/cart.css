@@ -30,14 +30,14 @@
     border: 1px solid #e0e0e0;
 }
 
-h1 {
+.cart-page h1 {
     margin-bottom: 30px;
     font-size: 28px;
     color: #333;
     font-weight: 600;
 }
 
-h2 {
+.cart-page h2 {
     margin-bottom: 20px;
     font-size: 22px;
     color: #333;

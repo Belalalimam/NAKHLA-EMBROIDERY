@@ -22,7 +22,7 @@
                     <img src="~/images/@firstImage.ImageUrl"
                          alt="@(firstImage.AltText ?? Model.Product.Name)"
                          class="product-main-image"
-                         style="height:550px; width:800px;"
+                         
                          id="mainProductImage">
 
                     <div class="product-thumbnails">
@@ -60,9 +60,9 @@
             </div>
 
             <!-- Product Info -->
-            <div class="product-info">
-                <div class="product-code">@Model.Product.SKU</div>
-                <h1 class="product-title">@Model.Product.Name</h1>
+            <div class="detailes-product-info border1 px-4">
+                <h1 class="detailes-product-title ">@Model.Product.Name</h1>
+                <div class="detailes-product-code ">@Model.Product.SKU</div>
 
                 <div class="product-description">
                     @if (!string.IsNullOrEmpty(Model.Product.Description))
@@ -70,14 +70,18 @@
                         var paragraphs = Model.Product.Description.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (var paragraph in paragraphs)
                         {
-                            <p>@paragraph</p>
+                            <div>@paragraph</div>
                         }
                     }
                     else
                     {
-                        <p>An elegant white and silver Chanel-style tweed fabric, enriched with delicate lilac yarn inserts; sophisticated and stylish, it is perfect for both classic and modern inspired garments.</p>
+                        <div>An elegant white and silver Chanel-style tweed fabric, enriched with delicate lilac yarn inserts; sophisticated and stylish, it is perfect for both classic and modern inspired garments.</div>
                     }
                 </div>
+
+                
+
+
 
                 <!-- Pricing Section -->
                 <div class="product-pricing-section">
@@ -89,7 +93,7 @@
                     }
 
                     <div class="price-main">
-                        @priceString <span class="price-unit">/ m + VAT if applicable</span>
+                        @priceString <span class="price-unit">/ m + VAT if applicable <i class="ri-money-pound-circle-line"></i></span>
                     </div>
 
                     @if (Model.Product.Discount > 0)
@@ -99,6 +103,19 @@
                         </div>
                     }
                 </div>
+
+                <!-- StockQuntity -->
+                <div>
+                    @if (Model.Product.StockQuantity != null)
+                    {
+                        <div style="font-size:16px; color:green;">@Model.Product.StockQuantity m in stock</div>
+                    }
+                </div>
+
+                <div style="font-size:17px;" class="mt-4">
+                    Shipping in <b>2 business days</b>.
+                </div>
+
 
                 <!-- Product Specs -->
                 <div class="product-specs-grid">
@@ -136,7 +153,7 @@
                 </div>
 
                 <!-- Colors Section -->
-                @if (!string.IsNullOrEmpty(Model.Product.AvailableColors))
+                @* @if (!string.IsNullOrEmpty(Model.Product.AvailableColors))
                 {
                     <div class="colors-section">
                         <h3 class="section-title">Available Colors</h3>
@@ -154,15 +171,14 @@
                             }
                         </div>
                     </div>
-                }
+                } *@
 
                 <!-- Order Form -->
-                <div class="order-form">
-                    <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
+                <div class="order-form container ">
+                    <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart" class="row  ">
                         <input type="hidden" name="ProductId" value="@Model.Product.Id">
 
-                        <div class="form-group">
-                            <label class="form-label">Quantity (meters):</label>
+                        <div class="form-group col-3">
                             <div class="quantity-control">
                                 <button type="button" class="quantity-btn" onclick="decrementQuantity()">-</button>
                                 <input type="number" name="count" id="quantityInput" value="1" min="1" max="@Model.Product.StockQuantity" class="quantity-input">
@@ -170,7 +186,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group col-9">
                             <button type="submit" class="add-to-cart-btn-main">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
