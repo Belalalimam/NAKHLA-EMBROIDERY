@@ -3,271 +3,208 @@
     var category = ViewBag.SelectedCategory as Category;
 }
 
-<!-- Category Header Section -->
-<div class="category-header-section">
-    <div class="container">
-        <div class="category-header">
-            @if (category != null)
-            {
-                <div class="category-image-container">
-                    <img src="~/images/@category.ImageUrl" class="category-image" alt="@category.Name">
-                </div>
+<div class="" style="max-width:1500px; margin-left: auto; margin-right: auto;">
+    <!-- Category Header Section -->
+    <div class="category-header-section">
+        <div class="container-fluid">
+            <div class="category-header">
+                @if (category != null)
+                {
+                    <div class="category-image-container">
+                        <img src="~/images/@category.ImageUrl" class="category-image" alt="@category.Name">
+                    </div>
 
-                <div class="category-content">
-                    <h1 class="category-title">@category.Name</h1>
-                    @if (!string.IsNullOrEmpty(category.Description))
-                    {
-                        <p class="category-subtitle">@category.Description</p>
-                    }                    
-                    <a href="#" class="read-more-link">
-                        Read more <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            }
+                    <div class="category-content">
+                        <h1 class="category-title">@category.Name</h1>
+                        @if (!string.IsNullOrEmpty(category.Description))
+                        {
+                            <p class="category-subtitle">@category.Description</p>
+                        }
+                        <a href="#" class="read-more-link">
+                            Read more <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
 
-<div class="container my-5">
-    <!-- Quick Filter Bar -->
-    
+    <div class="container-fluid">
 
-    <div class="row">
-        <!-- Filter Sidebar -->
-        <aside class="col-lg-3 mb-4">
-            <div class="filter-sidebar">
-                <h3 class="filter-title">Filters</h3>
 
-                <div class="filter-section">
-                    <div class="filter-section-title">
-                        <span>Search Products</span>
-                        <a href="#" class="filter-reset">Clear</a>
+        <div class="row">
+            <!-- Filter Sidebar -->
+            <aside class="col-3 mb-4 ">
+                <div class="filter-sidebar">
+                    <h3 class="filter-title">Filters</h3>
+
+                    <div class="filter-section">
+                        <div class="filter-section-title">
+                            <span>Search Products</span>
+                            <a href="#" class="filter-reset">Clear</a>
+                        </div>
+                        <input type="text" class="filter-input" placeholder="Type & hit ENTER">
                     </div>
-                    <input type="text" class="filter-input" placeholder="Type & hit ENTER">
+
+                    <div class="filter-section">
+                        <div class="filter-section-title">
+                            <span>Sort by</span>
+                            <a href="#" class="filter-reset">Reset</a>
+                        </div>
+                        <select class="filter-input">
+                            <option>New arrivals</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                            <option>Most Popular</option>
+                            <option>Customer Rating</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-section-title">
+                            <span>Height</span>
+                            <a href="#" class="filter-reset">Reset</a>
+                        </div>
+                        <input type="range" class="filter-range" min="100" max="200" value="140">
+                        <div class="filter-range-labels">
+                            <span>129 cm</span>
+                            <span>150 cm</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-section-title">
+                            <span>Weight</span>
+                            <a href="#" class="filter-reset">Reset</a>
+                        </div>
+                        <input type="range" class="filter-range" min="200" max="700" value="444">
+                        <div class="filter-range-labels">
+                            <span>232 g</span>
+                            <span>656 g</span>
+                        </div>
+                    </div>
+
+                    <a href="/Customer/Home/Product" class="view-all-btn">
+                        View All Products 
+                    </a>
                 </div>
+            </aside>
 
-                <div class="filter-section">
-                    <div class="filter-section-title">
-                        <span>Sort by</span>
-                        <a href="#" class="filter-reset">Reset</a>
-                    </div>
-                    <select class="filter-input">
-                        <option>New arrivals</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Most Popular</option>
-                        <option>Customer Rating</option>
+            <!-- Products Grid -->
+            <div class="col-9 ">
+
+                <div class="quick-filter-bar">
+                    <span class="filter-label">Filter by:</span>
+                    <select class="quick-filter-select">
+                        <option>Color</option>
+                        <option>Black</option>
+                        <option>White</option>
+                        <option>Red</option>
+                        <option>Blue</option>
+                        <option>Green</option>
+                    </select>
+                    <select class="quick-filter-select">
+                        <option>Type</option>
+                        <option>Tweed</option>
+                        <option>Bouclé</option>
+                        <option>Jacquard</option>
+                        <option>Velvet</option>
+                    </select>
+                    <select class="quick-filter-select">
+                        <option>Quality</option>
+                        <option>Premium</option>
+                        <option>Standard</option>
+                        <option>Economy</option>
+                    </select>
+                    <select class="quick-filter-select">
+                        <option>Composition</option>
+                        <option>100% Wool</option>
+                        <option>Wool Blend</option>
+                        <option>Silk</option>
+                        <option>Cotton</option>
+                    </select>
+                    <select class="quick-filter-select">
+                        <option>Pattern</option>
+                        <option>Solid</option>
+                        <option>Checkered</option>
+                        <option>Striped</option>
+                        <option>Floral</option>
                     </select>
                 </div>
 
-                <div class="filter-section">
-                    <div class="filter-section-title">
-                        <span>Height</span>
-                        <a href="#" class="filter-reset">Reset</a>
-                    </div>
-                    <input type="range" class="filter-range" min="100" max="200" value="140">
-                    <div class="filter-range-labels">
-                        <span>129 cm</span>
-                        <span>150 cm</span>
-                    </div>
-                </div>
+                @if (Model.Any())
+                {
+                    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                        @foreach (var item in Model)
+                        {
+                            <a href="https://localhost:7286/Customer/Home/Details/@item.Id" class="col">
+                                <div class="product-card m-1">
+                                    <img src="~/images/@item.MainImage" alt="@item.Name" />
 
-                <div class="filter-section">
-                    <div class="filter-section-title">
-                        <span>Weight</span>
-                        <a href="#" class="filter-reset">Reset</a>
-                    </div>
-                    <input type="range" class="filter-range" min="200" max="700" value="444">
-                    <div class="filter-range-labels">
-                        <span>232 g</span>
-                        <span>656 g</span>
-                    </div>
-                </div>
+                                    <div class="product-info">
+                                        <h3>@item.Name</h3>
 
-                <a href="/Customer/Home/Product" class="view-all-btn">
-                    View All Products
-                </a>
-            </div>
-        </aside>
+                                        <div class="rowProduct d-flex justify-content-center align-items-center">
+                                            <span>@item.Composition</span>
+                                        </div>
 
-        <!-- Products Grid -->
-        <div class="col-lg-9">
+                                        <div class="rowProduct split px-3">
+                                            <span>@item.Width cm</span>
+                                            <span>@item.Weight g / m</span>
+                                        </div>
 
-            <div class="quick-filter-bar">
-                <span class="filter-label">Filter by:</span>
-                <select class="quick-filter-select">
-                    <option>Color</option>
-                    <option>Black</option>
-                    <option>White</option>
-                    <option>Red</option>
-                    <option>Blue</option>
-                    <option>Green</option>
-                </select>
-                <select class="quick-filter-select">
-                    <option>Type</option>
-                    <option>Tweed</option>
-                    <option>Bouclé</option>
-                    <option>Jacquard</option>
-                    <option>Velvet</option>
-                </select>
-                <select class="quick-filter-select">
-                    <option>Quality</option>
-                    <option>Premium</option>
-                    <option>Standard</option>
-                    <option>Economy</option>
-                </select>
-                <select class="quick-filter-select">
-                    <option>Composition</option>
-                    <option>100% Wool</option>
-                    <option>Wool Blend</option>
-                    <option>Silk</option>
-                    <option>Cotton</option>
-                </select>
-                <select class="quick-filter-select">
-                    <option>Pattern</option>
-                    <option>Solid</option>
-                    <option>Checkered</option>
-                    <option>Striped</option>
-                    <option>Floral</option>
-                </select>
-            </div>
-            @if (Model.Any())
-            {
-                <div class="products-grid-new">
-                    @foreach (var item in Model)
-                    {
-                        <a href="https://localhost:7286/customer/home/Details/@item.Id" class="product-card-new">
-                            <div class="product-image-container">
-                                @* @if (item.IsHot)
-                                {
-                                    <div class="product-badge">HOT SALE</div>
-                                } *@
-                                <div class="product-code">@item.SKU</div>
-                                <img src="~/images/@item.MainImage" class="product-image" alt="@item.Name">
-                            </div>
-
-                            <div class="product-info-new">
-                                <h3 class="product-title-new">@item.Name</h3>
-
-                                @if (!string.IsNullOrEmpty(item.Composition))
-                                {
-                                    <div class="product-composition">
-                                        @* Parse and display composition with color coding *@
-                                        @{
-                                            var compositionParts = item.Composition.Split(',');
-                                            foreach (var part in compositionParts)
-                                            {
-                                                var trimmed = part.Trim();
-                                                if (trimmed.Contains("PC"))
-                                                {
-                                                    <span class="composition-pc">@trimmed</span>
-                                                }
-                                                else if (trimmed.Contains("WV"))
-                                                {
-                                                    <span class="composition-wv">@trimmed</span>
-                                                }
-                                                else if (trimmed.Contains("CO"))
-                                                {
-                                                    <span class="composition-co">@trimmed</span>
-                                                }
-                                                else if (trimmed.Contains("PA"))
-                                                {
-                                                    <span class="composition-pa">@trimmed</span>
-                                                }
-                                                else if (trimmed.Contains("VI"))
-                                                {
-                                                    <span class="composition-vi">@trimmed</span>
-                                                }
-                                                else if (trimmed.Contains("LI"))
-                                                {
-                                                    <span class="composition-li">@trimmed</span>
-                                                }
-                                                else
-                                                {
-                                                    <span>@trimmed</span>
-                                                }
-                                            }
-                                        }
-                                    </div>
-                                }
-
-                                <div class="product-specs">
-                                    <div class="spec-item">
-                                        <span class="spec-value">@(item.Height.HasValue ? $"{item.Height} cm" : "150 cm")</span>
-                                        <span class="spec-label">Height</span>
-                                    </div>
-                                    <div class="spec-divider"></div>
-                                    <div class="spec-item">
-                                        <span class="spec-value">@(item.Weight.HasValue ? $"{item.Weight} g" : "560 g")</span>
-                                        <span class="spec-label">Weight / m</span>
+                                        <div class="rowProduct split bottom px-3">
+                                            <span class="price">€ @item.Price / m</span>
+                                            <span class="stock">@item.StockQuantity m</span>
+                                        </div>
                                     </div>
                                 </div>
+                            </a>
+                        }
+                    </div>
 
-                                <div class="product-pricing">
-                                    <div class="price-per-meter">
-                                        @{
-                                            var discountedPrice = item.Price - (item.Price * (item.Discount / 100));
-                                            var priceString = discountedPrice.ToString("C");
+                    <!-- Pagination -->
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-center">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    @if (ViewBag.currentPage > 1)
+                                    {
+                                        <li class="page-item"><a class="page-link" href="/Customer/home/CategroySearch?page=@(ViewBag.currentPage - 1)">Previous</a></li>
+                                    }
+
+                                    @for (var i = 1; i <= ViewBag.totalNumberOfPages; i++)
+                                    {
+                                        @if (i == ViewBag.currentPage)
+                                        {
+                                            <li class="page-item active"><a class="page-link" href="/Customer/home/CategroySearch?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
                                         }
-                                        @priceString.Replace("$", "€") <span class="price-unit">/ m</span>
-                                    </div>
-                                    <div class="product-stock-new">
-                                        @(item.StockQuantity > 0 ? $"{item.StockQuantity} m in stock" : "Out of stock")
-                                    </div>
-                                </div>                                
-                            </div>
-                        </a>
-                    }
-                </div>
+                                        else
+                                        {
+                                            <li class="page-item"><a class="page-link" href="/Customer/home/CategroySearch?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
+                                        }
 
-                <!-- Pagination -->
-                <div class="pagination-container">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            @if (ViewBag.currentPage > 1)
-                            {
-                                <li class="page-item">
-                                    <a class="page-link" href="/?page=@(ViewBag.currentPage - 1)" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            }
+                                    }
 
-                            @for (var i = 1; i <= ViewBag.totalNumberOfPages; i++)
-                            {
-                                if (i == ViewBag.currentPage)
-                                {
-                                    <li class="page-item active">
-                                        <a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a>
-                                    </li>
-                                }
-                            }
+                                    @if (ViewBag.currentPage != ViewBag.totalNumberOfPages && Model.Any())
+                                    {
+                                        <li class="page-item"><a class="page-link" href="/Customer/home/CategroySearch?page=@(ViewBag.currentPage + 1)">Next</a></li>
+                                    }
+                                </ul>
+                            </nav>
+                        </div>
 
-                            @if (ViewBag.currentPage != ViewBag.totalNumberOfPages && Model.Any())
-                            {
-                                <li class="page-item">
-                                    <a class="page-link" href="/?page=@(ViewBag.currentPage + 1)" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    </nav>
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <h3>No products found in this category</h3>
-                    <p>Please check back later or browse other categories.</p>
-                </div>
-            }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <h3>No products found in this category</h3>
+                        <p>Please check back later or browse other categories.</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>

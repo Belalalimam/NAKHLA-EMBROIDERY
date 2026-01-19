@@ -1,7 +1,6 @@
 ﻿@model ProductWithRelatedVM
-
-<div class="product-detail-page">
-    <!-- Breadcrumb -->
+<div class="product-detail-page " style="max-width:1550px; margin-left: auto; margin-right: auto;">
+    @* <!-- Breadcrumb -->
     <div class="container">
         <div class="product-breadcrumb">
             <a href="/">Home</a>
@@ -10,10 +9,10 @@
             <span>></span>
             <span>@Model.Product.Name</span>
         </div>
-    </div>
+    </div> *@
 
     <!-- Main Product Section -->
-    <div class="container">
+    <div class="container-fluid">
         <div class="product-main-section">
             <!-- Product Gallery -->
             <div class="product-gallery">
@@ -23,6 +22,7 @@
                     <img src="~/images/@firstImage.ImageUrl"
                          alt="@(firstImage.AltText ?? Model.Product.Name)"
                          class="product-main-image"
+                         style="height:550px; width:800px;"
                          id="mainProductImage">
 
                     <div class="product-thumbnails">
@@ -38,7 +38,6 @@
                 }
                 else if (!string.IsNullOrEmpty(Model.Product.MainImage))
                 {
-                    <!-- Fallback to main product image if no gallery images -->
                     <img src="~/images/@Model.Product.MainImage"
                          alt="@Model.Product.Name"
                          class="product-main-image"
@@ -53,7 +52,6 @@
                 }
                 else
                 {
-                    <!-- Default image if no images exist -->
                     <img src="~/images/products/default.jpg"
                          alt="@Model.Product.Name"
                          class="product-main-image"
@@ -78,8 +76,6 @@
                     else
                     {
                         <p>An elegant white and silver Chanel-style tweed fabric, enriched with delicate lilac yarn inserts; sophisticated and stylish, it is perfect for both classic and modern inspired garments.</p>
-                        <p>The interlacing of the silver and lilac threads adds a discreet sheen, creating a bright and fresh effect that enhances the texture of the tweed.</p>
-                        <p>Soft and structured, it is ideal for making jackets, dusters and elegant dresses, offering a comfortable and refined fit. Perfect for those who want a chic and feminine look, this tweed brings a touch of originality to garments while maintaining a timeless elegance.</p>
                     }
                 </div>
 
@@ -143,7 +139,7 @@
                 @if (!string.IsNullOrEmpty(Model.Product.AvailableColors))
                 {
                     <div class="colors-section">
-                        <h3 class="section-title">AVAILABLE COLORS</h3>
+                        <h3 class="section-title">Available Colors</h3>
                         <div class="color-options">
                             @{
                                 var colors = Model.Product.AvailableColors.Split(',');
@@ -217,13 +213,15 @@
                         {
                             <img src="~/images/products/default.jpg" alt="@item.Name" class="related-product-image">
                         }
-                        <h3 class="related-product-title">@item.Name</h3>
-                        @{
-                            var itemDiscountedPrice = item.Price - (item.Price * (item.Discount / 100));
-                            var itemPriceString = itemDiscountedPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
-                        }
-                        <div class="related-product-price">@itemPriceString / m</div>
-                        <div class="related-product-stock">@item.StockQuantity m</div>
+                        <div>
+                            <h3 class="related-product-title">@item.Name</h3>
+                            @{
+                                var itemDiscountedPrice = item.Price - (item.Price * (item.Discount / 100));
+                                var itemPriceString = itemDiscountedPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
+                            }
+                            <div class="related-product-price">@itemPriceString / m</div>
+                            <div class="related-product-stock">@item.StockQuantity m</div>
+                        </div>
                     </a>
                 }
             </div>
@@ -233,37 +231,20 @@
     <!-- You May Also Like -->
     @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
     {
-        <div class="container related-products-section">
+        <div class="container-md border1">
             <div class="section-header">
                 <h2>You may also be interested in...</h2>
                 <a href="@Url.Action("Product", "Home", new { area = "Customer" })" class="view-all-link">View all</a>
             </div>
 
-            <div class="related-products-grid">
+            <div class="product-category-grid">
                 @foreach (var item in Model.RelatedProducts.Take(4))
                 {
-                    <a href="@Url.Action("Details", "Home", new { id = item.Id, area = "Customer" })" class="related-product-card">
-                        @if (item.ProductImages != null && item.ProductImages.Any())
-                        {
-                            <img src="~/images/products/@item.ProductImages.First().ImageUrl"
-                                 alt="@item.ProductImages.First().AltText"
-                                 class="related-product-image">
-                        }
-                        else if (!string.IsNullOrEmpty(item.MainImage))
-                        {
-                            <img src="~/images/@item.MainImage" alt="@item.Name" class="related-product-image">
-                        }
-                        else
-                        {
-                            <img src="~/images/products/default.jpg" alt="@item.Name" class="related-product-image">
-                        }
-                        <h3 class="related-product-title">@item.Name</h3>
-                        @{
-                            var itemDiscountedPrice = item.Price - (item.Price * (item.Discount / 100));
-                            var itemPriceString = itemDiscountedPrice.ToString("C").Replace("$", "€").Replace("USD", "€");
-                        }
-                        <div class="related-product-price">@itemPriceString / m</div>
-                        <div class="related-product-stock">@item.StockQuantity m</div>
+                    <a href="@Url.Action("FlashSale", "Products")" class="product-category-card border1">
+                        <img src="~/images/warm-coating-fabrics.webp" alt="Flash Sale" />
+                        <div class="category-overlay">
+                            <h3>Flash Sale</h3>
+                        </div>
                     </a>
                 }
             </div>
@@ -276,26 +257,17 @@
             <h2>More inspirations</h2>
         </div>
 
-        <div class="related-products-grid">
-            <a href="@Url.Action("Product", "Home", new { area = "Customer", IsHot = true })" class="related-product-card" style="text-align: center; background: #f9f9f9;">
-                <div style="padding: 40px 20px;">
-                    <h3 class="related-product-title">ON SALE FABRICS</h3>
-                    <div style="color: #666; font-size: 0.9rem; margin-top: 10px;">Discover our special offers</div>
-                </div>
+        <div class="related-products-grid d-flex justify-content-between">
+            <a href="@Url.Action("Product", "Home", new { area = "Customer", IsHot = true })" class="related-product-card1" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); text-align: center;">
+                <h3 class="related-product-title">ON SALE FABRICS</h3>
             </a>
 
-            <a href="@Url.Action("Product", "Home", new { area = "Customer" })" class="related-product-card" style="text-align: center; background: #f9f9f9;">
-                <div style="padding: 40px 20px;">
-                    <h3 class="related-product-title">NEW ARRIVALS</h3>
-                    <div style="color: #666; font-size: 0.9rem; margin-top: 10px;">Latest additions to our collection</div>
-                </div>
+            <a href="@Url.Action("Product", "Home", new { area = "Customer" })" class="related-product-card1" style="background: linear-gradient(135deg, #89CFF0 0%, #B2E5FF 100%); text-align: center;">
+                <h3 class="related-product-title">NEW ARRIVALS</h3>
             </a>
 
-            <a href="@Url.Action("Product", "Home", new { area = "Customer", CategoryName = "Organic" })" class="related-product-card" style="text-align: center; background: #f9f9f9;">
-                <div style="padding: 40px 20px;">
-                    <h3 class="related-product-title">ORGANIC FABRICS</h3>
-                    <div style="color: #666; font-size: 0.9rem; margin-top: 10px;">Eco-friendly and sustainable</div>
-                </div>
+            <a href="@Url.Action("Product", "Home", new { area = "Customer", CategoryName = "Organic" })" class="related-product-card1" style="background: linear-gradient(135deg, #90EE90 0%, #C1FFC1 100%); text-align: center;">
+                <h3 class="related-product-title">ORGANIC FABRICS</h3>
             </a>
         </div>
     </div>
@@ -316,24 +288,18 @@
 
 @section Scripts {
     <script>
-        // Image gallery functionality
         function changeImage(src, altText) {
             const mainImage = document.getElementById('mainProductImage');
             mainImage.src = src;
-
-            // Update alt text if available
             if (altText) {
                 mainImage.alt = altText;
             }
-
-            // Update active thumbnail
             document.querySelectorAll('.product-thumbnail').forEach(thumb => {
                 thumb.classList.remove('active');
             });
             event.target.classList.add('active');
         }
 
-        // Quantity controls
         function incrementQuantity() {
             const input = document.getElementById('quantityInput');
             const max = parseInt(input.max);
@@ -349,13 +315,10 @@
             }
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Set max quantity to stock
             const stock = @Model.Product.StockQuantity;
             document.getElementById('quantityInput').max = stock;
 
-            // Add click handlers to thumbnails
             document.querySelectorAll('.product-thumbnail').forEach(thumb => {
                 thumb.addEventListener('click', function() {
                     const src = this.src;
@@ -368,14 +331,13 @@
 }
 
 @functions {
-    // Helper function to get color hex codes
     private string GetColorHex(string colorName)
     {
         var colors = new Dictionary<string, string>
         {
-            { "TC001426", "#f5f5f5" }, // White/Silver
-            { "TC001425", "#7fffd4" }, // Aquamarine
-            { "TC001403", "#8b7355" }, // Tweed
+            { "TC001426", "#f5f5f5" },
+            { "TC001425", "#7fffd4" },
+            { "TC001403", "#8b7355" },
             { "WHITE", "#ffffff" },
             { "BLACK", "#000000" },
             { "RED", "#ff0000" },

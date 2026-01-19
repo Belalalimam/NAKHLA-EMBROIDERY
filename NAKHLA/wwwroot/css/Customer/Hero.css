@@ -81,11 +81,12 @@
     gap: 30px;
 }
 
+
 .category-card {
     position: relative;
     border-radius: 10px;
     overflow: hidden;
-    height: 180px;
+    height: 240px;
     text-decoration: none;
 }
 

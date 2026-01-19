@@ -67,7 +67,7 @@ namespace NAKHLA.Areas.Customer.Controllers
             ViewBag.totalNumberOfPages = totalNumberOfPages;
             ViewBag.currentPage = currentPage;
 
-            products = products.Skip((page - 1) * 10).Take(10);
+            products = products.Skip((page - 1) * 8).Take(8);
 
 
             return View(products.ToList());
@@ -104,7 +104,7 @@ namespace NAKHLA.Areas.Customer.Controllers
             ViewBag.totalNumberOfPages = totalNumberOfPages;
             ViewBag.currentPage = page;
 
-            products = products.Skip((page - 1) * 10).Take(10);
+            products = products.Skip((page - 1) * 8).Take(8);
 
             // 🔴 أهم سطر
             ViewBag.SelectedCategory = category;

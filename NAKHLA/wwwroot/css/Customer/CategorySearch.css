@@ -250,7 +250,14 @@
     }
 
 
-
+.container-xl-cs {
+    mmax-width: 1520px !important;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px; /* بدل padding Bootstrap الافتراضي */
+    padding-right: 15px;
+}
 
 /* Product Grid */
 .products-grid-new {

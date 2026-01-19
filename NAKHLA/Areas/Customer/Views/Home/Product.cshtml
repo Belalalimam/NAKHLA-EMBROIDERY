@@ -3,92 +3,36 @@
 
 @if (Model.Any())
 {
-    <div class="container-fluid d-flex">
-
-        
-
-        @* قسم المنتجات لسا بده شوي تعديلات *@
-        <div class="row d-flex align-items-start justify-content-center">
-            @foreach (var item in Model)    
+    <div class="container  my-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @foreach (var item in Model)
             {
-                @* <div class="card">
-                    <a href="https://localhost:7286/customer/home/Details/@item.Id">
-                    <div class="badge">HOT SALE</div>
-                    <div class="tilt">
-                            <div class="img"><img src="" alt="Premium Laptop"></div>
-                    </div>
-                    <div class="info">
-                        <div class="cat">@item.Category.Name</div>
-                        <h2 class="title">@item.Name</h2>
-                         <p class="desc">Cutting-edge performance with Intel Core i9, 32GB RAM, and a 1TB SSD in a sleek, lightweight design.</p>
-                        <div class="feats">
-                            <span class="feat">4K Display</span>
-                            <span class="feat">16-Hour Battery</span>
-                            <span class="feat">Thunderbolt 4</span>
-                        </div> 
-                        <div class="bottom">
-                            <div class="price">
-                                    <span class="old">@item.Price.ToString("c")</span>
-                                    <span class="new"> @((item.Price - (item.Price * (item.Discount / 100))).ToString("c"))</span>
-                            </div>
-                        </div>
-                        <div class="meta">
-                            <div class="rating">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                <span class="rcount">@item.Traffic Reviews</span>
-                            </div>
-                            <div class="stock">In Stock</div>
-                        </div>
-                    </div>
-                    </a>
-                </div> *@
-
-
-
-
-
-
-
-
-                <div class="product-card">
-                    <div class="product-image">
+                <a href="https://localhost:7286/Customer/Home/Details/@item.Id" class="col">
+                    <div class="product-card m-1">
                         <img src="~/images/@item.MainImage" alt="@item.Name" />
-                    </div>
 
-                    <div class="product-details">
-                        <h3 class="product-name">@item.Name</h3>
+                        <div class="product-info">
+                            <h3>@item.Name</h3>
 
-                        <div class="product-specs">
-                            <div class="spec-item">
-                                <span>@item.Name</span> @*Material *@
+                            <div class="rowProduct d-flex justify-content-center align-items-center">
+                                <span>@item.Composition</span>
                             </div>
-                            <div class="spec-item">
-                                <span>@item.Name g / m</span>@*Weight *@
+
+                            <div class="rowProduct split px-3">
+                                <span>@item.Width cm</span>
+                                <span>@item.Weight g / m</span>
                             </div>
-                            <div class="spec-item">
-                                <span>@item.Name cm</span>@*Width *@
-                            </div>
-                            <div class="spec-item available">
-                                <span>@item.Name m</span>@*AvailableLength *@
+
+                            <div class="rowProduct split bottom px-3">
+                                <span class="price">€ @item.Price / m</span>
+                                <span class="stock">@item.StockQuantity m</span>
                             </div>
                         </div>
-
-                        <div class="product-price">
-                            <span class="price">€ @item.Price.ToString("N2")</span>
-                            <span class="unit">/ m</span>
-                        </div>
                     </div>
-                </div>
-
-
-
+                </a>
             }
-                </div>  
-        </div>  
+        </div>
+    </div>
 
 
 
@@ -98,31 +42,31 @@
                 <ul class="pagination">
                     @if (ViewBag.currentPage > 1)
                     {
-                        <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage - 1)">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="/Customer/home/product?page=@(ViewBag.currentPage - 1)">Previous</a></li>
                     }
 
                     @for (var i = 1; i <= ViewBag.totalNumberOfPages; i++)
                     {
                         @if (i == ViewBag.currentPage)
                         {
-                            <li class="page-item active"><a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
+                            <li class="page-item active"><a class="page-link" href="/Customer/home/product?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
                         }
                         else
                         {
-                            <li class="page-item"><a class="page-link" href="/?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
+                            <li class="page-item"><a class="page-link" href="/Customer/home/product?Name=@ViewBag.ProductName&MinPrice=@ViewBag.MinPrice&MaxPrice=@ViewBag.MaxPrice&CategoryId=@ViewBag.CategoryId&IsHot=@ViewBag.IsHot&page=@i">@i</a></li>
                         }
 
                     }
 
                     @if (ViewBag.currentPage != ViewBag.totalNumberOfPages && Model.Any())
                     {
-                        <li class="page-item"><a class="page-link" href="/?page=@(ViewBag.currentPage + 1)">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="/Customer/home/product?page=@(ViewBag.currentPage + 1)">Next</a></li>
                     }
                 </ul>
             </nav>
         </div>
 
-       
+
     </div>
 }
 

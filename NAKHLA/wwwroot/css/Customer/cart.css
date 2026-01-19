@@ -1,11 +1,11 @@
 ﻿
-* {
+.cart-page * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-.container {
+.cart-page .container-cart {
     display: flex;
     flex-wrap: wrap;
     gap: 40px;
@@ -632,7 +632,7 @@ h2 {
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .container {
+    .container-cart {
         flex-direction: column;
     }
 

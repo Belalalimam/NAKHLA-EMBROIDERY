@@ -4,37 +4,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#06c1db" />
     <meta name="author" content="">
     <title>NAKHLA EMBROIDERY</title>
     <script type="importmap"></script>
     <link rel="icon" type="image/svg+xml" href="~/Logo.png" />
-    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
-    <script src="https://kit.fontawesome.com/26ef36b519.js" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    @* <script src="https://cdn.tailwindcss.com"></script> *@
     <link href="~/css/Customer/Hero.css" rel="stylesheet" />
     <link href="~/css/Customer/CategorySearch.css" rel="stylesheet" />
-    <link href="~/css/Customer/DetailsProduct.css" rel="stylesheet" />
     <link href="~/css/Customer/cart.css" rel="stylesheet" />
     <link href="~/css/Customer/ProductCard.css" rel="stylesheet" />
+    <link href="~/css/Customer/DetailsProduct.css" rel="stylesheet" />
 
-
-
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
 
 </head>
 
 @{
-            var categories = ViewBag.Categories as List<NAKHLA.Models.Category> ?? new List<NAKHLA.Models.Category>();
-            var brands = ViewBag.Brands as List<NAKHLA.Models.Brand> ?? new List<NAKHLA.Models.Brand>();
-            var validationErrors = ViewBag.ValidationErrors as List<string> ?? new List<string>();
+                    var categories = ViewBag.Categories as List<NAKHLA.Models.Category> ?? new List<NAKHLA.Models.Category>();
+                    var brands = ViewBag.Brands as List<NAKHLA.Models.Brand> ?? new List<NAKHLA.Models.Brand>();
+                    var validationErrors = ViewBag.ValidationErrors as List<string> ?? new List<string>();
 }
 <body>
 
 
-    <div class="bg-dark text-black text-center py-2 small">
+    <div class="text-black text-center py-2 small">
         <u>شحن مجاني</u> للطلبات المحلية بقيمة 1000 جنيه أو أكثر
     </div>
     <div class="site">
@@ -57,7 +53,7 @@
                                 <li><a href="#">Promo</a></li>
                             </ul>
                         </nav>
-                        
+
                     </div>
                     <div class="right">
                         <ul>
@@ -86,11 +82,9 @@
 
 
         <main role="main">
-            <div class="container1">
-                <div class="content">
+            <div class="content">
 
-                    @RenderBody()
-                </div>
+                @RenderBody()
             </div>
         </main>
 
