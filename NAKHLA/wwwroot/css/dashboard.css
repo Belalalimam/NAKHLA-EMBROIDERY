@@ -1290,21 +1290,7 @@ body {
         padding: 15px;
     }
 
-    .pagination {
-        padding: 15px;
-        flex-wrap: wrap;
-        gap: 4px;
-        justify-content: center;
-    }
-
-    .page-item {
-        width: 32px;
-        height: 32px;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    
 
     .mobile-scroll-hint {
         display: block;

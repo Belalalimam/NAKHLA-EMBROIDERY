@@ -1,9 +1,4 @@
-﻿.product-detail-page {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    background: #fff;
-}
-.product-breadcrumb {
+﻿.product-breadcrumb {
     padding: 20px 0;
     font-size: 14px; 
     color: #666;
@@ -120,7 +115,6 @@
 }
 
 .price-discount {
-    background: #fff3cd;
     color: #856404;
     padding: 10px 15px;
     border-radius: 4px;
@@ -137,7 +131,6 @@
     padding: 20px;
     border-radius: 8px;
 }
-
 .spec-item {
     display: flex;
     align-items: center;
@@ -209,7 +202,7 @@
 
 /* Order Form */
 .order-form {
-    border-top: 1px solid #e0e0e0;
+/*    border-top: 1px solid #e0e0e0;*/
     padding-top: 30px;
 }
 

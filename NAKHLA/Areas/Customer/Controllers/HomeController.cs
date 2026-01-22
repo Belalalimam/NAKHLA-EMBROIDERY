@@ -67,7 +67,7 @@ namespace NAKHLA.Areas.Customer.Controllers
             ViewBag.totalNumberOfPages = totalNumberOfPages;
             ViewBag.currentPage = currentPage;
 
-            products = products.Skip((page - 1) * 8).Take(8);
+            products = products.Skip((page - 1) * 16).Take(16);
 
 
             return View(products.ToList());

@@ -3,10 +3,10 @@
     var category = ViewBag.SelectedCategory as Category;
 }
 
-<div class="" style="max-width:1500px; margin-left: auto; margin-right: auto;">
+<div class="container">
     <!-- Category Header Section -->
     <div class="category-header-section">
-        <div class="container-fluid">
+        <div class="container">
             <div class="category-header">
                 @if (category != null)
                 {
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container">
 
 
         <div class="row">
@@ -134,10 +134,10 @@
 
                 @if (Model.Any())
                 {
-                    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    <div class="row">
                         @foreach (var item in Model)
                         {
-                            <a href="https://localhost:7286/Customer/Home/Details/@item.Id" class="col">
+                            <a href="@Url.Action("Details", "Home", new { id = item.Id, area = "Customer" })" class="col-4">
                                 <div class="product-card m-1">
                                     <img src="~/images/@item.MainImage" alt="@item.Name" />
 

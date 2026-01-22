@@ -3,9 +3,9 @@
 @{
     ViewData["Title"] = "Shopping Cart";
 }
-<div class="cart-page border1">
+<div class="cart-page ">
 
-    <div class="container-cart border1">
+    <div class="container-cart ">
         <div class="basket-section">
             <h1>Basket</h1>
 
@@ -115,31 +115,35 @@
                     <div class="recommendations">
                         <h2>You may also be interested in...</h2>
 
-                        <div class="product-grid">
-                            @foreach (var product in Model.SuggestedProducts.Take(4))
-                            {
-                                <div class="product-card">
-                                    <img src="~/images/@product.MainImage" alt="@product.Name" class="suggested-product-image">
-                                    <div class="product-info">
-                                        <div class="product-title">@product.Name</div>
-                                        <div class="product-price">
-                                            <span class="price">€ @product.Price.ToString("N2")</span>
-                                            @if (product.SpecialPrice.HasValue &&
-                                                                            product.SpecialPriceStart.HasValue &&
-                                                                            product.SpecialPriceEnd.HasValue &&
-                                                                            DateTime.Now >= product.SpecialPriceStart.Value &&
-                                                                            DateTime.Now <= product.SpecialPriceEnd.Value)
-                                            {
-                                                <span class="original-price">€ @product.Price.ToString("N2")</span>
-                                                <span class="special-price">€ @product.SpecialPrice.Value.ToString("N2")</span>
-                                            }
-                                        </div>
-                                        <a href="@Url.Action("Details", "Product", new { id = product.Id, area = "" })"
-                                           class="view-product-btn">View Product</a>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+
+                        <swiper-container class="mySwiper" pagination="true" pagination-clickable="true" space-between="30" slides-per-view="3">
+
+
+
+
+                            @* <div class="product-grid"> *@
+                                @foreach (var product in Model.SuggestedProducts.Take(10))
+                                {
+                                    <swiper-slide>
+                                        <a href="@Url.Action("Details", "Home", new { id = product.Id, area = "Customer" })" class="col">
+                                            <div class="product-card m-1">
+                                                <img src="~/images/@product.MainImage" alt="@product.Name" />
+
+                                                <div class="product-info">
+                                                    <h3>@product.Name</h3>
+
+                                                    <div class="rowProduct split bottom px-3">
+                                                        <span class="price">€ @product.Price / m</span>
+                                                        <span class="stock">@product.StockQuantity m</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </swiper-slide>
+                                }
+                            @* </div> *@
+                        </swiper-container>
+
                     </div>
                 }
             }
