@@ -113,6 +113,47 @@ namespace NAKHLA.Areas.Customer.Controllers
         }
 
 
+        [HttpGet("fabrics-used-for/{slug}")]
+        public IActionResult FabricsUsedFor(string slug)
+        {
+            var products = _context.Products
+                .Include(p => p.ProjectCategories)
+                .Include(p => p.FabricType)
+                .Where(p => p.ProjectCategories.Any(c => c.Slug == slug))
+                .ToList();
+
+            ViewBag.Title = slug;
+            return View("Product", products);
+        }
+
+
+        [HttpGet("fabric-type/{slug}")]
+        public IActionResult FabricType(string slug)
+        {
+            var products = _context.Products
+                .Include(p => p.FabricType)
+                .Where(p => p.FabricType.Slug == slug)
+                .ToList();
+
+            ViewBag.Title = slug;
+            return View("Product", products);
+        }
+
+
+
+
+        public IActionResult FilterByColor(string color)
+        {
+            var products = _context.Products
+                .Include(p => p.ProductColors)
+                .Where(p => p.ProductColors.Any(c => c.Color == color))
+                .ToList();
+
+            return View("Product", products);
+        }
+
+
+
 
         public IActionResult Details(int id)
         {

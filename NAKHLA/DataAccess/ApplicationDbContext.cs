@@ -21,12 +21,15 @@ namespace NAKHLA.DataAccess
         public DbSet<Brand> Brands { get; set; }
         public DbSet<UserOTP> UserOTPs { get; set; }
         public DbSet<Cart> Carts { get; set; } = default!;
-        public DbSet<ProductAttribute> productAttributes { get; set; }
-        public DbSet<ProductTag> productTags { get; set; }
+        public DbSet<ProductAttribute> ProductAttributes { get; set; }
+        public DbSet<ProductTag> ProductTags { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
-        public DbSet<ProductReview> productReviews  { get; set; }
+        public DbSet<ProductReview> ProductReviews  { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<ProductColor> ProductColors { get; set; }
+        public DbSet<FabricType> FabricTypes { get; set; }
+        public DbSet<ProjectCategory> ProjectCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using NAKHLA.Models;
 using NAKHLA.Utitlies;
 using NAKHLA.Utitlies.DBInitilizer;
 
@@ -45,6 +46,9 @@ namespace NAKHLA
             services.AddScoped<IRepository<Promotion>, Repository<Promotion>>();
             services.AddScoped<IRepository<Order>, Repository<Order>>();
             services.AddScoped<IRepository<OrderItem>, Repository<OrderItem>>();
+            services.AddScoped<IRepository<ProductColor>, Repository<ProductColor>>();
+            services.AddScoped<IRepository<FabricType>, Repository<FabricType>>();
+            services.AddScoped<IRepository<ProjectCategory>, Repository<ProjectCategory>>();
             
 
             services.AddScoped<IDBInitializer, DBInitializer>();

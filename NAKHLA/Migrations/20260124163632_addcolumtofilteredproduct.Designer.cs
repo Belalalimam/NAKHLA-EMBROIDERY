@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NAKHLA.DataAccess;
 
@@ -11,9 +12,11 @@ using NAKHLA.DataAccess;
 namespace NAKHLA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124163632_addcolumtofilteredproduct")]
+    partial class addcolumtofilteredproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -406,7 +409,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FabricTypes");
+                    b.ToTable("FabricType");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Order", b =>
@@ -871,32 +874,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttributes");
-                });
-
-            modelBuilder.Entity("NAKHLA.Models.ProductColor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductColors");
+                    b.ToTable("productAttributes");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductImage", b =>
@@ -962,7 +940,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReviews");
+                    b.ToTable("productReviews");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductTag", b =>
@@ -983,7 +961,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTags");
+                    b.ToTable("productTags");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProjectCategory", b =>
@@ -1004,7 +982,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectCategories");
+                    b.ToTable("ProjectCategory");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Promotion", b =>
@@ -1188,12 +1166,12 @@ namespace NAKHLA.Migrations
                     b.Property<int>("ProductsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProjectCategoriesId")
+                    b.Property<int>("ProjectCategoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProductsId", "ProjectCategoriesId");
+                    b.HasKey("ProductsId", "ProjectCategoryId");
 
-                    b.HasIndex("ProjectCategoriesId");
+                    b.HasIndex("ProjectCategoryId");
 
                     b.ToTable("ProductProjectCategory");
                 });
@@ -1334,15 +1312,6 @@ namespace NAKHLA.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("NAKHLA.Models.ProductColor", b =>
-                {
-                    b.HasOne("NAKHLA.Models.Product", null)
-                        .WithMany("ProductColors")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("NAKHLA.Models.ProductImage", b =>
                 {
                     b.HasOne("NAKHLA.Models.Product", "Product")
@@ -1422,7 +1391,7 @@ namespace NAKHLA.Migrations
 
                     b.HasOne("NAKHLA.Models.ProjectCategory", null)
                         .WithMany()
-                        .HasForeignKey("ProjectCategoriesId")
+                        .HasForeignKey("ProjectCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1457,8 +1426,6 @@ namespace NAKHLA.Migrations
             modelBuilder.Entity("NAKHLA.Models.Product", b =>
                 {
                     b.Navigation("ProductAttributes");
-
-                    b.Navigation("ProductColors");
 
                     b.Navigation("ProductImages");
 

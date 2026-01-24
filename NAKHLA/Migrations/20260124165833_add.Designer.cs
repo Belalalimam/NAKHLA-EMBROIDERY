@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NAKHLA.DataAccess;
 
@@ -11,9 +12,11 @@ using NAKHLA.DataAccess;
 namespace NAKHLA.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124165833_add")]
+    partial class add
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -406,7 +409,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FabricTypes");
+                    b.ToTable("fabricTypes");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Order", b =>
@@ -871,7 +874,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttributes");
+                    b.ToTable("productAttributes");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductColor", b =>
@@ -896,7 +899,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductColors");
+                    b.ToTable("productColors");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductImage", b =>
@@ -962,7 +965,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReviews");
+                    b.ToTable("productReviews");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductTag", b =>
@@ -983,7 +986,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTags");
+                    b.ToTable("productTags");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProjectCategory", b =>
@@ -1004,7 +1007,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectCategories");
+                    b.ToTable("projectCategories");
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Promotion", b =>

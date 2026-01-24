@@ -25,6 +25,9 @@ namespace NAKHLA.Controllers.Admin
             var products = await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
+                .Include(p => p.ProductColors)
+                .Include(p => p.FabricType)
+                .Include(p => p.ProjectCategories)
                 .Where(p => !p.IsDeleted)
                 .OrderByDescending(p => p.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -95,8 +98,17 @@ namespace NAKHLA.Controllers.Admin
                 .Where(b => b.Status == "Active")
                 .ToListAsync();
 
+            var colors = await _context.ProductColors.ToListAsync();
+
+            var fabricTypes = await _context.FabricTypes.ToListAsync();
+
+            var projectCategories = await _context.ProjectCategories.ToListAsync();
+
             ViewBag.Categories = categories;
             ViewBag.Brands = brands;
+            ViewBag.Colors = colors;
+            ViewBag.FabricTypes = fabricTypes;
+            ViewBag.ProjectCategories = projectCategories;
 
             return View();
         }
@@ -104,7 +116,7 @@ namespace NAKHLA.Controllers.Admin
         // POST: Admin/Products/Create
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategories)
         {
             // Debug: Check what's coming in
             Console.WriteLine($"Product Name: {product?.Name}");
@@ -127,8 +139,19 @@ namespace NAKHLA.Controllers.Admin
                         product.SKU = "PROD-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
                     }
 
-                    // Generate slug if empty
-                    if (string.IsNullOrEmpty(product.Slug))
+                    if (SelectedProjectCategories != null && SelectedProjectCategories.Length > 0)
+                    {
+                        foreach (var catId in SelectedProjectCategories)
+                        {
+                            var category = await _context.ProjectCategories.FindAsync(catId);
+                            if (category != null)
+                            {
+                                product.ProjectCategories.Add(category);
+                            }
+                        }
+                    }
+                        // Generate slug if empty
+                        if (string.IsNullOrEmpty(product.Slug))
                     {
                         product.Slug = GenerateSlug(product.Name);
                     }
@@ -171,6 +194,9 @@ namespace NAKHLA.Controllers.Admin
 
             ViewBag.Categories = categories;
             ViewBag.Brands = brands;
+
+
+            ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
 
             return View(product);
         }
