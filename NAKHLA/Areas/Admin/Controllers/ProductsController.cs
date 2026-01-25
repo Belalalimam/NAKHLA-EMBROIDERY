@@ -64,6 +64,10 @@ namespace NAKHLA.Controllers.Admin
             var product = await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
+                .Include(p => p.FabricType)
+                .Include(p => p.ProductColors)
+                .Include(p => p.ProjectCategories)
+                .Include(p => p.ProductTags)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
 
             if (product == null) return NotFound();
@@ -78,6 +82,10 @@ namespace NAKHLA.Controllers.Admin
             var product = await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
+                .Include(p => p.FabricType)
+                .Include(p => p.ProductColors)
+                .Include(p => p.ProjectCategories)
+                .Include(p => p.ProductTags)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
 
             if (product == null) return NotFound();
@@ -86,6 +94,7 @@ namespace NAKHLA.Controllers.Admin
         }
 
         // GET: Admin/Products/Create
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             // Get active categories
@@ -98,6 +107,7 @@ namespace NAKHLA.Controllers.Admin
                 .Where(b => b.Status == "Active")
                 .ToListAsync();
 
+            var ProductTags = await _context.ProductTags.ToListAsync();
             var colors = await _context.ProductColors.ToListAsync();
 
             var fabricTypes = await _context.FabricTypes.ToListAsync();
@@ -106,6 +116,7 @@ namespace NAKHLA.Controllers.Admin
 
             ViewBag.Categories = categories;
             ViewBag.Brands = brands;
+            ViewBag.ProductTags = ProductTags;
             ViewBag.Colors = colors;
             ViewBag.FabricTypes = fabricTypes;
             ViewBag.ProjectCategories = projectCategories;
@@ -116,7 +127,7 @@ namespace NAKHLA.Controllers.Admin
         // POST: Admin/Products/Create
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategoryIds)
+        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategoryIds, List<int> SelectedTagIds)
         {
             // Debug: Check what's coming in
             Console.WriteLine($"Product Name: {product?.Name}");
@@ -148,6 +159,14 @@ namespace NAKHLA.Controllers.Admin
                             if (category != null)
                                 product.ProjectCategories.Add(category);
                         }
+                    }
+                    if (SelectedTagIds != null)
+                    {
+                        var tags = _context.ProductTags
+                            .Where(t => SelectedTagIds.Contains(t.Id))
+                            .ToList();
+
+                        product.ProductTags = tags;
                     }
                     // Generate slug if empty
                     if (string.IsNullOrEmpty(product.Slug))

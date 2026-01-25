@@ -29,9 +29,51 @@
             <div class="mb-3">
                 <label class="form-label"><strong>Category:</strong></label>
                 <div>
-                    <span class="badge badge-primary">@Model.Category?.Name</span>
+                    <span class="">@Model.Category?.Name</span>
                 </div>
             </div>
+            <div class="mb-3">
+                <label class="form-label"><strong>Fabric Type:</strong></label>
+                <div>
+                    @if (Model.FabricType != null)
+                    {
+                        <span class=" badge-info">@Model.FabricType.Name</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not set</span>
+                    }
+                </div>
+            </div>
+            
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Composition:</strong></label>
+                <div>
+                    @(string.IsNullOrEmpty(Model.Composition) ? "Not set" : Model.Composition)
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Product Tags:</strong></label>
+                <div>
+                    @if (Model.ProductTags != null && Model.ProductTags.Any())
+                    {
+                        @foreach (var tag in Model.ProductTags)
+                        {
+                            <span class=" badge-warning me-1">
+                                @tag.Name
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">No tags</span>
+                    }
+                </div>
+            </div>
+
+
         </div>
 
         <div class="col-md-6">
@@ -40,7 +82,7 @@
                 <div>
                     @if (Model.Brand != null)
                     {
-                        <span class="badge badge-info">@Model.Brand.Name</span>
+                        <span class="">@Model.Brand?.Name</span>
                     }
                     else
                     {
@@ -53,13 +95,47 @@
                 <label class="form-label"><strong>Created:</strong></label>
                 <div>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</div>
             </div>
+            <div class="mb-3">
+                <label class="form-label"><strong>Colors:</strong></label>
+                <div>
+                    @if (Model.ProductColors != null && Model.ProductColors.Any())
+                    {
+                        @foreach (var color in Model.ProductColors)
+                        {
+                            <span class="badge badge-secondary me-1">
+                                @color.Name
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">No colors</span>
+                    }
+                </div>
+            </div>
 
+            <div class="mb-3">
+                <label class="form-label"><strong>Project Categories:</strong></label>
+                <div>
+                    @if (Model.ProjectCategories != null && Model.ProjectCategories.Any())
+                    {
+                        @foreach (var pc in Model.ProjectCategories)
+                        {
+                            <span class="badge badge-dark me-1">@pc.Name</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not assigned</span>
+                    }
+                </div>
+            </div>
             <div class="mb-3">
                 <label class="form-label"><strong>Stock Quantity:</strong></label>
                 <div>
                     @if (Model.StockQuantity > 0)
                     {
-                        <span class="badge @(Model.StockQuantity <= Model.LowStockThreshold ? "badge-warning" : "badge-success")">
+                        <span class=" @(Model.StockQuantity <= Model.LowStockThreshold ? "badge-warning" : "badge-success")">
                             @Model.StockQuantity in stock
                         </span>
                     }

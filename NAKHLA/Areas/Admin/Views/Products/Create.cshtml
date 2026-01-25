@@ -82,6 +82,8 @@
                         <textarea asp-for="ShortDescription" class="form-control" rows="2" placeholder="Brief description"></textarea>
                         <span asp-validation-for="ShortDescription" class="text-danger"></span>
                     </div>
+
+
                 </div>
 
                 <div class="col-md-6">
@@ -97,65 +99,7 @@
                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                     </div>
 
-
-
-
-                    <div class="form-group mb-3">
-                        <label>Project Categories</label>
-                        <select name="SelectedProjectCategoryIds" class="form-control" multiple>
-                            @foreach (var category in ViewBag.ProjectCategories as List<NAKHLA.Models.ProjectCategory>)
-                            {
-                                <option value="@category.Id">@category.Name</option>
-                            }
-                        </select>
-                        <small>Hold Ctrl/Cmd to select multiple categories</small>
-
-                    </div>
-
-                    <!-- Fabric Type -->
-                    <div class="form-group mb-3">
-                        <label asp-for="FabricTypeId" class="form-label">Fabric Type</label>
-                        <select asp-for="FabricTypeId" class="form-control">
-                            <option value="">Select Fabric Type</option>
-                            @{
-                                var fabricTypes = ViewBag.FabricTypes as List<NAKHLA.Models.FabricType> ?? new List<NAKHLA.Models.FabricType>();
-                            }
-                            @foreach (var fabric in fabricTypes)
-                            {
-                                <option value="@fabric.Id">@fabric.Name</option>
-                            }
-                        </select>
-                        <span asp-validation-for="FabricTypeId" class="text-danger"></span>
-                    </div>
-
-                    <!-- Product Colors (Multiple Selection) -->
-                    <div class="form-group mb-3">
-                        <label class="form-label">Product Colors</label>
-                        <div id="color-container">
-                            <div class="input-group mb-2">
-                                <input type="text" name="Colors[]" class="form-control" placeholder="Enter color (e.g., Blue, Red)">
-                                <button type="button" class="btn btn-outline-danger remove-color">×</button>
-                            </div>
-                        </div>
-                        <button type="button" id="add-color" class="btn btn-sm btn-secondary mt-2">
-                            <i class="fas fa-plus"></i> Add Color
-                        </button>
-                        <small class="text-muted">Enter each color in a separate field</small>
-                    </div>
-
-                    <!-- Composition -->
-                    <div class="form-group mb-3">
-                        <label asp-for="Composition" class="form-label">Fabric Composition</label>
-                        <textarea asp-for="Composition" class="form-control" rows="2" placeholder="e.g., 100% Cotton, 60% Polyester 40% Cotton"></textarea>
-                        <span asp-validation-for="Composition" class="text-danger"></span>
-                    </div>
-
-
-
-
-
-
-
+                         
 
                     <div class="form-group mb-3">
                         <label asp-for="BrandId" class="form-label">Brand</label>
@@ -210,7 +154,78 @@
                 <textarea asp-for="Description" class="form-control" rows="4" placeholder="Detailed product description"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Product Colors (Multiple Selection) -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">Product Colors</label>
+                        <div id="color-container">
+                            <div class="input-group mb-2">
+                                <input type="text" name="Colors[]" class="form-control" placeholder="Enter color (e.g., Blue, Red)">
+                                <button type="button" class="btn btn-outline-danger remove-color">×</button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-color" class="btn btn-sm btn-secondary mt-2">
+                            <i class="fas fa-plus"></i> Add Color
+                        </button>
+                        <small class="text-muted">Enter each color in a separate field</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Composition -->
+                    <div class="form-group mb-3">
+                        <label asp-for="Composition" class="form-label">Fabric Composition</label>
+                        <textarea asp-for="Composition" class="form-control" rows="2" placeholder="e.g., 100% Cotton, 60% Polyester 40% Cotton"></textarea>
+                        <span asp-validation-for="Composition" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
 
+
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Product Tags (Multiple Selection) -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">Product Tags</label>
+                        <select name="SelectedTagIds" multiple class="form-control">
+                            @foreach (var tag in ViewBag.ProductTags)
+                            {
+                                <option value="@tag.Id">@tag.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Fabric Type -->
+                    <div class="form-group mb-3">
+                        <label asp-for="FabricTypeId" class="form-label">Fabric Type</label>
+                        <select asp-for="FabricTypeId" class="form-control">
+                            <option value="">Select Fabric Type</option>
+                            @{
+                                var fabricTypes = ViewBag.FabricTypes as List<NAKHLA.Models.FabricType> ?? new List<NAKHLA.Models.FabricType>();
+                            }
+                            @foreach (var fabric in fabricTypes)
+                            {
+                                <option value="@fabric.Id">@fabric.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="FabricTypeId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="">
+                    <div class="form-group mb-3">
+                        <label>Project Categories</label>
+                        <select name="SelectedProjectCategoryIds" class="form-control" multiple>
+                            @foreach (var category in ViewBag.ProjectCategories as List<NAKHLA.Models.ProjectCategory>)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                        <small>Hold Ctrl/Cmd to select multiple categories</small>
+
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group mb-3">

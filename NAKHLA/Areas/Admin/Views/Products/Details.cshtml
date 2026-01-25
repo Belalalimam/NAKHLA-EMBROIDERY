@@ -35,6 +35,97 @@
                             <span class="badge bg-primary">@Model.Category?.Name</span>
                         </div>
 
+
+                        <!-- New Section -->
+
+                        <div class="detail-item mb-3">
+                            <strong>Fabric Type:</strong>
+                            @if (Model.FabricType != null)
+                            {
+                                <span class="badge bg-info">@Model.FabricType.Name</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not set</span>
+                            }
+                        </div>
+
+
+
+                        <div class="detail-item mb-3">
+                            <strong>Colors:</strong>
+                            @if (Model.ProductColors != null && Model.ProductColors.Any())
+                            {
+                                @foreach (var color in Model.ProductColors)
+                                {
+                                    <span class="badge bg-secondary me-1">
+                                        @color.Name
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">No colors</span>
+                            }
+                        </div>
+
+
+
+
+
+                        <div class="detail-item mb-3">
+                            <strong>Project Categories:</strong>
+                            @if (Model.ProjectCategories != null && Model.ProjectCategories.Any())
+                            {
+                                @foreach (var pc in Model.ProjectCategories)
+                                {
+                                    <span class="badge bg-dark me-1">@pc.Name</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not assigned</span>
+                            }
+                        </div>
+
+
+
+
+                        <div class="detail-item mb-3">
+                            <strong>Composition:</strong>
+                            <span>@(string.IsNullOrEmpty(Model.Composition) ? "Not set" : Model.Composition)</span>
+                        </div>
+
+
+
+
+
+                        <div class="detail-item mb-3">
+                            <strong>Tags:</strong>
+                            @if (Model.ProductTags != null && Model.ProductTags.Any())
+                            {
+                                @foreach (var tag in Model.ProductTags)
+                                {
+                                    <span class="badge bg-warning text-dark me-1">
+                                        @tag.Name
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">No tags</span>
+                            }
+                        </div>
+
+
+                        <!-- New Section -->
+
+
+
+
+
+
+
                         <div class="detail-item mb-3">
                             <strong>Brand:</strong>
                             <span>@Model.Brand?.Name</span>
