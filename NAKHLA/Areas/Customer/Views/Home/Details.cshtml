@@ -201,13 +201,17 @@
                         </div>
 
                         <div class="row">
-                            @if (Model.Product.Category != null)
+                            @if (Model.Product.ProjectCategories != null && Model.Product.ProjectCategories.Any())
                             {
-                                <div class="col-12 d-flex flex-column border justify-content-center align-items-center px-5 py-3">
                                     <span class="spec-label">Category:</span>
-                                    <span class="spec-value">@Model.Product.Category.Name</span>
+                                <div class="col-12 d-flex  border justify-content-center align-items-center px-5 py-3">
+                                    @foreach (var category in Model.Product.ProjectCategories)
+                                    {
+                                        @* <span class="spec-value"> </span> *@
+                                        <i class="@category.Icon"> </i>
+                                    }
                                 </div>
-                            }
+                            }                           
                         </div>
                         <div class="row">
                             @if (Model.Product.Category != null)

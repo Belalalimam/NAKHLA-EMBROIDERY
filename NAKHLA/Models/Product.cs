@@ -105,9 +105,9 @@ namespace NAKHLA.Models
         public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
 
-        public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
         public int? FabricTypeId { get; set; }
         public FabricType? FabricType { get; set; } = null!;
+        public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
         public ICollection<ProductColor> ProductColors { get; set; } = new List<ProductColor>();
 
 

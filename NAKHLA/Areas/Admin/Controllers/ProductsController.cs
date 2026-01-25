@@ -116,7 +116,7 @@ namespace NAKHLA.Controllers.Admin
         // POST: Admin/Products/Create
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategories)
+        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategoryIds)
         {
             // Debug: Check what's coming in
             Console.WriteLine($"Product Name: {product?.Name}");
@@ -139,19 +139,18 @@ namespace NAKHLA.Controllers.Admin
                         product.SKU = "PROD-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
                     }
 
-                    if (SelectedProjectCategories != null && SelectedProjectCategories.Length > 0)
+                    if (SelectedProjectCategoryIds != null && SelectedProjectCategoryIds.Any())
                     {
-                        foreach (var catId in SelectedProjectCategories)
+                        product.ProjectCategories = new List<ProjectCategory>();
+                        foreach (var id in SelectedProjectCategoryIds)
                         {
-                            var category = await _context.ProjectCategories.FindAsync(catId);
+                            var category = await _context.ProjectCategories.FindAsync(id);
                             if (category != null)
-                            {
                                 product.ProjectCategories.Add(category);
-                            }
                         }
                     }
-                        // Generate slug if empty
-                        if (string.IsNullOrEmpty(product.Slug))
+                    // Generate slug if empty
+                    if (string.IsNullOrEmpty(product.Slug))
                     {
                         product.Slug = GenerateSlug(product.Name);
                     }
@@ -196,6 +195,7 @@ namespace NAKHLA.Controllers.Admin
             ViewBag.Brands = brands;
 
 
+            ViewBag.FabricTypes = await _context.FabricTypes.ToListAsync();
             ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
 
             return View(product);

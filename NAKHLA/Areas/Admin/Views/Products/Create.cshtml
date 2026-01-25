@@ -102,13 +102,14 @@
 
                     <div class="form-group mb-3">
                         <label>Project Categories</label>
-                        <select name="SelectedProjectCategories" class="form-control" multiple>
-                            @foreach (var cat in ViewBag.ProjectCategories as List<NAKHLA.Models.ProjectCategory>)
+                        <select name="SelectedProjectCategoryIds" class="form-control" multiple>
+                            @foreach (var category in ViewBag.ProjectCategories as List<NAKHLA.Models.ProjectCategory>)
                             {
-                                <option value="@cat.Id">@cat.Name</option>
+                                <option value="@category.Id">@category.Name</option>
                             }
                         </select>
-                        <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple categories.</small>
+                        <small>Hold Ctrl/Cmd to select multiple categories</small>
+
                     </div>
 
                     <!-- Fabric Type -->

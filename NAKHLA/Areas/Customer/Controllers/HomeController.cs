@@ -159,6 +159,7 @@ namespace NAKHLA.Areas.Customer.Controllers
         {
             var product = _context.Products
                 .Include(e => e.Category)
+                .Include(p => p.ProjectCategories)
                 .Include(e => e.ProductImages) // This will load the related images
                 .FirstOrDefault(e => e.Id == id);
 
