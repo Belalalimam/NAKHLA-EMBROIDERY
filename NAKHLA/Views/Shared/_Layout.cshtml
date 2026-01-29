@@ -12,12 +12,12 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
-    <link href="~/css/Customer/Hero.css" rel="stylesheet" />
-    <link href="~/css/Customer/CategorySearch.css" rel="stylesheet" />
-    <link href="~/css/Customer/cart.css" rel="stylesheet" />
-    <link href="~/css/Customer/ProductCard.css" rel="stylesheet" />
-    <link href="~/css/Customer/DetailsProduct.css" rel="stylesheet" />
-    <link href="~/css/Navbar.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/Customer/Hero.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/Customer/CategorySearch.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/Customer/cart.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Customer/ProductCard.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/Customer/DetailsProduct.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Navbar.css" asp-append-version="true" />
 
 
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
@@ -25,9 +25,9 @@
 </head>
 
 @{
-                                var categories = ViewBag.Categories as List<NAKHLA.Models.Category> ?? new List<NAKHLA.Models.Category>();
-                                var brands = ViewBag.Brands as List<NAKHLA.Models.Brand> ?? new List<NAKHLA.Models.Brand>();
-                                var validationErrors = ViewBag.ValidationErrors as List<string> ?? new List<string>();
+                                    var categories = ViewBag.Categories as List<NAKHLA.Models.Category> ?? new List<NAKHLA.Models.Category>();
+                                    var brands = ViewBag.Brands as List<NAKHLA.Models.Brand> ?? new List<NAKHLA.Models.Brand>();
+                                    var validationErrors = ViewBag.ValidationErrors as List<string> ?? new List<string>();
 }
 <body>
 
@@ -36,13 +36,16 @@
         <u>شحن مجاني</u> للطلبات المحلية بقيمة 1000 جنيه أو أكثر
     </div>
     <div class="site">
-        <header class="">
-            <div class="container1 ">
-                <div class="content">
+        <header class="border1">
+            <div class="container1 border1">
+                <div class="content border1">
+
                     <div class="left">
                         <a class="trigger"><i class="ri-menu-line"></i></a>
                         <div class="logo"><a href="/">NAKHLA EMBROIDERY</a></div>
                     </div>
+
+
 
 
 
@@ -51,6 +54,20 @@
                             <ul>
                                 <li><a href="/Customer/home/product">ِAll Fabrics</a></li>
                                 <li><a href="/Customer/home/product">By Type</a></li>
+
+                                 
+                                <li class="dropdown1">
+                                    <a href="/" class="dropdown1-btn">Dropdown</a>
+                                    <div class="dropdown1-menu">
+                                        <div class="border1">Item 1</div>
+                                        <div>Item 2</div>
+                                        <div>Item 3</div>
+                                    </div>
+                                </li>
+
+
+
+
                                 <li><a href="#">By Project</a></li>
                                 <li><a href="#">By Composition</a></li>
                                 <li><a href="#">By Color</a></li>
@@ -427,7 +444,7 @@
     </script>
 
     <script src="~/js/site.js"></script>
-    <script src="~/js/Navbar.js"></script>
+    <script src="~/js/Navbar.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="~/js/newFile.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
