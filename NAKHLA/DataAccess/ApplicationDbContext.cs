@@ -30,6 +30,7 @@ namespace NAKHLA.DataAccess
         public DbSet<ProductColor> ProductColors { get; set; }
         public DbSet<FabricType> FabricTypes { get; set; }
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
+        public DbSet<ProductComposition> ProductCompositions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

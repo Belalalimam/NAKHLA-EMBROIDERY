@@ -1,4 +1,6 @@
-﻿namespace NAKHLA.ViewModels
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace NAKHLA.ViewModels
 {
     public class ProductWithRelatedVM
     {
@@ -9,6 +11,10 @@
         public List<Product> RecentlyViewed { get; set; }
         public List<Product> MatchingProducts { get; set; }
         public List<ProductImage> ProductImages { get; set; }
+
+        public IEnumerable<SelectListItem>? CompositionList { get; set; }
+
+        public List<ProductCompositionVM> SelectedCompositions { get; set; } = new List<ProductCompositionVM>();
 
     }
 }

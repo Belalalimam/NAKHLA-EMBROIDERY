@@ -14,7 +14,6 @@ namespace NAKHLA.Models
         public string SKU { get; set; } = GenerateSKU();
         public string? Barcode { get; set; }
         public string? ModelNumber { get; set; }
-        public string? Composition { get; set; }
 
         // Pricing - FIXED: All decimal
         public decimal CostPrice { get; set; }
@@ -103,7 +102,7 @@ namespace NAKHLA.Models
         public ICollection<ProductTag> ProductTags { get; set; } = new List<ProductTag>();
         public ICollection<ProductAttribute> ProductAttributes { get; set; } = new List<ProductAttribute>();
         public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
-
+        public ICollection<ProductComposition> ProductCompositions { get; set; } = new List<ProductComposition>();
 
         public int? FabricTypeId { get; set; }
         public FabricType? FabricType { get; set; } = null!;
