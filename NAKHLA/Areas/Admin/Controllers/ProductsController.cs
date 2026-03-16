@@ -106,6 +106,7 @@ namespace NAKHLA.Controllers.Admin
             var brands = await _context.Brands
                 .Where(b => b.Status == "Active")
                 .ToListAsync();
+            ViewBag.Compositions = await _context.Compositions.ToListAsync();
 
             var ProductTags = await _context.ProductTags.ToListAsync();
             var colors = await _context.ProductColors.ToListAsync();
@@ -127,7 +128,7 @@ namespace NAKHLA.Controllers.Admin
         // POST: Admin/Products/Create
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategoryIds, List<int> SelectedTagIds)
+        public async Task<IActionResult> Create(Product product, int[] SelectedProjectCategoryIds, List<int> SelectedTagIds, List<ProductComposition> ProductCompositions)
         {
             // Debug: Check what's coming in
             Console.WriteLine($"Product Name: {product?.Name}");
@@ -177,6 +178,19 @@ namespace NAKHLA.Controllers.Admin
                     _context.Products.Add(product);
                     await _context.SaveChangesAsync();
 
+                    if (ProductCompositions != null && ProductCompositions.Any())
+                    {
+                        foreach (var item in ProductCompositions)
+                        {
+                            if (item.CompositionId > 0 && item.Percentage > 0)
+                            {
+                                item.ProductId = product.Id; // ربط الـ ID
+                                _context.ProductCompositions.Add(item);
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+
                     TempData["Success"] = "Product created successfully!";
                     return RedirectToAction(nameof(Index));
                 }
@@ -216,6 +230,10 @@ namespace NAKHLA.Controllers.Admin
 
             ViewBag.FabricTypes = await _context.FabricTypes.ToListAsync();
             ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
+            ViewBag.ProductTags = await _context.ProductTags.ToListAsync();   // هذا يحل خطأ سطر 214
+            ViewBag.Colors = await _context.ProductColors.ToListAsync();
+
+            ViewBag.Compositions = await _context.Compositions.ToListAsync();
 
             return View(product);
         }
