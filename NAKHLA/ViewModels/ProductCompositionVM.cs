@@ -4,7 +4,7 @@ namespace NAKHLA.ViewModels
 {
     public class ProductCompositionVM
     {
-        public int CompositionId { get; set; }
+        public string CompositionName { get; set; }
         public decimal Percentage { get; set; }
     }
 }

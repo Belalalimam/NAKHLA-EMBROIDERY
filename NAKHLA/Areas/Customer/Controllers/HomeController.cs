@@ -161,6 +161,8 @@ namespace NAKHLA.Areas.Customer.Controllers
                 .Include(e => e.Category)
                 .Include(p => p.ProjectCategories)
                 .Include(e => e.ProductImages) // This will load the related images
+                .Include(p => p.ProductCompositions) // تحميل جدول الربط
+                    .ThenInclude(pc => pc.Composition)
                 .FirstOrDefault(e => e.Id == id);
 
             if (product is null)
@@ -199,7 +201,12 @@ namespace NAKHLA.Areas.Customer.Controllers
                 RelatedProducts = relatedProducts,
                 TopProducts = topProducts,
                 SimilarProducts = similarProducts,
-                ProductImages = productImages
+                ProductImages = productImages,
+                SelectedCompositions = product.ProductCompositions.Select(pc => new ProductCompositionVM
+                {
+                    CompositionName = pc.Composition.Name,
+                    Percentage = pc.Percentage
+                }).ToList()
             });
         }
 
@@ -211,7 +218,19 @@ namespace NAKHLA.Areas.Customer.Controllers
 
 
 
+        [HttpGet("filter-by-composition/{id}")]
+        public IActionResult FilterByComposition(int id)
+        {
+            var products = _context.Products
+                .Include(p => p.ProductCompositions)
+                .Where(p => p.ProductCompositions.Any(pc => pc.CompositionId == id))
+                .ToList();
 
+            var compName = _context.Compositions.Find(id)?.Name;
+            ViewBag.Title = $"Fabrics with {compName}";
+
+            return View("Product", products);
+        }
 
 
         public ViewResult PersonalInfo()

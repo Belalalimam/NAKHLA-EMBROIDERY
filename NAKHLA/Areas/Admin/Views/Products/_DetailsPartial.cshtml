@@ -50,7 +50,20 @@
             <div class="mb-3">
                 <label class="form-label"><strong>Composition:</strong></label>
                 <div>
-                    @* @(string.IsNullOrEmpty(Model.Composition) ? "Not set" : Model.Composition) *@
+                    @* @if (Model.SelectedCompositions != null && Model.SelectedCompositions.Any())
+                    {
+                        foreach (var item in Model.SelectedCompositions)
+                        {
+                            <li>
+                                <strong>@item.CompositionName:</strong>
+                                <span class="text-dark">@item.Percentage %</span>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="text-muted">No composition details available</li>
+                    } *@
                 </div>
             </div>
 

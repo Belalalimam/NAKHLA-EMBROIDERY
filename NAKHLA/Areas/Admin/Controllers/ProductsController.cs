@@ -68,6 +68,8 @@ namespace NAKHLA.Controllers.Admin
                 .Include(p => p.ProductColors)
                 .Include(p => p.ProjectCategories)
                 .Include(p => p.ProductTags)
+                .Include(p => p.ProductCompositions) 
+            .ThenInclude(pc => pc.Composition)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
 
             if (product == null) return NotFound();
@@ -169,6 +171,22 @@ namespace NAKHLA.Controllers.Admin
 
                         product.ProductTags = tags;
                     }
+
+
+                    if (ProductCompositions != null && ProductCompositions.Any())
+                    {
+                        product.ProductCompositions = new List<ProductComposition>();
+                        foreach (var item in ProductCompositions)
+                        {
+                            if (item.CompositionId > 0 && item.Percentage > 0)
+                            {
+                                // لا نحتاج لتعيين ProductId هنا لأن EF سيربطها تلقائياً عند إضافة المنتج
+                                product.ProductCompositions.Add(item);
+                            }
+                        }
+                    }
+
+
                     // Generate slug if empty
                     if (string.IsNullOrEmpty(product.Slug))
                     {
@@ -178,18 +196,7 @@ namespace NAKHLA.Controllers.Admin
                     _context.Products.Add(product);
                     await _context.SaveChangesAsync();
 
-                    if (ProductCompositions != null && ProductCompositions.Any())
-                    {
-                        foreach (var item in ProductCompositions)
-                        {
-                            if (item.CompositionId > 0 && item.Percentage > 0)
-                            {
-                                item.ProductId = product.Id; // ربط الـ ID
-                                _context.ProductCompositions.Add(item);
-                            }
-                        }
-                        await _context.SaveChangesAsync();
-                    }
+                    
 
                     TempData["Success"] = "Product created successfully!";
                     return RedirectToAction(nameof(Index));
@@ -268,6 +275,9 @@ namespace NAKHLA.Controllers.Admin
         public async Task<IActionResult> GetEdit(int id)
         {
             var product = await _context.Products
+                .Include(p => p.ProductTags) // مهم جداً لعرض الـ Selected Tags
+                .Include(p => p.ProductCompositions) // مهم للـ Compositions
+                .Include(p => p.ProjectCategories)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
 
             if (product == null) return NotFound();
@@ -281,9 +291,11 @@ namespace NAKHLA.Controllers.Admin
                 .Where(b => b.Status == "Active")
                 .ToListAsync();
 
-            ViewBag.Categories = categories;
-            ViewBag.Brands = brands;
-
+            ViewBag.Categories = await _context.Categorise.Where(c => c.Status == CategoryStatus.Active).ToListAsync();
+            ViewBag.Brands = await _context.Brands.Where(b => b.Status == "Active").ToListAsync();
+            ViewBag.ProductTags = await _context.ProductTags.ToListAsync(); // هذا السطر اللي كان ناقص ومسبب الخطأ
+            ViewBag.Compositions = await _context.Compositions.ToListAsync();
+            ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
             return PartialView("_EditPartial", product);
         }
 
@@ -305,7 +317,7 @@ namespace NAKHLA.Controllers.Admin
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Product updated successfully!";
-                    return Json(new { success = true, message = "Product updated successfully!" });
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -323,7 +335,7 @@ namespace NAKHLA.Controllers.Admin
                 .Select(e => e.ErrorMessage)
                 .ToList();
 
-            return Json(new { success = false, errors = errors });
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Admin/Products/Delete/5

@@ -29,3 +29,13 @@
         }
     </div>
 </li>
+
+<li class="dropdown1">
+    <a href="#" class="dropdown1-btn">By Composition</a>
+    <div class="dropdown1-menu">
+        @foreach (var comp in Model.Compositions)
+        {
+            <a asp-controller="Home" asp-action="FilterByComposition" asp-route-compositionId="@comp.Id">@comp.Name</a>
+        }
+    </div>
+</li>
