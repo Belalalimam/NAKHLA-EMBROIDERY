@@ -18,7 +18,7 @@ public class NavMenuViewComponent : ViewComponent
         {
             FabricTypes = await _db.FabricTypes.ToListAsync(),
             ProjectCategories = await _db.ProjectCategories.ToListAsync(),
-            ProductColors = await _db.ProductColors.ToListAsync(),
+            ProductColors = await _db.Colors.ToListAsync(),
             Compositions = await _db.Compositions.ToListAsync()
         };
 
@@ -31,6 +31,6 @@ public class NavMenuViewModel
 {
     public List<NAKHLA.Models.FabricType> FabricTypes { get; set; }
     public List<NAKHLA.Models.ProjectCategory> ProjectCategories { get; set; }
-    public List<NAKHLA.Models.ProductColor> ProductColors { get; set; }
+    public List<NAKHLA.Models.Color> ProductColors { get; set; }
     public List<NAKHLA.Models.Composition> Compositions { get; set; }
 }

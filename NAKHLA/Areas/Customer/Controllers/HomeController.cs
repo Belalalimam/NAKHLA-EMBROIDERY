@@ -22,7 +22,7 @@ namespace NAKHLA.Areas.Customer.Controllers
         public IActionResult Product(FilterVM filterVM, int page = 1)
         {
             const int discount = 50;
-            var products = _context.Products.AsQueryable();
+            var products = _context.Products.Where(p => !p.IsDeleted).AsQueryable();
 
             // Filter
             if (filterVM.Name is not null)
@@ -145,10 +145,11 @@ namespace NAKHLA.Areas.Customer.Controllers
         public IActionResult FilterByColor(string color)
         {
             var products = _context.Products
-                .Include(p => p.ProductColors)
-                .Where(p => p.ProductColors.Any(c => c.Color == color))
+                .Include(p => p.Color)
                 .ToList();
 
+            ViewBag.categories = _context.Categorise.ToList();
+            ViewBag.Title = $"Color: {color}";
             return View("Product", products);
         }
 
@@ -157,57 +158,72 @@ namespace NAKHLA.Areas.Customer.Controllers
 
         public IActionResult Details(int id)
         {
+            // 1. جلب بيانات المنتج مع كافة العلاقات الضرورية لمنع خطأ الـ Null أو الـ InvalidOperation
             var product = _context.Products
-                .Include(e => e.Category)
-                .Include(p => p.ProjectCategories)
-                .Include(e => e.ProductImages) // This will load the related images
-                .Include(p => p.ProductCompositions) // تحميل جدول الربط
-                    .ThenInclude(pc => pc.Composition)
-                .FirstOrDefault(e => e.Id == id);
+        .Include(e => e.Category)
+        .Include(p => p.ProjectCategories)
+        .Include(e => e.ProductImages)
+        .Include(p => p.Color) // تم حذف ThenInclude للون لأنه string وليس كائن
+        .Include(p => p.ProductCompositions)
+            .ThenInclude(pc => pc.Composition) // هذا يبقى كما هو لأن Composition كائن
+        .FirstOrDefault(e => e.Id == id && !e.IsDeleted);
 
+            // التحقق من وجود المنتج
             if (product is null)
                 return RedirectToAction(nameof(NotFoundPage));
 
+            // تحديث عدد المشاهدات
             product.Traffic += 1;
             _context.SaveChanges();
 
+            // 2. جلب المنتجات ذات الصلة (نفس القسم)
             var relatedProducts = _context.Products
                 .Include(e => e.Category)
-                .Where(e => e.CategoryId == product.CategoryId && e.Id != product.Id)
-                .Take(4)
-                .ToList();
+                .Where(e => e.CategoryId == product.CategoryId && e.Name == product.Name && e.Id != product.Id && !e.IsDeleted)
+                .Take(4).ToList();
 
+            // 3. جلب المنتجات الأكثر رواجاً
             var topProducts = _context.Products
                 .Include(e => e.Category)
-                .Where(e => e.Id != product.Id)
-                .OrderByDescending(e => e.Traffic)
-                .Take(4)
-                .ToList();
+                .Where(e => e.Id != product.Id && !e.IsDeleted)
+                .OrderByDescending(e => e.Traffic).Take(4).ToList();
 
+            // 4. جلب المنتجات المتشابهة بالاسم
             var similarProducts = _context.Products
                 .Include(e => e.Category)
                 .Where(e => e.Name.Contains(product.Name) && e.Id != product.Id)
                 .Take(4)
                 .ToList();
 
-            // Get product images from the navigation property
+            // 5. تجهيز الصور
             var productImages = product.ProductImages?
                 .OrderBy(pi => pi.DisplayOrder)
                 .ToList() ?? new List<ProductImage>();
 
-            return View(new ProductWithRelatedVM()
+            // 6. تجهيز الـ ViewModel مع حل مشكلة تكرار المكونات
+            var viewModel = new ProductWithRelatedVM()
             {
                 Product = product,
                 RelatedProducts = relatedProducts,
                 TopProducts = topProducts,
                 SimilarProducts = similarProducts,
                 ProductImages = productImages,
-                SelectedCompositions = product.ProductCompositions.Select(pc => new ProductCompositionVM
-                {
-                    CompositionName = pc.Composition.Name,
-                    Percentage = pc.Percentage
-                }).ToList()
-            });
+
+                // الحل السحري للتكرار: GroupBy تضمن ظهور كل مكون مرة واحدة فقط
+                SelectedCompositions = product.ProductCompositions
+                    .Where(pc => pc.Composition != null) // تأمين إضافي ضد الـ Null
+                    .GroupBy(pc => pc.Composition.Name)
+                    .Select(g => new ProductCompositionVM
+                    {
+                        CompositionName = g.Key,
+                        Percentage = g.First().Percentage // يأخذ النسبة من أول سجل في المجموعة
+                    }).ToList()
+            };
+
+            // إرسال الكاتيجوري للـ View لضمان عدم حدوث خطأ في القائمة الجانبية
+            ViewBag.categories = _context.Categorise.ToList();
+
+            return View(viewModel);
         }
 
 

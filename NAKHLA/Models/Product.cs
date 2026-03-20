@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
 
 namespace NAKHLA.Models
 {
@@ -107,7 +108,10 @@ namespace NAKHLA.Models
         public int? FabricTypeId { get; set; }
         public FabricType? FabricType { get; set; } = null!;
         public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
-        public ICollection<ProductColor> ProductColors { get; set; } = new List<ProductColor>();
+
+        public int? ColorId { get; set; }
+        [ForeignKey("ColorId")]
+        public Color? Color { get; set; }
 
 
         // Calculated Properties

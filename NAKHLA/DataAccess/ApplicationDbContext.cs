@@ -27,7 +27,7 @@ namespace NAKHLA.DataAccess
         public DbSet<ProductReview> ProductReviews  { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-        public DbSet<ProductColor> ProductColors { get; set; }
+        public DbSet<Color> Colors { get; set; }
         public DbSet<FabricType> FabricTypes { get; set; }
         public DbSet<ProjectCategory> ProjectCategories { get; set; }
         public DbSet<Composition> Compositions { get; set; }
@@ -45,7 +45,7 @@ namespace NAKHLA.DataAccess
             //new ProductImgEntityTypeConfiguration().Configure(modelBuilder.Entity<ProductSubImage>());
 
             //modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductColorEntityTypeConfiguration).Assembly);
-
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
             base.OnModelCreating(modelBuilder);
         }
 

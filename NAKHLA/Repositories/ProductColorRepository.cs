@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Repositories
 {
-    public class ProductColorRepository : Repository<ProductColor>, IProductColorRepository
+    public class ProductColorRepository : Repository<Color>, IProductColorRepository
     {
         private ApplicationDbContext _context;// = new();
 
@@ -12,7 +12,7 @@ namespace ECommerce.Repositories
             _context = context;
         }
 
-        public void RemoveRange(IEnumerable<ProductColor> productColors)
+        public void RemoveRange(IEnumerable<Color> productColors)
         {
             _context.RemoveRange(productColors);
         }

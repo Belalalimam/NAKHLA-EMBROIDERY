@@ -58,25 +58,31 @@
                 }
 
                 <!-- Colors Section -->
-                @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
-                {
-                    <div class="colors-section mt-5">
-                        <h3 class="section-title">Available Colors</h3>
+                                    @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+                                    {
+                                        <div class="colors-section mt-5">
+                                            <h3 class="section-title">Available Colors</h3>
 
-                        <div class="color-options">
-                            @foreach (var item in Model.RelatedProducts)
-                            {
-                                    <a href="@Url.Action("Details", "Home", new { id = item.Id, area = "Customer" })">
-                                    <div class="d-flex flex-column  mx-1">
-                                        <img src="~/images/@item.MainImage" width="120px" height="80px" class="rounded-3" alt="" />
+                                            <div class="color-options">
+                                                @foreach (var item in Model.RelatedProducts)
+                                                {
+                                                    /* هنا التعديل:
+                                                       الرابط يجب أن يذهب لـ Id المنتج (اللون) الذي ضغطت عليه
+                                                    */
+                                                    <a href="@Url.Action("Details", "Home", new { id = item.Id, area = "Customer" })">
+                                                        <div class="d-flex flex-column mx-1">
+                                                            <img src="~/images/@item.MainImage" width="120px" height="80px" class="rounded-3" alt="" />
 
-                                        <span class="color-name">@item.SKU</span>
-                                    </div>
-                                </a>
-                            }
-                        </div>
-                    </div>
-                }
+                                                            @* إذا كان عندك حقل اسم اللون في جدول Product استخدمه هنا
+                           بدل SKU ليكون البحث دقيقاً 
+                        *@
+                                                            <span class="color-name">@item.SKU</span>
+                                                        </div>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
             </div>
 
 
@@ -86,6 +92,7 @@
                 <div class="detailes-product-info px-4">
                     <h1 class="detailes-product-title ">@Model.Product.Name</h1>
                     <div class="detailes-product-code ">@Model.Product.SKU</div>
+                    
 
                     <div class="product-description">
                         @if (!string.IsNullOrEmpty(Model.Product.Description))
@@ -217,6 +224,13 @@
                                     <span class="spec-value">@Model.Product.Weight g/m</span>
                                 </div>
                             }
+                            @if (Model.Product.Width.HasValue)
+                            {
+                                <div class="col-6 d-flex flex-column border justify-content-center align-items-center px-5 py-3">
+                                    <span class="spec-label">Width:</span>
+                                    <span class="spec-value">@Model.Product.Width cm</span>
+                                </div>
+                            }
                         </div>
 
                         <div class="row">
@@ -258,8 +272,15 @@
                                 </button>
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <strong>This is the first item’s accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                                <div class="detailes-product-code">
+                                    @* @if (Model.Product.ProductColors != null && Model.Product.ProductColors.Any())
+                                    {
+                                            @string.Join(", ", Model.Product.ProductColors.Select(pc => pc.Name).Where(n => !string.IsNullOrEmpty(n))) 
+                                    }
+                                    else
+                                    {
+                                        <span>No colors specified</span>
+                                    } *@
                                 </div>
                             </div>
                         </div>

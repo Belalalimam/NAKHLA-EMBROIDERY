@@ -46,7 +46,7 @@ namespace NAKHLA
             services.AddScoped<IRepository<Promotion>, Repository<Promotion>>();
             services.AddScoped<IRepository<Order>, Repository<Order>>();
             services.AddScoped<IRepository<OrderItem>, Repository<OrderItem>>();
-            services.AddScoped<IRepository<ProductColor>, Repository<ProductColor>>();
+            services.AddScoped<IRepository<Color>, Repository<Color>>();
             services.AddScoped<IRepository<FabricType>, Repository<FabricType>>();
             services.AddScoped<IRepository<ProjectCategory>, Repository<ProjectCategory>>();
             

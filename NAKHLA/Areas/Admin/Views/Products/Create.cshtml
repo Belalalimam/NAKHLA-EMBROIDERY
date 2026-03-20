@@ -213,34 +213,18 @@
 
                                             
                                             <div class="col-md-6">
-                                                <div class="form-group mb-3">
-                                                    <label class="form-label font-weight-bold">Fabric Colors</label>
-                                                    <div id="composition-container">
-                                                        <div class="composition-row row mb-2 g-2 align-items-center">
-                                                            <div class="col-7">
-                                                                <select name="ProductCompositions[0].CompositionId" class="form-select form-control" required>
-                                                                    <option value="">Select Color</option>
-                                                                    @if (ViewBag.Compositions != null)
-                                                                    {
-                                                                        foreach (var color in ViewBag.Colors as List<NAKHLA.Models.ProductColor>)
-                                                                        {
-                                                                            <option value="@color.Id">@color.Name</option>
-                                                                        }
-                                                                    }
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-3">
-                                                                <input type="number" name="ProductCompositions[0].Percentage" class="form-control" placeholder="#" min="1" max="100" required>
-                                                            </div>
-                                                            <div class="col-2">
-                                                                <button type="button" class="btn btn-outline-danger btn-sm remove-composition">×</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" id="add-composition" class="btn btn-sm btn-outline-primary mt-2">
-                                                        <i class="fas fa-plus"></i> Add Material
-                                                    </button>
-                                                    <small class="text-muted d-block mt-1">Example: 60% Cotton, 40% Polyester</small>
+                                                <d<div class="form-group mb-3">
+                                                    <label class="form-label">Product Color</label>
+                                                    <select name="SelectedColorIds" class="form-select form-control">
+                                                        <option value="">Select Color</option>
+                                                        @if (ViewBag.ProductColors != null)
+                                                        {
+                                                            foreach (var color in ViewBag.Colors as List<NAKHLA.Models.Color>)
+                                                            {
+                                                                <option value="@color.Id" >@color.Name</option>
+                                                            }
+                                                        }
+                                                    </select>
                                                 </div>
                                             </div>
 

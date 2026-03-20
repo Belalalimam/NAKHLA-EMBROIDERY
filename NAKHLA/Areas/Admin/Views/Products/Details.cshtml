@@ -52,11 +52,11 @@
 
 
 
-                        <div class="detail-item mb-3">
+                      @*   <div class="detail-item mb-3">
                             <strong>Colors:</strong>
-                            @if (Model.ProductColors != null && Model.ProductColors.Any())
+                            @if (Model.Color != null && Model.Color.Any())
                             {
-                                @foreach (var color in Model.ProductColors)
+                                @foreach (var color in Model.Color)
                                 {
                                     <span class="badge bg-secondary me-1">
                                         @color.Name
@@ -67,7 +67,7 @@
                             {
                                 <span class="text-muted">No colors</span>
                             }
-                        </div>
+                        </div> *@
 
 
 
