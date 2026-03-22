@@ -124,8 +124,8 @@
                             @* <div class="product-grid"> *@
                                 @foreach (var product in Model.SuggestedProducts.Take(10))
                                 {
-                                    <swiper-slide>
-                                        <a href="@Url.Action("Details", "Home", new { id = product.Id, area = "Customer" })" class="col">
+                                    <swiper-slide class="">
+                                        <a href="@Url.Action("Details", "Home", new { id = product.Id, area = "Customer" })" class="col mb-5 ">
                                             <div class="product-card m-1">
                                                 <img src="~/images/@product.MainImage" alt="@product.Name" />
 

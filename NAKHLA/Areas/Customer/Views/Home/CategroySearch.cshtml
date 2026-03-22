@@ -5,6 +5,7 @@
     var projectCategory = ViewBag.SelectedProject as ProjectCategory;
     var productTag = ViewBag.SelectedTag as ProductTag;
     var color = ViewBag.SelectedColor as Color;
+    var composition = ViewBag.SelectedComposition as Composition;
 }
 
 <div class="container">
@@ -69,6 +70,22 @@
                                         @if (!string.IsNullOrEmpty(color.Description))
                                 {
                                             <p class="category-subtitle">@color.Description</p>
+                                }
+                            </div>
+                        }
+
+
+                else if (Model.Any() && composition != null)
+                    {
+                        <div class="category-image-container">
+                            @* تأكد إن عندك حقل ImageUrl في جدول الكاتيجوري *@
+                                        <img src="~/images/@composition.ImageUrl" class="category-image" alt="@composition.Name">
+                            </div>
+                            <div class="category-content">
+                                            <h1 class="category-title">@composition.Name</h1>
+                                            @if (!string.IsNullOrEmpty(composition.Description))
+                                {
+                                                <p class="category-subtitle">@composition.Description</p>
                                 }
                             </div>
                         }

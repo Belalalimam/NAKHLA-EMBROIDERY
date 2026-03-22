@@ -36,7 +36,7 @@
     <div class="dropdown1-menu">
         @foreach (var comp in Model.Compositions)
         {
-            <a asp-controller="Home" asp-action="FilterByComposition" asp-route-compositionId="@comp.Id">@comp.Name</a>
+            <a asp-controller="Home" asp-action="CategroySearch" asp-route-CompositionId="@comp.Id">@comp.Name</a>
         }
     </div>
 </li>

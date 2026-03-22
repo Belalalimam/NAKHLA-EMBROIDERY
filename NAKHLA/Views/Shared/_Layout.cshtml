@@ -73,9 +73,23 @@
                     </div>
 
                     <div class="right">
-                        <ul>
-                            <li><a href="#"><i class="ri-search-line"></i></a></li>
-                            <li><a href="/Customer/Cart/index"><span class="num">1</span><i class="ri-shopping-bag-2-line"></i></a></li>
+                        <ul >
+                            <li class="d-flex justify-content-center ">
+                                @* <a href="#"><i class="ri-search-line"></i></a> *@
+                                <form class="" action="@Url.Action("CategroySearch", "Home")" method="get">
+                                    <input type="text" name="Name" placeholder="Type & hit 'enter'" />
+                                </form>
+                                
+                            </li>
+
+                            <li>
+                                <a href="/Customer/Cart/index">
+                                    <span id="cartBadge" class="num d-none">0</span>
+                                    <i class="ri-shopping-bag-2-line"></i>
+                                </a>
+                            </li>
+
+
                             @* <li class="nav-item">
                                 <a class="nav-link position-relative" href="
 
@@ -91,7 +105,7 @@
                                     }
                                 </a>
                             </li> *@
-                            <li><a href="#"><span class="num">3</span><i class="ri-heart-line"></i></a></li>
+                            @* <li><a href="#"><span class="num">3</span><i class="ri-heart-line"></i></a></li> *@
                             <li><a href="/Identity/Account/Logout"><i class="ri-door-line"></i></a></li>
                             <li><a href="/Identity/Profile/index"><i class="ri-user-line"> @User.Identity.Name </i></a></li>
                         </ul>
@@ -419,20 +433,30 @@
     </script>
 
     <script>
-        // Update cart count on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (@User.Identity.IsAuthenticated.ToString().ToLower()) {
-                fetch('/Customer/Cart/GetCartCount')
-                    .then(response => response.json())
-                    .then(data => {
-                        const badge = document.getElementById('cartBadge');
-                        if (badge) {
-                            badge.textContent = data.count;
-                            badge.classList.toggle('invisible', data.count === 0);
-                        }
-                    });
-            }
-        });
+            document.addEventListener('DOMContentLoaded', function() {
+                // نتحقق إذا كان المستخدم مسجل دخول
+                if ("@User.Identity.IsAuthenticated" === "True") {
+                    updateCartCount();
+                }
+
+                function updateCartCount() {
+                    fetch('/Customer/Cart/GetCartCount')
+                        .then(response => response.json())
+                        .then(data => {
+                            const badge = document.getElementById('cartBadge');
+                            if (badge) {
+                                badge.textContent = data.count;
+                                // إذا كانت السلة فيها منتجات، نظهر الدائرة، وإذا كانت 0 نخفيها
+                                if (data.count > 0) {
+                                    badge.classList.remove('d-none');
+                                } else {
+                                    badge.classList.add('d-none');
+                                }
+                            }
+                        })
+                        .catch(error => console.error('Error fetching cart count:', error));
+                }
+            });
     </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

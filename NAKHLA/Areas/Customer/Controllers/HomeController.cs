@@ -17,6 +17,9 @@ namespace NAKHLA.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.ProjectCategories = _context.ProjectCategories.ToList();
+            ViewBag.FabricTypes = _context.FabricTypes.ToList();
+            ViewBag.Colors = _context.Colors.ToList(); // افترضنا أن اسم الجدول Colors
             return View();
         }
         public IActionResult Product(FilterVM filterVM, int page = 1)
@@ -128,18 +131,17 @@ namespace NAKHLA.Areas.Customer.Controllers
 
 
 
-
-            //Color? color = null;
-            //if (filterVM.ColorId.HasValue) { 
-            //    products = products.Where(p => p.ColorId == filterVM.ColorId);
-            //    color = _context.Colors.FirstOrDefault(e => e.Id == filterVM.ColorId);
-            //    ViewBag.Color = filterVM.ColorId;
-            //}
-            //ViewBag.SelectedColor = color;
-
             // فلترة المكونات (العلاقة عبر جدول وسيط)
-            if (filterVM.CompositionId.HasValue)
+            Composition composition = null;
+            if (filterVM.CompositionId.HasValue) { 
                 products = products.Where(p => p.ProductCompositions.Any(pc => pc.CompositionId == filterVM.CompositionId));
+                composition = _context.Compositions.FirstOrDefault(e => e.Id == filterVM.CompositionId);
+            ViewBag.ProductComposition = filterVM.CompositionId;
+        }
+
+        ViewBag.SelectedComposition = composition;
+
+
 
             // الترقيم (Pagination)
             const int pageSize = 12;
