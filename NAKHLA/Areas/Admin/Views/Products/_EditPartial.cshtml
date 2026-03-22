@@ -176,7 +176,7 @@
                                         type = "number",
                                         min = "0",
                                         placeholder = "10 cm",
-                                        required = "required"
+                                        
                                         })
                     @Html.ValidationMessageFor(model => model.Width, null, new { @class = "text-danger" })
                 </div>
@@ -337,23 +337,20 @@
 
 
         <div class="row">
+
+
+            
+
             <div class="col-md-6">
                 <div class="form-group mb-3">
-                    <label class="form-label">Product Color</label>
-                    <select name="SelectedColorIds" class="form-select form-control">
-                        @if (ViewBag.ProductColors != null)
-                        {
-                            foreach (var color in ViewBag.ProductColors)
-                            {
-                                @* bool isSelected = Model.Color != null && Model.Color.Any(t => t.Id == color.Id); *@
-                                <option value="@color.Id">
-                                    @color.Name
-                                </option>
-                            }
-                        }
+                    <label asp-for="ColorId" class="control-label">Product Color</label>
+                    <select asp-for="ColorId" class="form-select select2" asp-items="@(new SelectList(ViewBag.Colors, "Id", "Name"))">
+                        <option value="">--Select Color--</option>
                     </select>
+                    <span asp-validation-for="ColorId" class="text-danger"></span>
                 </div>
-            </div>   
+            </div>
+
         </div>
 
 
@@ -395,8 +392,10 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">
+        
+        <a href="@Url.Action("Edit", "Products", new { id = Model.Id, area = "Admin" })" class="btn btn-outline-primary">Go To Item Page</a>
+        <button type="button" class="btn btn-outline-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-outline-primary">
             <i class="fas fa-save"></i> Save Changes
         </button>
     </div>
@@ -406,186 +405,113 @@
 
 <script>
     $(document).ready(function() {
-        // Form validation
-        $('#editProductForm').validate({
-            // your validation rules...
-        });
+        // 1. عداد العناصر الحالية
+        let compIndex = $('.composition-row').length;
 
-        // Handle form submission via AJAX
-        $('#editProductForm').on('submit', function(e) {
+        // 2. إضافة مادة جديدة
+        $('#add-composition').on('click', function (e) {
             e.preventDefault();
-
-            if (!$(this).valid()) {
-                return false;
-            }
-
-            const form = this;
-            const submitBtn = $(form).find('button[type="submit"]');
-            const originalHtml = submitBtn.html();
-
-            // Show loading
-            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Saving...');
-            submitBtn.prop('disabled', true);
-
-            // AJAX submission
-            $.ajax({
-                url: $(form).attr('action'),  // This should be /Admin/Categories/Edit/{id}
-                type: 'POST',
-                data: $(form).serialize(),
-                success: function(response) {
-                    if (response.success) {
-                        // Show success message
-                        alert(response.message || 'Product updated successfully!');
-                        closeModal();
-                        // Reload the page to show updated data
-                        window.location.reload();
-                    } else {
-                        // Show error
-                        alert(response.error || 'Error updating category');
-                        submitBtn.html(originalHtml);
-                        submitBtn.prop('disabled', false);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Edit AJAX error:', error);
-                    alert('Error updating category. Please try again.');
-                    submitBtn.html(originalHtml);
-                    submitBtn.prop('disabled', false);
-                }
-            });
-
-            return false;
+            const container = $('#composition-container');
+            const html = `
+                <div class="composition-row row mb-2 g-2 align-items-center">
+                    <div class="col-7">
+                        <select name="ProductCompositions[${compIndex}].CompositionId" class="form-select form-control" required>
+                            <option value="">Select Material</option>
+                            @if (ViewBag.Compositions != null) {
+                                @foreach (var comp in ViewBag.Compositions) {
+                                    <option value="@comp.Id">@comp.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" name="ProductCompositions[${compIndex}].Percentage" class="form-control" placeholder="%" min="1" max="100" required>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-composition">×</button>
+                    </div>
+                </div>`;
+            
+            container.append(html);
+            compIndex++; // زيادة العداد لضمان تسلسل الأسماء في المصفوفة
         });
-    });
-</script>
 
-<script>
+        // 3. حذف مادة
+        $(document).on('click', '.remove-composition', function() {
+            $(this).closest('.composition-row').remove();
+            // ملاحظة: الـ Index المكسور بعد الحذف غالباً تعالجه ASP.NET Core تلقائياً 
+            // إذا كانت المصفوفة تستخدم مؤشرات صحيحة.
+        });
 
-
-    $(document).ready(function() {
-        // Form validation
-        $('#editProductForm').validate({
+        // 4. إعدادات الـ Validation
+        const validator = $('#editProductForm').validate({
             rules: {
-                Name: {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 100
-                },
-                SKU: {
-                    required: true,
-                    minlength: 3
-                },
-                CategoryId: {
-                    required: true
-                },
-                Price: {
-                    required: true,
-                    min: 0.01
-                },
-                StockQuantity: {
-                    required: true,
-                    min: 0
-                }
-            },
-            messages: {
-                Name: {
-                    required: "Product name is required",
-                    minlength: "Product name must be at least 3 characters",
-                    maxlength: "Product name cannot exceed 100 characters"
-                },
-                SKU: {
-                    required: "SKU is required",
-                    minlength: "SKU must be at least 3 characters"
-                },
-                CategoryId: {
-                    required: "Category is required"
-                },
-                Price: {
-                    required: "Price is required",
-                    min: "Price must be greater than 0"
-                },
-                StockQuantity: {
-                    required: "Stock quantity is required",
-                    min: "Stock cannot be negative"
-                }
+                Name: { required: true, minlength: 3 },
+                SKU: { required: true },
+                CategoryId: { required: true },
+                Price: { required: true, min: 0.01 },
+                StockQuantity: { required: true, min: 0 }
             },
             errorElement: 'span',
             errorClass: 'text-danger',
-            highlight: function(element) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element) {
-                $(element).removeClass('is-invalid');
-            },
-            errorPlacement: function(error, element) {
-                error.insertAfter(element);
-            }
+            highlight: function(element) { $(element).addClass('is-invalid'); },
+            unhighlight: function(element) { $(element).removeClass('is-invalid'); }
         });
 
+        // 5. إرسال النموذج عبر AJAX (مرة واحدة فقط)
+        $('#editProductForm').on('submit', function(e) {
+            e.preventDefault();
 
+            if (!$(this).valid()) return false;
 
-        // Auto-generate slug from product name
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+            const originalHtml = submitBtn.html();
+
+            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message || 'Product updated successfully!');
+                        if (typeof closeModal === "function") closeModal();
+                        window.location.reload();
+                    } else {
+                        alert(response.error || 'Error updating product');
+                        submitBtn.html(originalHtml).prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    alert('Server error. Please try again.');
+                    submitBtn.html(originalHtml).prop('disabled', false);
+                }
+            });
+        });
+
+        // 6. توليد الـ Slug تلقائياً
         $('#Name').on('blur', function() {
             const name = $(this).val();
-            const slugField = $('#Slug');
-
-            if (name && (!slugField.val() || slugField.val().trim() === '')) {
+            if (name && !$('#Slug').val()) {
                 generateProductSlugFromName(name);
             }
         });
     });
 
-    // Generate product slug
+    // وظائف خارج الـ ready
     function generateProductSlug() {
         const name = $('#Name').val();
-        if (name) {
-            generateProductSlugFromName(name);
-        } else {
-            alert('Please enter a product name first');
-        }
+        if (name) generateProductSlugFromName(name);
+        else alert('Please enter a product name first');
     }
 
     function generateProductSlugFromName(name) {
-        const slug = name
-            .toLowerCase()
-            .trim()
+        const slug = name.toLowerCase().trim()
             .replace(/[^\w\s-]/g, '')
             .replace(/[\s_-]+/g, '-')
             .replace(/^-+|-+$/g, '');
-
         $('#Slug').val(slug);
     }
-
-
-        // في قسم الـ Scripts بصفحة الـ Edit
-    let compIndex = @(Model.ProductCompositions?.Count() ?? 0);
-
-    $('#add-composition').click(function () {
-        const container = $('#composition-container');
-        const html = `
-            <div class="composition-row row mb-2 g-2 align-items-center">
-                <div class="col-7">
-                    <select name="ProductCompositions[${compIndex}].CompositionId" class="form-select form-control" required>
-                        <option value="">Select Material</option>
-                        @foreach (var comp in ViewBag.Compositions)
-                        {
-                                <option value="@comp.Id">@comp.Name</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-3">
-                    <input type="number" name="ProductCompositions[${compIndex}].Percentage" class="form-control" placeholder="%" min="1" max="100" required>
-                </div>
-                <div class="col-2">
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-composition">×</button>
-                </div>
-            </div>`;
-        container.append(html);
-        compIndex++; // زيادة الـ index لكل سطر جديد
-    });
-
-    // كود حذف السطور (شغال للـ Create والـ Edit)
-    $(document).on('click', '.remove-composition', function() {
-        $(this).closest('.composition-row').remove();
-    });
 </script>

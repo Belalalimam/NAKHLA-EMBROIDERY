@@ -75,7 +75,9 @@ namespace NAKHLA.Models
         public int BrandId { get; set; }
         public Brand? Brand { get; set; }
 
-        
+        public int? ColorId { get; set; }
+        [ForeignKey("ColorId")]
+        public Color? Color { get; set; }
 
 
         // Specifications (JSON or separate table)
@@ -109,9 +111,7 @@ namespace NAKHLA.Models
         public FabricType? FabricType { get; set; } = null!;
         public ICollection<ProjectCategory> ProjectCategories { get; set; } = new List<ProjectCategory>();
 
-        public int? ColorId { get; set; }
-        [ForeignKey("ColorId")]
-        public Color? Color { get; set; }
+        
 
 
         // Calculated Properties

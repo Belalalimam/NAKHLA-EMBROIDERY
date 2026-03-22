@@ -1,6 +1,10 @@
 ﻿@model List<Product>
 @{
     var category = ViewBag.SelectedCategory as Category;
+    var fabricType = ViewBag.SelectedFabricType as FabricType;
+    var projectCategory = ViewBag.SelectedProject as ProjectCategory;
+    var productTag = ViewBag.SelectedTag as ProductTag;
+    var color = ViewBag.SelectedColor as Color;
 }
 
 <div class="container">
@@ -8,23 +12,67 @@
     <div class="category-header-section">
         <div class="container">
             <div class="category-header">
-                @if (category != null)
+                @* 1. إذا كان الفلتر المختار هو Fabric Type *@
+                @if (Model.Any() && fabricType != null)
                 {
                     <div class="category-image-container">
-                        <img src="~/images/@category.ImageUrl" class="category-image" alt="@category.Name">
-                    </div>
-
-                    <div class="category-content">
-                        <h1 class="category-title">@category.Name</h1>
-                        @if (!string.IsNullOrEmpty(category.Description))
-                        {
-                            <p class="category-subtitle">@category.Description</p>
+                        <img src="~/images/@fabricType.ImageUrl" class="category-image" alt="@fabricType.Name">
+                        </div>
+                        <div class="category-content">
+                            <h1 class="category-title">@fabricType.Name</h1>
+                            @if (!string.IsNullOrEmpty(fabricType.Description))
+                            {
+                                <p class="category-subtitle">@fabricType.Description</p>
+                            }
+                        </div>
+                    }
+                
+@* 2. إذا كان الفلتر المختار هو Category *@
+                else if (Model.Any() && category != null)
+                    {
+                        <div class="category-image-container">
+                            @* تأكد إن عندك حقل ImageUrl في جدول الكاتيجوري *@
+                            <img src="~/images/@category.ImageUrl" class="category-image" alt="@category.Name">
+                            </div>
+                            <div class="category-content">
+                                <h1 class="category-title">@category.Name</h1>
+                                @if (!string.IsNullOrEmpty(category.Description))
+                                {
+                                    <p class="category-subtitle">@category.Description</p>
+                                }
+                            </div>
                         }
-                        <a href="#" class="read-more-link">
-                            Read more <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                }
+
+                else if (Model.Any() && projectCategory != null)
+                    {
+                        <div class="category-image-container">
+                            @* تأكد إن عندك حقل ImageUrl في جدول الكاتيجوري *@
+                                <img src="~/images/@projectCategory.ImageUrl" class="category-image" alt="@projectCategory.Name">
+                            </div>
+                            <div class="category-content">
+                                    <h1 class="category-title">@projectCategory.Name</h1>
+                                    @if (!string.IsNullOrEmpty(projectCategory.Description))
+                                {
+                                        <p class="category-subtitle">@projectCategory.Description</p>
+                                }
+                            </div>
+                        }
+
+                else if (Model.Any() && color != null)
+                    {
+                        <div class="category-image-container">
+                            @* تأكد إن عندك حقل ImageUrl في جدول الكاتيجوري *@
+                                    <img src="~/images/@color.ImageUrl" class="category-image" alt="@color.Name">
+                            </div>
+                            <div class="category-content">
+                                        <h1 class="category-title">@color.Name</h1>
+                                        @if (!string.IsNullOrEmpty(color.Description))
+                                {
+                                            <p class="category-subtitle">@color.Description</p>
+                                }
+                            </div>
+                        }
+     
             </div>
         </div>
     </div>
@@ -145,7 +193,19 @@
                                         <h3>@item.Name</h3>
 
                                         <div class="rowProduct d-flex justify-content-center align-items-center">
-                                                <span>@item.ProductCompositions</span>
+                                             
+                                                    @if (item.ProductCompositions != null && item.ProductCompositions.Any())
+                                                    {
+                                                        @foreach (var comp in item.ProductCompositions.Take(3)) // نأخذ أول 3 فقط للحفاظ على الشكل
+                                                        {
+                                                            <span class="px-2"
+                                                                  title="@comp.Composition?.Name: @comp.Percentage%">
+                                                                @comp.Composition?.Name?.Substring(0, Math.Min(comp.Composition.Name.Length, 3))..
+                                                                <small class="">@comp.Percentage%</small>
+                                                            </span>
+                                                        }
+                                                    }
+                                                    
                                         </div>
 
                                         <div class="rowProduct split px-3">

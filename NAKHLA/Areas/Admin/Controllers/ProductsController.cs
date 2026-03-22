@@ -245,6 +245,35 @@ namespace NAKHLA.Controllers.Admin
             return View(product);
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewColor(string name, string hexCode)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(hexCode))
+            {
+                return Json(new { success = false, message = "يرجى إدخال اسم اللون ورمز الـ Hex" });
+            }
+
+            try
+            {
+                // إنشاء كائن اللون الجديد
+                var newColor = new Color
+                {
+                    Name = name,
+                    HexCode = hexCode
+                };
+
+                _context.Colors.Add(newColor);
+                await _context.SaveChangesAsync();
+
+                // نرجع بيانات اللون الجديد (Id, Name) عشان نضيفه للقائمة فوراً بالـ JS
+                return Json(new { success = true, id = newColor.Id, name = newColor.Name, hex = newColor.HexCode });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "حدث خطأ: " + ex.Message });
+            }
+        }
         // GET: Admin/Products/Edit/5
         [HttpGet]       
         public async Task<IActionResult> Edit(int? id)
@@ -266,6 +295,7 @@ namespace NAKHLA.Controllers.Admin
             ViewBag.Compositions = await _context.Compositions.ToListAsync();
             ViewBag.ProductTags = await _context.ProductTags.ToListAsync();
             ViewBag.FabricTypes = await _context.FabricTypes.ToListAsync();
+            ViewBag.Colors = await _context.Colors.ToListAsync();
             ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
 
             return View(product);
@@ -276,9 +306,8 @@ namespace NAKHLA.Controllers.Admin
         public async Task<IActionResult> GetEdit(int id)
         {
             var product = await _context.Products
-                .Include(p => p.ProductTags) // مهم جداً لعرض الـ Selected Tags
-                .Include(p => p.ProductCompositions) // مهم للـ Compositions
-                .Include(p => p.Color) // مهم للـ Compositions
+                .Include(p => p.ProductTags) 
+                .Include(p => p.ProductCompositions)
                 .Include(p => p.ProjectCategories)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
 
@@ -297,14 +326,14 @@ namespace NAKHLA.Controllers.Admin
             ViewBag.Brands = await _context.Brands.Where(b => b.Status == "Active").ToListAsync();
             ViewBag.ProductTags = await _context.ProductTags.ToListAsync(); // هذا السطر اللي كان ناقص ومسبب الخطأ
             ViewBag.Compositions = await _context.Compositions.ToListAsync();
-            ViewBag.ProductColors = await _context.Colors.ToListAsync();
+            ViewBag.Colors = await _context.Colors.ToListAsync();
             ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
             return PartialView("_EditPartial", product);
         }
 
         // POST: Admin/Products/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]        
         public async Task<IActionResult> Edit(int id, Product product, int[] SelectedProjectCategoryIds, List<int> SelectedTagIds, List<ProductComposition> ProductCompositions)
         {
             if (id != product.Id) return NotFound();
@@ -313,7 +342,7 @@ namespace NAKHLA.Controllers.Admin
             {
                 try
                 {
-                    // 1. جلب المنتج من قاعدة البيانات مع كل علاقاته الحالية لضمان التحكم بها
+                    // 1. جلب المنتج الأصلي مع التضمينات (Includes)
                     var productDb = await _context.Products
                         .Include(p => p.ProductTags)
                         .Include(p => p.ProductCompositions)
@@ -322,18 +351,31 @@ namespace NAKHLA.Controllers.Admin
 
                     if (productDb == null) return NotFound();
 
-                    // 2. تحديث البيانات الأساسية للمنتج (الاسم، السعر، الوصف...)
+                    // 2. تحديث الحقول الأساسية (بما فيها ColorId تلقائياً)
                     _context.Entry(productDb).CurrentValues.SetValues(product);
+
                     productDb.UpdatedAt = DateTime.Now;
                     productDb.UpdatedBy = User.Identity?.Name ?? "System";
 
-                    // 3. حل مشكلة التكرار: حذف الـ Compositions القديمة قبل إضافة الجديدة
-                    if (productDb.ProductCompositions != null)
+                    // 3. تحديث ProjectCategories (Many-to-Many)
+                    productDb.ProjectCategories.Clear();
+                    if (SelectedProjectCategoryIds != null)
                     {
-                        _context.ProductCompositions.RemoveRange(productDb.ProductCompositions);
+                        var pCategories = await _context.ProjectCategories
+                            .Where(pc => SelectedProjectCategoryIds.Contains(pc.Id)).ToListAsync();
+                        foreach (var pc in pCategories) productDb.ProjectCategories.Add(pc);
                     }
 
-                    // إضافة الـ Compositions الجديدة المرسلة من الفورم
+                    // 4. تحديث الـ Tags
+                    productDb.ProductTags.Clear();
+                    if (SelectedTagIds != null)
+                    {
+                        var tags = await _context.ProductTags.Where(t => SelectedTagIds.Contains(t.Id)).ToListAsync();
+                        foreach (var tag in tags) productDb.ProductTags.Add(tag);
+                    }
+
+                    // 5. تحديث الـ Compositions (حذف القديم وإضافة الجديد)
+                    _context.ProductCompositions.RemoveRange(productDb.ProductCompositions);
                     if (ProductCompositions != null)
                     {
                         foreach (var item in ProductCompositions.Where(pc => pc.CompositionId > 0 && pc.Percentage > 0))
@@ -347,37 +389,31 @@ namespace NAKHLA.Controllers.Admin
                         }
                     }
 
-                    // 4. تحديث الـ Tags: تفريغ القائمة القديمة وإعادة ملئها لتجنب التكرار
-                    productDb.ProductTags.Clear();
-                    if (SelectedTagIds != null)
-                    {
-                        var tags = await _context.ProductTags.Where(t => SelectedTagIds.Contains(t.Id)).ToListAsync();
-                        foreach (var tag in tags)
-                        {
-                            productDb.ProductTags.Add(tag);
-                        }
-                    }
-
-                    // 5. حفظ كافة التغييرات في قاعدة البيانات
                     await _context.SaveChangesAsync();
-
+                    TempData["Success"] = "تم تحديث المنتج بنجاح";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    return Json(new { success = false, message = $"خطأ أثناء الحفظ: {ex.Message}" });
+                    ModelState.AddModelError("", "حدث خطأ أثناء الحفظ: " + ex.Message);
                 }
             }
 
-            // في حال وجود أخطاء Validation (مثل التي ظهرت في صورتك الأولى)
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            // في حال فشل الـ Validation، نعيد تحميل القوائم لعرض الصفحة مرة أخرى
+            await LoadViewBags();
+            return View(product);
+        }
 
+        // ميثود مساعدة لتقليل تكرار الكود
+        private async Task LoadViewBags()
+        {
             ViewBag.Categories = await _context.Categorise.Where(c => c.Status == CategoryStatus.Active).ToListAsync();
             ViewBag.Brands = await _context.Brands.Where(b => b.Status == "Active").ToListAsync();
-            ViewBag.ProductTags = await _context.ProductTags.ToListAsync(); // هذا السطر اللي كان ناقص ومسبب الخطأ
-            ViewBag.Compositions = await _context.Compositions.ToListAsync();
+            ViewBag.Colors = await _context.Colors.ToListAsync();
+            ViewBag.ProductTags = await _context.ProductTags.ToListAsync();
+            ViewBag.FabricTypes = await _context.FabricTypes.ToListAsync();
             ViewBag.ProjectCategories = await _context.ProjectCategories.ToListAsync();
-            return RedirectToAction(nameof(Index));
+            ViewBag.Compositions = await _context.Compositions.ToListAsync();
         }
 
         // POST: Admin/Products/Delete/5

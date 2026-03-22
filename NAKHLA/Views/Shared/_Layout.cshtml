@@ -21,7 +21,6 @@
 
 
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
 
 @{
@@ -52,42 +51,10 @@
                     <div class="middle">
                         <nav>
                             <ul>
-                                <li><a href="/Customer/home/product">ِAll Fabrics</a></li>
-                                 
-                                @* <li class="dropdown1">
-                                    <a href="/" class="dropdown1-btn">By Type</a>
-                                    <div class="dropdown1-menu">
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=13">item 1</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=14">item 2</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=15">item 3</a>
-                                        
-                                    </div>
-                                </li> *@
+                                <li><a href="/Customer/home/product">ِAll Fabrics</a></li>                                 
+                                
                                 @await Component.InvokeAsync("NavMenu")
-                                @* <li class ="dropdown1">
-                                    <a href="/" class="dropdown1-btn">By Project</a>
-                                    <div class="dropdown1-menu">
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=13">item 1</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=14">item 2</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=15">item 3</a>
-                                    </div>
-                                </li> *@
-                                @* <li class ="dropdown1">
-                                    <a href="/" class="dropdown1-btn">By Composition</a>
-                                    <div class="dropdown1-menu">
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=13">item 1</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=14">item 2</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=15">item 3</a>
-                                    </div>
-                                </li> *@
-                                @* <li class ="dropdown1">
-                                    <a href="/" class="dropdown1-btn">By Color</a>
-                                    <div class="dropdown1-menu">
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=13">item 1</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=14">item 2</a>
-                                        <a href="https://localhost:7286/customer/home/CategroySearch?categoryId=15">item 3</a>
-                                    </div>
-                                </li> *@
+                                
                                 <li class ="dropdown1">
                                     <a href="/" class="dropdown1-btn">By Pattern</a>
                                     <div class="dropdown1-menu">
@@ -424,8 +391,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom JS -->
     <script>
@@ -470,28 +435,17 @@
         });
     </script>
 
-    <script src="~/js/site.js"></script>
-    <script src="~/js/Navbar.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="~/js/newFile.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="~/assets/demo/chart-area-demo.js"></script>
-    <script src="~/assets/demo/chart-bar-demo.js"></script>
-    <script src="~/js/datatables-simple-demo.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-element-bundle.min.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/bootstrap.min.js"></script>
-    <script src="~/js/jquery.min.js"></script>
-    <script src="~/js/main.js"></script>
-    <script src="~/js/popper.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+
+    <script src="~/js/site.js"></script>
+    <script src="~/js/Navbar.js" asp-append-version="true"></script>
+    <script src="~/js/newFile.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -152,6 +152,58 @@
                         </button>
                     </div>
                 </div>
+
+
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label asp-for="ColorId" class="control-label">Product Color</label>
+                                                    <select asp-for="ColorId" class="form-select select2" asp-items="@(new SelectList(ViewBag.Colors, "Id", "Name"))">
+                                                        <option value="">--Select Color--</option>
+                                                    </select>
+                                                    <span asp-validation-for="ColorId" class="text-danger"></span>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addColorModal">
+                                                    + إضافة لون جديد
+                                                </button>
+
+                                                <div class="modal fade" id="addColorModal" tabindex="-1">
+                                                    <div class="modal-dialog modal-sm">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">إضافة لون جديد</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label>اسم اللون</label>
+                                                                    <input type="text" id="newColorName" class="form-control" placeholder="مثلاً: أحمر ملكي" />
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label>اختر اللون</label>
+                                                                    <input type="color" id="newColorHex" class="form-control form-control-color" value="#563d7c" style="width:100%" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-primary w-100" onclick="saveNewColor()">حفظ اللون</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
 
             <div class="form-group mb-3">
@@ -314,5 +366,27 @@
             
             // باقي كود الـ Validation والـ Ajax الخاص بك يبقى كما هو...
         });
+
+
+                                                                            function saveNewColor() {
+                                                                        var name = $('#newColorName').val();
+                                                                        var hex = $('#newColorHex').val();
+
+                                                                        $.post('/Admin/Products/AddNewColor', { name: name, hexCode: hex }, function(response) {
+                                                                            if (response.success) {
+                                                                                // 1. إضافة اللون الجديد لجميع قوائم الـ Select الخاصة بالألوان في الصفحة
+                                                                                var newOption = new Option(response.name, response.id, true, true);
+                                                                                $('select[name="ColorId"]').append(newOption).trigger('change');
+
+                                                                                // 2. إغلاق المودال وتفريغ الحقول
+                                                                                $('#addColorModal').modal('hide');
+                                                                                $('#newColorName').val('');
+            
+                                                                                alert('تم إضافة اللون بنجاح واختياره!');
+                                                                            } else {
+                                                                                alert(response.message);
+                                                                            }
+                                                                        });
+                                                                    }
     </script>
 }

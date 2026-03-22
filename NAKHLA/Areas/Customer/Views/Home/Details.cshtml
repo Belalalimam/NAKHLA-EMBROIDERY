@@ -236,15 +236,20 @@
                         <div class="row">
                             @if (Model.Product.ProjectCategories != null && Model.Product.ProjectCategories.Any())
                             {
-                                    <span class="spec-label">Category:</span>
-                                <div class="col-12 d-flex  border justify-content-center align-items-center px-5 py-3">
+                                <div class="col-12 d-flex border justify-content-center align-items-center flex-column px-5 py-3 gap-3">
+                                  <span class="spec-label">PROJECT</span>
+                                <div class="d-flex justify-content-center align-items-center flex-row">
                                     @foreach (var category in Model.Product.ProjectCategories)
                                     {
-                                        @* <span class="spec-value"> </span> *@
-                                        <i class="@category.Icon"> </i>
+                                        <a href="#">
+                                            <div class="text-center">
+                                                <i class="@category.Icon d-block mb-1" style="font-size: 1.5rem;"></i>
+                                            </div>
+                                        </a>
                                     }
                                 </div>
-                            }                           
+                                </div>
+                            }
                         </div>
                         <div class="row">
                             @if (Model.Product.Category != null)
@@ -273,14 +278,23 @@
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                                 <div class="detailes-product-code">
-                                    @* @if (Model.Product.ProductColors != null && Model.Product.ProductColors.Any())
-                                    {
-                                            @string.Join(", ", Model.Product.ProductColors.Select(pc => pc.Name).Where(n => !string.IsNullOrEmpty(n))) 
-                                    }
-                                    else
-                                    {
-                                        <span>No colors specified</span>
-                                    } *@
+                                    
+                                    @* <div>@Model.Product.Color.Name</div> *@
+                                                        <div class="product-info-item mb-3">
+                                                            <h6 class="text-uppercase fw-bold">اللون المتاح:</h6>
+                                                            @if (Model.Product.Color != null)
+                                                            {
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="color-box me-3"
+                                                                         style="background-color: @Model.Product.Color.HexCode; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #eee;">
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="d-block fw-bold">@Model.Product.Color.Name</span>
+                                                                        <small class="text-muted">@Model.Product.Color.HexCode</small>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
                                 </div>
                             </div>
                         </div>

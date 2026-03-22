@@ -155,25 +155,7 @@
                                             <span asp-validation-for="Description" class="text-danger"></span>
                                         </div>
                                         <div class="row">
-                                            @* <div class="col-md-6">
-
-
-
-                    <!-- Product Colors (Multiple Selection) -->
-                    <div class="form-group mb-3">
-                        <label class="form-label">Product Colors</label>
-                        <div id="color-container">
-                            <div class="input-group mb-2">
-                                <input type="text" name="Colors[]" class="form-control" placeholder="Enter color (e.g., Blue, Red)">
-                                <button type="button" class="btn btn-outline-danger remove-color">×</button>
-                            </div>
-                        </div>
-                        <button type="button" id="add-color" class="btn btn-sm btn-secondary mt-2">
-                            <i class="fas fa-plus"></i> Add Color
-                        </button>
-                        <small class="text-muted">Enter each color in a separate field</small>
-                    </div>
-                </div> *@
+                                            
 
 
 
@@ -213,24 +195,36 @@
 
                                             
                                             <div class="col-md-6">
-                                                <d<div class="form-group mb-3">
+                                                <div class="form-group mb-3">
                                                     <label class="form-label">Product Color</label>
-                                                    <select name="SelectedColorIds" class="form-select form-control">
+                                                    <select asp-for="ColorId" class="form-select form-control" asp-items="@(new SelectList(ViewBag.Colors, "Id", "Name"))">
                                                         <option value="">Select Color</option>
-                                                        @if (ViewBag.ProductColors != null)
-                                                        {
-                                                            foreach (var color in ViewBag.Colors as List<NAKHLA.Models.Color>)
-                                                            {
-                                                                <option value="@color.Id" >@color.Name</option>
-                                                            }
-                                                        }
                                                     </select>
                                                 </div>
+                                               
+                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="forceOpenModal()">
+                                                    <i class="fas fa-plus"></i> إضافة لون جديد
+                                                </button>
+
+                                                
+                                                
+
+                                                
+
                                             </div>
 
 
                 
+
+
+
                                         </div>
+
+
+                                        <div class="row">
+                                        </div>
+
+
 
 
                                         <div class="row">
@@ -336,94 +330,130 @@
                                                                 </div>
                                                             </form>
                                                         </div>
+
+
+                                                        <div class="modal fade" id="addColorModal" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="modal-content border-0 shadow">
+                                                                    <div class="modal-header bg-primary text-white">
+                                                                        <h5 class="modal-title">إضافة لون منتج جديد</h5>
+                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label fw-bold">اسم اللون</label>
+                                                                            <input type="text" id="newColorName" class="form-control" placeholder="مثلاً: أبيض لؤلؤي">
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label fw-bold">درجة اللون</label>
+                                                                            <input type="color" id="newColorHex" class="form-control form-control-color w-100" value="#000000">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer bg-light">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                                        <button type="button" class="btn btn-primary" onclick="saveNewColor()">حفظ اللون</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
                                                     </div>
 
+
+                                                    
                                                     @section Scripts {
                                                         <script>
-                                                            $(document).ready(function() {
-                                                                // Auto-generate SKU if empty
-                                                                $('#SKU').on('blur', function() {
-                                                                    if (!$(this).val()) {
-                                                                        const sku = 'PROD-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-                                                                        $(this).val(sku);
-                                                                    }
-                                                                });
+                                                            
 
-                                                                // Auto-generate slug from product name
+                                                            $(document).ready(function () {
+                                                                
+
+                                                                // ب. منطق الـ SKU والـ Slug (تلقائي)
                                                                 $('#Name').on('blur', function() {
                                                                     const name = $(this).val();
-                                                                    const slugField = $('#Slug');
-
-                                                                    if (name && (!slugField.val() || slugField.val().trim() === '')) {
-                                                                        const slug = name.toLowerCase()
-                                                                            .trim()
-                                                                            .replace(/[^\w\s-]/g, '')
-                                                                            .replace(/[\s_-]+/g, '-')
-                                                                            .replace(/^-+|-+$/g, '');
-                                                                        slugField.val(slug);
+                                                                    if (name && !$('#Slug').val()) {
+                                                                        const slug = name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-');
+                                                                        $('#Slug').val(slug);
                                                                     }
                                                                 });
 
-                                                                // Auto-generate meta title from product name
-                                                                $('#Name').on('blur', function() {
-                                                                    const name = $(this).val();
-                                                                    const metaTitleField = $('#MetaTitle');
-
-                                                                    if (name && (!metaTitleField.val() || metaTitleField.val().trim() === '')) {
-                                                                        metaTitleField.val(name + ' - Product');
-                                                                    }
+                                                                // ج. منطق إضافة الـ Compositions (الخامات)
+                                                                let compIndex = $('.composition-row').length;
+                                                                $('#add-composition').click(function () {
+                                                                    const html = `
+                                                                    <div class="composition-row row mb-2 g-2 align-items-center">
+                                                                        <div class="col-7">
+                                                                            <select name="ProductCompositions[${compIndex}].CompositionId" class="form-select" required>
+                                                                                <option value="">Select Material</option>
+                                                                                @foreach (var comp in ViewBag.Compositions)
+                                                                                {
+                                                                                    <option value="@comp.Id">@comp.Name</option>
+                                                                                }
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="col-3">
+                                                                            <input type="number" name="ProductCompositions[${compIndex}].Percentage" class="form-control" placeholder="%" min="1" max="100" required>
+                                                                        </div>
+                                                                        <div class="col-2">
+                                                                            <button type="button" class="btn btn-outline-danger btn-sm remove-composition">×</button>
+                                                                        </div>
+                                                                    </div>`;
+                                                                    $('#composition-container').append(html);
+                                                                    compIndex++;
                                                                 });
 
-                                                                // Auto-generate meta description from short description
-                                                                $('#ShortDescription').on('blur', function() {
-                                                                    const desc = $(this).val();
-                                                                    const metaDescField = $('#MetaDescription');
-
-                                                                    if (desc && (!metaDescField.val() || metaDescField.val().trim() === '')) {
-                                                                        metaDescField.val(desc.substring(0, 150));
-                                                                    }
+                                                                $(document).on('click', '.remove-composition', function () {
+                                                                    $(this).closest('.composition-row').remove();
                                                                 });
                                                             });
 
-                                                            // gimiadd
-                                                                                                                        // Variable to keep track of rows index
-                                                                                                                let compIndex = 1;
+                                                                                                                 // دالة الفتح "القسرية" - تمنع التكرار نهائياً
+                                                            function forceOpenModal() {
+                                                                // 1. تنظيف أي مودال قديم أو خلفية سوداء عالقة
+                                                                $('.modal-backdrop').remove();
+                                                                $('.modal').hide().removeClass('show');
+                                                                $('body').removeClass('modal-open').css('overflow', '');
 
-                                                                                                                $('#add-composition').click(function () {
-                                                                                                                    const container = $('#composition-container');
-                                                                                                                    const html = `
-                                                                                                                        <div class="composition-row row mb-2 g-2 align-items-center">
-                                                                                                                            <div class="col-7">
-                                                                                                                                <select name="ProductCompositions[${compIndex}].CompositionId" class="form-select form-control" required>
-                                                                                                                                    <option value="">Select Material</option>
-                                                                                                                                    @foreach (var comp in ViewBag.Compositions as List<NAKHLA.Models.Composition>)
-                                                                                                                                    {
-                                                                                                                                                    <option value="@comp.Id">@comp.Name</option>
-                                                                                                                                    }
-                                                                                                                                </select>
-                                                                                                                            </div>
-                                                                                                                            <div class="col-3">
-                                                                                                                                <input type="number" name="ProductCompositions[${compIndex}].Percentage" class="form-control" placeholder="%" min="1" max="100" required>
-                                                                                                                            </div>
-                                                                                                                            <div class="col-2">
-                                                                                                                                <button type="button" class="btn btn-outline-danger btn-sm remove-composition">×</button>
-                                                                                                                            </div>
-                                                                                                                        </div>`;
-                                                                                                                    container.append(html);
-                                                                                                                    compIndex++;
-                                                                                                                });
+                                                                // 2. الوصول للعنصر
+                                                                var modalEl = document.getElementById('addColorModal');
+            
+                                                                // 3. نقله للـ body فوراً (عشان ما يختفي لما تحرك الماوس)
+                                                                document.body.appendChild(modalEl);
 
-                                                                                                                // Remove Row
-                                                                                                                $(document).on('click', '.remove-composition', function () {
-                                                                                                                    if ($('.composition-row').length > 1) {
-                                                                                                                        $(this).closest('.composition-row').remove();
-                                                                                                                        // Re-index to prevent breaking the list binding in C#
-                                                                                                                        $('.composition-row').each(function(index, element) {
-                                                                                                                            $(element).find('select').attr('name', `ProductCompositions[${index}].CompositionId`);
-                                                                                                                            $(element).find('input').attr('name', `ProductCompositions[${index}].Percentage`);
-                                                                                                                        });
-                                                                                                                        compIndex = $('.composition-row').length;
-                                                                                                                    }
-                                                                                                                });
+                                                                // 4. تشغيله يدوياً بأمر من البوتستراب
+                                                                var modal = new bootstrap.Modal(modalEl, { backdrop: 'static' });
+                                                                modal.show();
+                                                            }
+
+                                                            // دالة الحفظ
+                                                            function saveNewColor() {
+                                                                const name = $('#newColorName').val().trim();
+                                                                const hex = $('#newColorHex').val();
+
+                                                                if (!name) { alert("اكتب الاسم يا غالي"); return; }
+
+                                                                $.post('/Admin/Products/AddNewColor', { name: name, hexCode: hex }, function (res) {
+                                                                    if (res.success) {
+                                                                        // إضافة الخيار
+                                                                        const newOption = new Option(res.name, res.id, true, true);
+                                                                        $('#ColorId').append(newOption).trigger('change');
+
+                                                                        // إغلاق وتنظيف يدوي (أضمن طريقة)
+                                                                        $('.modal').hide().removeClass('show');
+                                                                        $('.modal-backdrop').remove();
+                                                                        $('body').removeClass('modal-open');
+                                                                        $('#newColorName').val('');
+                                                                    } else {
+                                                                        alert(res.message);
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            // باقي كود الـ SKU والـ Composition كما هو تحت هنا...
+                                                            $(document).ready(function() {
+                                                                 // كود الـ SKU والـ Composition اللي عندك
+                                                            });
                                                         </script>
                                                     }

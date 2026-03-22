@@ -21,65 +21,143 @@ namespace NAKHLA.Areas.Customer.Controllers
         }
         public IActionResult Product(FilterVM filterVM, int page = 1)
         {
-            const int discount = 50;
-            var products = _context.Products.Where(p => !p.IsDeleted).AsQueryable();
+            // جلب المنتجات مع كل العلاقات اللازمة
+            var products = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.FabricType)
+                .Include(p => p.Color)
+                .Include(p => p.ProjectCategories)
+                .Include(p => p.ProductCompositions)
+        .ThenInclude(pc => pc.Composition)
+                .Where(p => !p.IsDeleted)
+                .AsQueryable();
 
-            // Filter
-            if (filterVM.Name is not null)
-            {
-                products = products.Where(e => e.Name.Contains(filterVM.Name));
-                ViewBag.ProductName = filterVM.Name;
-            }
+            // تطبيق الفلاتر "بذكاء":
+            if (!string.IsNullOrEmpty(filterVM.Name))
+                products = products.Where(p => p.Name.Contains(filterVM.Name));
 
-            if (filterVM.MinPrice is not null)
-            {
-                products = products;
-                ViewBag.MinPrice = filterVM.MinPrice;
-            }
+            if (filterVM.CategoryId.HasValue)
+                products = products.Where(p => p.CategoryId == filterVM.CategoryId);
 
-            if (filterVM.MaxPrice is not null)
-            {
-                products = products;
-                ViewBag.MaxPrice = filterVM.MaxPrice;
-            }
+            if (filterVM.FabricTypeId.HasValue)
+                products = products.Where(p => p.FabricTypeId == filterVM.FabricTypeId);
 
-            if (filterVM.CategoryId is not null)
-            {
-                products = products.Where(e => e.CategoryId == filterVM.CategoryId);
-                ViewBag.CategoryId = filterVM.CategoryId;
-            }
+            if (filterVM.ColorId.HasValue)
+                products = products.Where(p => p.ColorId == filterVM.ColorId);
 
-            if (filterVM.IsHot)
-            {
-                products = products.Where(e => e.Discount >= discount);
-                ViewBag.isHot = filterVM.IsHot;
-            }
+            // فلترة المشاريع (العلاقة Many-to-Many)
+            if (filterVM.ProjectCategoryId.HasValue)
+                products = products.Where(p => p.ProjectCategories.Any(c => c.Id == filterVM.ProjectCategoryId));
 
+            // فلترة المكونات (العلاقة عبر جدول وسيط)
+            if (filterVM.CompositionId.HasValue)
+                products = products.Where(p => p.ProductCompositions.Any(pc => pc.CompositionId == filterVM.CompositionId));
 
-            // Categories
-            var categories = _context.Categorise;
-            ViewData["categories"] = categories.ToList();
-            ViewBag.categories = categories.ToList();
+            // الترقيم (Pagination)
+            const int pageSize = 12;
+            var totalItems = products.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            // Paginitation
-            var totalNumberOfPages = Math.Ceiling(products.Count() / 8.0);
-            var currentPage = page;
-            ViewBag.totalNumberOfPages = totalNumberOfPages;
-            ViewBag.currentPage = currentPage;
+            var result = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
-            products = products.Skip((page - 1) * 16).Take(16);
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.Filter = filterVM; // عشان الـ View تعرف شو الفلتر الحالي
 
-
-            return View(products.ToList());
+            return View(result);
         }
 
         public IActionResult CategroySearch(FilterVM filterVM, int page = 1)
         {
-            const int discount = 50;
-
+            // جلب المنتجات مع كل العلاقات اللازمة
             var products = _context.Products
-                .Include(e => e.Category)
+                .Include(p => p.Category)
+                .Include(p => p.FabricType)
+                .Include(p => p.Color)
+                .Include(p => p.ProjectCategories)
+                .Include(p => p.ProductCompositions)
+                .ThenInclude(pc => pc.Composition)
+                .Where(p => !p.IsDeleted)
                 .AsQueryable();
+
+            // تطبيق الفلاتر "بذكاء":
+            if (!string.IsNullOrEmpty(filterVM.Name))
+                products = products.Where(p => p.Name.Contains(filterVM.Name));
+
+            if (filterVM.CategoryId.HasValue)
+                products = products.Where(p => p.CategoryId == filterVM.CategoryId);
+
+
+            FabricType? fabricType = null;
+            if (filterVM.FabricTypeId.HasValue)
+            {
+                products = products.Where(p => p.FabricTypeId == filterVM.FabricTypeId);
+                fabricType = _context.FabricTypes.FirstOrDefault(e => e.Id == filterVM.FabricTypeId);
+                ViewBag.FabricType = filterVM.FabricTypeId;
+            }
+            ViewBag.SelectedFabricType = fabricType;
+
+
+
+
+            // فلترة المشاريع (العلاقة Many-to-Many)
+            ProjectCategory? projectCategory = null;
+            if (filterVM.ProjectCategoryId.HasValue)
+            {
+                products = products.Where(p => p.ProjectCategories.Any(c => c.Id == filterVM.ProjectCategoryId));
+                projectCategory = _context.ProjectCategories.FirstOrDefault(e => e.Id == filterVM.ProjectCategoryId);
+                ViewBag.ProjectCategory = filterVM.ProjectCategoryId;
+            }
+
+            ViewBag.SelectedProject = projectCategory;
+
+
+
+            Color? color = null;
+            if (filterVM.ColorId.HasValue)
+            {
+                products = products.Where(p => p.ColorId == filterVM.ColorId);
+                color = _context.Colors.FirstOrDefault(e => e.Id == filterVM.ColorId);
+                ViewBag.Color = filterVM.ColorId;
+            }
+
+            ViewBag.SelectedColor = color;
+
+
+
+
+            //Color? color = null;
+            //if (filterVM.ColorId.HasValue) { 
+            //    products = products.Where(p => p.ColorId == filterVM.ColorId);
+            //    color = _context.Colors.FirstOrDefault(e => e.Id == filterVM.ColorId);
+            //    ViewBag.Color = filterVM.ColorId;
+            //}
+            //ViewBag.SelectedColor = color;
+
+            // فلترة المكونات (العلاقة عبر جدول وسيط)
+            if (filterVM.CompositionId.HasValue)
+                products = products.Where(p => p.ProductCompositions.Any(pc => pc.CompositionId == filterVM.CompositionId));
+
+            // الترقيم (Pagination)
+            const int pageSize = 12;
+            var totalItems = products.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var result = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.Filter = filterVM; // عشان الـ View تعرف شو الفلتر الحالي
+
+
+
+
 
             Category? category = null;
 
@@ -92,24 +170,9 @@ namespace NAKHLA.Areas.Customer.Controllers
                 ViewBag.CategoryId = filterVM.CategoryId;
             }
 
-            // باقي الفلاتر
-            if (filterVM.Name is not null)
-                products = products.Where(e => e.Name.Contains(filterVM.Name));
-
-            if (filterVM.IsHot)
-                products = products.Where(e => e.Discount >= discount);
-
-            // pagination
-            var totalNumberOfPages = Math.Ceiling(products.Count() / 8.0);
-            ViewBag.totalNumberOfPages = totalNumberOfPages;
-            ViewBag.currentPage = page;
-
-            products = products.Skip((page - 1) * 8).Take(8);
-
-            // 🔴 أهم سطر
             ViewBag.SelectedCategory = category;
 
-            return View(products.ToList());
+            return View(result);
         }
 
 
