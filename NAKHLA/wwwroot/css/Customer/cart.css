@@ -40,11 +40,11 @@ swiper-slide img {
 .totals-section {
     flex: 1;
     min-width: 300px;
-    background: #ffffff; /* أبيض ناصع بدل الرمادي */
+    background: var(--jade-color);
     padding: 25px;
     border-radius: 8px;
     height: fit-content;
-    border: 1px solid #C5A059; /* تحديد بلون ذهبي خفيف */
+    border: 1px solid var(--dustyolive-color);
 }
 
 .cart-page h1 {
@@ -57,8 +57,8 @@ swiper-slide img {
 .cart-page h2 {
     margin-bottom: 20px;
     font-size: 22px;
-    color: #1A1A1A; /* أسود فحمي */
-    border-bottom: 2px solid #C5A059; /* خط ذهبي بدل الوردي */
+    color: var(--evergreen-color); /* أسود فحمي */
+    border-bottom: 2px solid var(--jade-color); /* خط ذهبي بدل الوردي */
     padding-bottom: 10px;
     font-weight: 600;
 }
@@ -75,7 +75,7 @@ swiper-slide img {
 .cart-header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 50px;
-    background: #f5f5f5;
+    background: var(--jade-color);
     padding: 15px 20px;
     font-weight: 600;
     color: #666;
@@ -86,17 +86,18 @@ swiper-slide img {
 }
 
 .cart-item {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 50px;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
     gap: 15px;
+    display: grid;
+    padding: 20px;
+    align-items: center;
+    border-bottom: 1px solid var(--jade-color);
+    transition: background-color 0.3s linear;
+    background-color: var(--cotton-color);
+    grid-template-columns: 2fr 1fr 1fr 1fr 50px;
 }
 
     .cart-item:hover {
-        background-color: #fafafa;
+        background-color: var(--jade-color);
     }
 
     .cart-item:last-child {
@@ -123,7 +124,7 @@ swiper-slide img {
 }
 
 .product-name1 {
-    color: #333;
+    color: var(--evergreen-color);
     font-weight: 600;
     text-decoration: none;
     font-size: 16px;
@@ -133,12 +134,12 @@ swiper-slide img {
 }
 
     .product-name1:hover {
-        color: #C5A059;
+        color: var(--dustyolive-color);
     }
 
 .product-sku1 {
     font-size: 12px;
-    color: #888;
+    color: var(--evergreen-color);
     font-family: monospace;
 }
 
@@ -150,12 +151,12 @@ swiper-slide img {
 .price-amount {
     font-weight: 600;
     font-size: 16px;
-    color: #333;
+    color: var(--evergreen-color) !important;
 }
 
 .original-price {
     font-size: 13px;
-    color: #999;
+    color: var(--evergreen-color) !important;
     text-decoration: line-through;
     margin-top: 5px;
 }
@@ -172,13 +173,15 @@ swiper-slide img {
     border: 1px solid #ddd;
     border-radius: 6px;
     padding: 2px;
-    background: white;
+    justify-content: center;
+    color: var(--evergreen-color);
+    background: var(--jade-color);
 }
 
 .qty-btn {
     width: 30px;
     height: 30px;
-    background: #f8f8f8;
+    background: var(--cotton-color);
     border: none;
     border-radius: 4px;
     font-size: 18px;
@@ -201,6 +204,7 @@ swiper-slide img {
     text-align: center;
     border: none;
     font-size: 14px;
+    border-radius:4px;
     background: transparent;
 }
 
@@ -220,7 +224,7 @@ swiper-slide img {
 .item-subtotal {
     font-weight: 600;
     font-size: 16px;
-    color: #333;
+    color: var(--evergreen-color);
 }
 
 /* Remove Column */
@@ -270,7 +274,8 @@ swiper-slide img {
 .coupon-input {
     flex: 1;
     padding: 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--jade-color);
+    color:var(--evergreen-color);
     border-radius: 6px;
     font-size: 14px;
     min-width: 200px;
@@ -278,13 +283,13 @@ swiper-slide img {
 
     .coupon-input:focus {
         outline: none;
-        border-color: #e91e63;
+        border-color: var(--evergreen-color);
     }
 
 .apply-btn {
     padding: 12px 25px;
-    background: #333;
-    color: white;
+    background: var(--evergreen-color);
+    color: var(--cotton-color);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -295,7 +300,8 @@ swiper-slide img {
 }
 
     .apply-btn:hover {
-        background: #555;
+        background: var(--jade-color);
+        color:var(--evergreen-color);
     }
 
 .applied-promotion {
@@ -321,8 +327,8 @@ swiper-slide img {
 
 .clear-cart-btn {
     padding: 12px 25px;
-    background: #ff4444;
-    color: white;
+    background: var(--jade-color);
+    color: var(--cotton-color);
     text-decoration: none;
     border-radius: 6px;
     font-size: 14px;
@@ -334,7 +340,8 @@ swiper-slide img {
 }
 
     .clear-cart-btn:hover {
-        background: #cc0000;
+        background: var(--evergreen-color);
+
     }
 
 /* Recommendations */
@@ -352,22 +359,20 @@ swiper-slide img {
 }
 
 .product-card {
-    border: 1px solid #eee;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
-    background: white;
-}
+    background: var(--cotton-color) !important;
+    margin-top: 10px;
 
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
 
 .suggested-product-image {
     width: 100%;
     height: 150px;
-    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     border-bottom: 1px solid #eee;
 }
 
@@ -390,7 +395,7 @@ swiper-slide img {
 
 .price {
     font-weight: 600;
-    color: #333;
+    color:var(--evergreen-color) !important;
 }
 
 .special-price {
@@ -421,8 +426,9 @@ swiper-slide img {
     display: flex;
     justify-content: space-between;
     padding: 12px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--dustyolive-color);
     font-size: 15px;
+    color: var(--evergreen-color);
 }
 
     .total-row.subtotal {
@@ -438,17 +444,17 @@ swiper-slide img {
     .total-row.final {
         font-size: 20px;
         font-weight: 700;
-        color: #1A1A1A; /* أسود للفخامة */
+        color: var(--evergreen-color);
         border-bottom: none;
         margin-top: 10px;
         padding-top: 15px;
-        border-top: 2px solid #C5A059; /* خط ذهبي */
+        /*border-top: 1px solid var(--dustyolive-color);*/ /* خط ذهبي */
     }
 
 .shipping-info {
     margin: 20px 0;
     padding: 15px;
-    background: white;
+    background: var(--cotton-color);
     border-radius: 6px;
     border: 1px solid #eee;
 }
@@ -459,19 +465,22 @@ swiper-slide img {
     font-weight: 600;
     margin-bottom: 10px;
     font-size: 15px;
+    color: var(--dustyolive-color);
 }
 
 .shipping-address {
     margin-bottom: 15px;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
+    color: var(--evergreen-color);
 }
 
-.change-address {
-    font-size: 14px;
-    text-decoration: none;
-    font-weight: 600;
-}
+    .shipping-address .change-address {
+        font-size: 14px;
+        text-decoration: none;
+        font-weight: 600;
+        color: var(--evergreen-color);
+    }
 
     .change-address:hover {
         text-decoration: underline;
@@ -479,11 +488,13 @@ swiper-slide img {
 
 .shipping-methods {
     margin-top: 15px;
+    color: var(--evergreen-color);
 }
 
 .shipping-method {
     margin-bottom: 10px;
     display: flex;
+    color: var(--evergreen-color);
     align-items: center;
 }
 
@@ -506,7 +517,7 @@ swiper-slide img {
 
 .usd-estimate {
     font-size: 13px;
-    color: #666;
+    color: var(--dustyolive-color);
     font-weight: normal;
     margin-top: 5px;
 }
@@ -519,14 +530,14 @@ swiper-slide img {
     display: block;
     width: 100%;
     padding: 16px;
-    background: #1A1A1A; /* أسود ملكي */
-    color: #C5A059; /* ذهبي */
+    background: var(--evergreen-color); /* أسود ملكي */
+    color: var(--cotton-color); /* ذهبي */
     text-align: center;
     text-decoration: none;
     border-radius: 6px;
     font-size: 16px;
     font-weight: 700;
-    border: 1px solid #C5A059;
+    border: 1px solid var(--evergreen-color);
     cursor: pointer;
     transition: all 0.3s ease;
     margin-bottom: 15px;
@@ -535,8 +546,8 @@ swiper-slide img {
 }
 
     .checkout-btn:hover {
-        background: #C5A059; /* ينعكس اللون عند التمرير */
-        color: #1A1A1A;
+        background: var(--cotton-color); /* ينعكس اللون عند التمرير */
+        color: var(--evergreen-color);
         box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
     }
 
@@ -547,11 +558,11 @@ swiper-slide img {
 
     .alternative-payments p {
         margin-bottom: 15px;
-        color: #666;
+        color: var(--dustyolive-color);
         font-size: 14px;
     }
 
-.paypal-btn, .apple-pay-btn {
+.paypal-btn {
     width: 100%;
     padding: 12px;
     margin: 5px 0;
@@ -574,15 +585,6 @@ swiper-slide img {
         color: white;
     }
 
-.apple-pay-btn {
-    color: #000;
-    border-color: #000;
-}
-
-    .apple-pay-btn:hover {
-        background: #000;
-        color: white;
-    }
 
 .paypal-info {
     background: #f0f8ff;
@@ -598,13 +600,13 @@ swiper-slide img {
 .continue-shopping {
     text-align: center;
     padding: 20px 0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--dustyolive-color);
     margin-top: 20px;
-    color: #666;
+    color: var(--dustyolive-color);
 }
 
     .continue-shopping a {
-        color: #C5A059;
+        color: var(--evergreen-color);
         text-decoration: none;
         font-weight: 600;
         font-size: 16px;
@@ -642,8 +644,8 @@ swiper-slide img {
     font-size: 16px;
     transition: background-color 0.2s;
     background: #1A1A1A;
-    color: #C5A059;
-    border: 1px solid #C5A059;
+/*    color: #C5A059;
+    border: 1px solid #C5A059;*/
     padding: 12px 30px;
     border-bottom: none;
 }
@@ -653,13 +655,6 @@ swiper-slide img {
         color: #1A1A1A;
     }
 
-
-.change-address, .continue-shopping a, .continue-shopping-btn {
-    color: #C5A059;
-    text-decoration: none;
-    font-weight: 600;
-    border-bottom: 1px solid #C5A059; /* خط ذهبي تحت الرابط */
-}
 /* Responsive Design */
 @media (max-width: 1024px) {
     .container-cart {

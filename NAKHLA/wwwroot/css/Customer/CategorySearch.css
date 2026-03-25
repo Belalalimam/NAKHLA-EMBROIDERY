@@ -1,8 +1,8 @@
 ﻿/* ===== CATEGORY PAGE STYLES ===== */
 .category-header-section {
 /*    padding: 60px 0;*/
-    margin-bottom: 40px;
-    margin-top: 40px;
+    paddin-bottom: 40px;
+    padding-top: 40px;
 }
 
 .category-header {
@@ -88,7 +88,7 @@
 
 /* Quick Filter Bar */
 .quick-filter-bar {
-    background: #fff;
+    background-color: var(--jade-color);
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 30px;
@@ -100,19 +100,19 @@
 }
 
 .filter-label {
-    font-weight: 600;
-    color: #333;
+    font-weight: 600;    
+    color: var(--evergreen-color);
     font-size: 0.9rem;
     white-space: nowrap;
 }
 
 .quick-filter-select {
     min-width: 135px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--jade-color);
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 0.9rem;
-    color: #555;
+    color: var(--evergreen-color);
     background-color: #fff;
     transition: all 0.3s ease;
 }
@@ -125,7 +125,7 @@
 
 /* Filter Sidebar */
 .filter-sidebar {
-    background: #fff;
+    background-color: var(--jade-color);
     border-radius: 12px;
     padding: 25px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -137,7 +137,7 @@
 .filter-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.5rem;
-    color: #1a1a1a;
+    color: var(--evergreen-color);
     margin-bottom: 25px;
     padding-bottom: 10px;
     border-bottom: 2px solid #f0e6d6;
@@ -146,7 +146,7 @@
 .filter-section {
     margin-bottom: 25px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var( --cotton-color);
 }
 
     .filter-section:last-child {
@@ -158,7 +158,7 @@
 .filter-section-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #333;
+    color: var(--dustyolive-color);
     margin-bottom: 15px;
     display: flex;
     justify-content: space-between;
@@ -167,7 +167,7 @@
 
 .filter-reset {
     font-size: 0.85rem;
-    color: #8b7355;
+    color: var( --cotton-color);
     text-decoration: none;
     font-weight: 500;
 }
@@ -182,6 +182,7 @@
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 0.95rem;
+    color: var( --evergreen-color);
     transition: all 0.3s ease;
 }
 
@@ -196,13 +197,13 @@
     justify-content: space-between;
     margin-top: 8px;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--dustyolive-color);
 }
 
 .filter-range {
     width: 100%;
     height: 6px;
-    background: #f0f0f0;
+    background: var( --cotton-color);
     border-radius: 3px;
     outline: none;
     -webkit-appearance: none;
@@ -212,20 +213,20 @@
         -webkit-appearance: none;
         width: 18px;
         height: 18px;
-        background: #8b7355;
+        background: var(--dustyolive-color);
         border-radius: 50%;
         cursor: pointer;
-        border: 2px solid #fff;
+        border: 2px solid var( --cotton-color);
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     .filter-range::-moz-range-thumb {
         width: 18px;
         height: 18px;
-        background: #8b7355;
+        background: lime;
         border-radius: 50%;
         cursor: pointer;
-        border: 2px solid #fff;
+        border: 2px solid var( --cotton-color);
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
@@ -233,9 +234,9 @@
     display: block;
     width: 100%;
     padding: 12px;
-    background: transparent;
-    border: 2px solid #8b7355;
-    color: #8b7355;
+    background-color: var(--jade-color);
+    border: 2px solid var(--dustyolive-color);
+    color: var(--dustyolive-color);
     border-radius: 6px;
     font-weight: 600;
     text-align: center;
@@ -245,9 +246,12 @@
 }
 
     .view-all-btn:hover {
-        background: #8b7355;
-        color: #fff;
+        background: var(--dustyolive-color);
+        color: var( --cotton-color);
     }
+.ifNoProductText {
+    color: var(--dustyolive-color);
+}
 
 
 .container-xl-cs {
@@ -265,6 +269,9 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 30px;
     margin-bottom: 40px;
+}
+.borderContainer{
+    border:1px solid var(--jade-color);
 }
 
 .product-card-new {
@@ -506,10 +513,11 @@
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 6px;
-    color: #555;
+    color: var(--cotton-color);
+    background-color: var(--evergreen-color);
     text-decoration: none;
     transition: all 0.3s ease;
-}
+}   
 
     .page-link:hover {
         background: #f8f6f3;

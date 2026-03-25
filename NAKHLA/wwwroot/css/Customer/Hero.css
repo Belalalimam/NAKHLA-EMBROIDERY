@@ -17,7 +17,7 @@
 .hero-content {
     position: relative;
     max-width: 700px;
-    color: #fff;
+    color: var(--cotton-color);
     z-index: 2;
 } 
 
@@ -36,8 +36,8 @@
 
 .btn-hero {
     display: inline-block;
-    background-color: #ffffff;
-    color: #000;
+    background-color: var(--evergreen-color);
+    color: var(--cotton-color);
     padding: 14px 32px;
     font-size: 0.95rem;
     text-transform: uppercase;
@@ -111,7 +111,7 @@
 }
 
     .category-overlay h3 {
-        color: #fff;
+        color: var(--cotton-color);
         font-size: 1.4rem;
         font-weight: 600;
         text-align: center;
@@ -164,13 +164,19 @@
     text-align: center;
     font-weight: 400;
     margin-bottom: 50px;
-    color: #555;
+    color: var(--evergreen-color);
 }
 
 .fabric-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
+}
+    .fabric-grid a span {
+        color: var(--cotton-color);
+    }
+.changeColor{
+    color:var(--evergreen-color);
 }
 
 .fabric-card {
@@ -245,6 +251,10 @@
     max-width: 1100px;
     margin: auto;
 }
+    .categories2 a {
+        background-color: var(--dustyolive-color);
+        color:var(--cotton-color);
+    }
 
 .cat {
     border: 1px solid #ccc;
@@ -265,26 +275,26 @@
 .seo-section {
     margin-top: 90px;
     padding: 60px 20px;
-    background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
     border-top: 1px solid #e6e6e6;
 }
 
 .seo-container {
     max-width: 1200px;
     margin: auto;
+    
     font-family: Arial, sans-serif;
 }
 
     .seo-container h2 {
         font-size: 26px;
         margin-bottom: 18px;
-        color: #222;
+        color: var(--evergreen-color);
     }
 
     .seo-container p {
         font-size: 15px;
         line-height: 1.9;
-        color: #555;
+        color: var(--evergreen-color);
         margin-bottom: 16px;
     }
 /*footer*/
@@ -378,6 +388,7 @@ body {
 .footer-nav {
     padding: 60px 0 40px;
     border-top: 1px solid var(--border-color);
+    background-color: var(--jade-color);
 }
 
 .nav-column {
@@ -434,7 +445,7 @@ body {
 
 /* Contact Info */
 .contact-info {
-    background: var(--light-gray);
+    background: var(--cotton-color);
     padding: 20px;
     border-radius: 4px;
 }

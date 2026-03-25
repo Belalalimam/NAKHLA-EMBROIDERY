@@ -66,20 +66,30 @@
 
 /* Product Info */
 .detailes-product-info {
-        padding-top: 10px;
+    padding-top: 10px;
+    border-radius:8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding-bottom:10px;
 }
     .detailes-product-info .detailes-product-title {
-        font-size: 40px ;
+        font-size: 40px;
         font-weight: 600;
-        
+        color: var(--evergreen-color);
     }
-    
+
     .detailes-product-info .detailes-product-code {
         font-size: 15px;
-/*        color: #999;*/
+        color: var(--dustyolive-color);
         margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+    }
+    .detailes-product-info .detailes-product-code1 {
+        font-size: 15px;
+        color: var(--dustyolive-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
     }
 
 
@@ -87,7 +97,7 @@
     .detailes-product-info .product-description {
         font-size: 20px;
         line-height: 1.7;
-        color: #666;
+        color: var(--dustyolive-color);
         margin-bottom: 30px;
     }
 
@@ -104,18 +114,18 @@
 .price-main {
     font-size: 25px;
     font-weight: 500;
-    color: #333;
+    color: var(--evergreen-color);
     margin-bottom: 8px;
 }
 
 .price-unit {
     font-size: 16px;
     font-weight: 400;
-    color: #666;
+    color: var(--dustyolive-color);
 }
 
 .price-discount {
-    color: #856404;
+    color: var(--evergreen-color);
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 14px;
@@ -144,8 +154,16 @@
 }
 
 .spec-value {
-    color: #666;
+    color: var(--evergreen-color);
     font-size: 14px;
+}
+
+    .spec-value div ul li {
+        color: var(--evergreen-color) !important;
+    }
+
+.row div span{
+    color: var(--evergreen-color) !important;
 }
 
 /* Colors Section */
@@ -202,7 +220,7 @@
 
 /* Order Form */
 .order-form {
-/*    border-top: 1px solid #e0e0e0;*/
+
     padding-top: 30px;
 }
 
@@ -222,6 +240,7 @@
     display: flex;
     align-items: center;
 /*    gap: 15px;*/
+
     width: 200px;
 }
 
@@ -229,7 +248,7 @@
     width: 40px;
     height: 40px;
     border: 1px solid #ddd;
-    background: white;
+    background: var(--cotton-color);
     border-radius: 4px;
     font-size: 20px;
     cursor: pointer;
@@ -254,8 +273,8 @@
 .add-to-cart-btn-main {
     width: 100%;
     padding: 16px 24px;
-    background: #e91e63;
-    color: white;
+    background: var(--evergreen-color);
+    color: var(--cotton-color);
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -271,9 +290,9 @@
 }
 
     .add-to-cart-btn-main:hover {
-        background: #c2185b;
+        background: var(--dustyolive-color);
+        color:var(--evergreen-color);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
     }
 
 /* Related Products */
@@ -329,7 +348,8 @@
     align-items: center;
     justify-content: center;
 }
-.related-product-card {
+.related-
+{
     text-decoration: none;
     color: inherit;
     transition: transform 0.3s;
@@ -378,7 +398,7 @@
 
 /* Newsletter */
 .newsletter-section {
-    background: #f9f9f9;
+    background: var(--cotton-color);
     padding: 60px 0;
     margin-top: 80px;
     text-align: center;
@@ -388,11 +408,12 @@
     font-size: 24px;
     font-weight: 600;
     margin: 0 0 10px 0;
+    color: var(--evergreen-color);
 }
 
 .newsletter-subtitle {
     font-size: 15px;
-    color: #666;
+    color: var(--evergreen-color);
     margin-bottom: 30px;
 }
 
@@ -406,15 +427,15 @@
 .newsletter-input {
     flex: 1;
     padding: 14px 20px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--evergreen-color);
     border-radius: 4px;
     font-size: 15px;
 }
 
 .newsletter-btn {
     padding: 14px 30px;
-    background: #333;
-    color: white;
+    background: var(--evergreen-color);
+    color: var(--cotton-color);
     border: none;
     border-radius: 4px;
     font-weight: 600;
@@ -423,8 +444,30 @@
 }
 
     .newsletter-btn:hover {
-        background: #000;
+        color: var(--evergreen-color);
+        background: var(--jade-color);
     }
+
+
+
+.accordion-collapse {
+    background-color: var(--jade-color) !important;
+}
+.accordion-header .accordion-button {
+    background-color: var(--jade-color) !important;
+    color: var(--cotton-color) !important;
+}
+.accordion-body {
+    color: var(--evergreen-color) !important;
+}
+
+
+
+
+
+
+
+
 
 /* Responsive */
 @media (max-width: 968px) {

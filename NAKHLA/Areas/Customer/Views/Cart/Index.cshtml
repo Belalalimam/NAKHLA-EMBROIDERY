@@ -179,11 +179,11 @@
                     </div>
                     <div class="shipping-methods">
                         <div class="shipping-method">
-                            <input type="radio" id="standard" name="shipping" checked value="5.99">
+                            <input type="radio" id="standard" name="shipping" class="inputCheck" checked value="5.99">
                             <label for="standard">Standard Shipping: € 5.99</label>
                         </div>
                         <div class="shipping-method">
-                            <input type="radio" id="express" name="shipping" value="12.99">
+                                <input type="radio" id="express" name="shipping" class="inputCheck" value="12.99">
                             <label for="express">Express Shipping: € 12.99</label>
                         </div>
                     </div>
@@ -210,7 +210,6 @@
                     <div class="alternative-payments">
                         <p>Or checkout with:</p>
                         <button type="button" class="paypal-btn" onclick="processPayPal()">PayPal</button>
-                        <button type="button" class="apple-pay-btn" onclick="processApplePay()">Apple Pay</button>
                     </div>
                 </div>
 
@@ -237,7 +236,8 @@
                 // Update shipping display - you might want to AJAX update
                 console.log('Shipping updated to:', shippingCost);
 
-                // Show loading state
+                // 
+                //  loading state
                 const shippingPrice = document.querySelector('.shipping-price');
                 if (shippingPrice) {
                     shippingPrice.textContent = '€ ' + shippingCost.toFixed(2);

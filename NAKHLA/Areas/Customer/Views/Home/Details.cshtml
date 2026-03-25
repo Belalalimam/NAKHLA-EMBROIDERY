@@ -88,8 +88,9 @@
 
 
             <!-- Product Info -->
-            <div class="">
-                <div class="detailes-product-info px-4">
+            <div class="bordre1">
+
+                <div class="detailes-product-info px-4 ">
                     <h1 class="detailes-product-title ">@Model.Product.Name</h1>
                     <div class="detailes-product-code ">@Model.Product.SKU</div>
                     
@@ -142,32 +143,28 @@
                         }
                     </div>
 
-                    <div style="font-size:17px;" class="mt-4">
+                                        <div style="font-size:17px; color:var(--dustyolive-color);" class="mt-4">
                         Shipping in <b>2 business days</b>.
                     </div>
 
 
 
                     <!-- Order Form -->
-                    <div class="order-form container ">
-                        <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart" class="row  ">
+                    <div class="order-form ">
+                        <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart" class="d-flex justify-content-evenly align-items-center " >
                             <input type="hidden" name="ProductId" value="@Model.Product.Id">
 
-                            <div class="form-group col-3">
-                                <div class="quantity-control">
+                            <div class="form-group ">
+                                <div class="quantity-control ">
                                     <button type="button" class="quantity-btn" onclick="decrementQuantity()">-</button>
                                     <input type="number" name="count" id="quantityInput" value="1" min="1" max="@Model.Product.StockQuantity" class="quantity-input">
                                     <button type="button" class="quantity-btn" onclick="incrementQuantity()">+</button>
                                 </div>
                             </div>
 
-                            <div class="form-group col-9">
-                                <button type="submit" class="add-to-cart-btn-main">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4" />
-                                        <line x1="3" y1="6" x2="21" y2="6" />
-                                        <path d="M16 10a4 4 0 01-8 0" />
-                                    </svg>
+                            <div class="form-group">
+                                <button type="submit" class="add-to-cart-btn-main ">
+                                    
                                     Add to Cart
                                 </button>
                             </div>
@@ -181,7 +178,7 @@
                     <div class="container  ">
                         <div class="row">
 
-                                <div class="col-12 d-flex flex-column border justify-content-center align-items-center px-5 py-3 rounded-top-5">
+                                <div class="col-12 d-flex flex-column borderContainer justify-content-center align-items-center px-5 py-3 rounded-top-5">
                                     <span class="spec-label">Composition:</span>
                                         <span class="spec-value">
                                             <div class="product-compositions mt-3">
@@ -211,7 +208,7 @@
                         <div class="row">
                             @if (Model.Product.Height.HasValue)
                             {
-                                <div class="col-6 d-flex flex-column border justify-content-center align-items-center px-5 py-3">
+                                <div class="col-6 d-flex flex-column borderContainer justify-content-center align-items-center px-5 py-3">
                                     <span class="spec-label">Height:</span>
                                     <span class="spec-value">@Model.Product.Height cm</span>
                                 </div>
@@ -219,14 +216,14 @@
 
                             @if (Model.Product.Weight.HasValue)
                             {
-                                <div class="col-6 d-flex flex-column border justify-content-center align-items-center px-5 py-3">
+                                <div class="col-6 d-flex flex-column borderContainer justify-content-center align-items-center px-5 py-3">
                                     <span class="spec-label">Weight:</span>
                                     <span class="spec-value">@Model.Product.Weight g/m</span>
                                 </div>
                             }
                             @if (Model.Product.Width.HasValue)
                             {
-                                <div class="col-6 d-flex flex-column border justify-content-center align-items-center px-5 py-3">
+                                <div class="col-6 d-flex flex-column borderContainer justify-content-center align-items-center px-5 py-3">
                                     <span class="spec-label">Width:</span>
                                     <span class="spec-value">@Model.Product.Width cm</span>
                                 </div>
@@ -236,9 +233,9 @@
                         <div class="row">
                             @if (Model.Product.ProjectCategories != null && Model.Product.ProjectCategories.Any())
                             {
-                                <div class="col-12 d-flex border justify-content-center align-items-center flex-column px-5 py-3 gap-3">
+                                <div class="col-12 d-flex borderContainer justify-content-center align-items-center flex-column px-5 py-3 gap-3">
                                   <span class="spec-label">PROJECT</span>
-                                <div class="d-flex justify-content-center align-items-center flex-row">
+                                    <div class="d-flex justify-content-center align-items-center flex-row">
                                     @foreach (var category in Model.Product.ProjectCategories)
                                     {
                                         <a href="#">
@@ -247,14 +244,14 @@
                                             </div>
                                         </a>
                                     }
-                                </div>
+                                    </div>
                                 </div>
                             }
                         </div>
                         <div class="row">
                             @if (Model.Product.Category != null)
                             {
-                                <div class="col-12 d-flex flex-column border justify-content-center align-items-center px-5 py-3 rounded-bottom-5">
+                                                    <div class="col-12 d-flex flex-column borderContainer justify-content-center align-items-center px-5 py-3 rounded-bottom-5">
                                     <span class="spec-label">Care Instructions:</span>
                                     <div>
                                         <i class="ri-shopping-bag-2-line"></i>
@@ -270,34 +267,47 @@
 
                     <!-- Accordion -->
                     <div class="accordion accordion-flush mt-4" id="accordionFlushExample">
+
+
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                     Fabric Details
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                                <div class="detailes-product-code">
-                                    
-                                    @* <div>@Model.Product.Color.Name</div> *@
-                                                        <div class="product-info-item mb-3">
-                                                            <h6 class="text-uppercase fw-bold">اللون المتاح:</h6>
-                                                            @if (Model.Product.Color != null)
-                                                            {
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="color-box me-3"
-                                                                         style="background-color: @Model.Product.Color.HexCode; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #eee;">
-                                                                    </div>
-                                                                    <div>
-                                                                        <span class="d-block fw-bold">@Model.Product.Color.Name</span>
-                                                                        <small class="text-muted">@Model.Product.Color.HexCode</small>
-                                                                    </div>
-                                                                </div>
-                                                            }
-                                                        </div>
+
+
+
+
+
+                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                <div class="detailes-product-code1 mx-2">                                    
+                                    <div class="product-info-item ">
+                                        <h6 class="text-uppercase fw-bold">Color Is :</h6>
+                                        @if (Model.Product.Color != null)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <div class="color-box me-3"
+                                                        style="background-color: @Model.Product.Color.HexCode; width: 40px; height: 40px; border-radius: 8px; border: 2px solid #eee;">
+                                                </div>
+                                                <div>
+                                                    <span class="d-block fw-bold">@Model.Product.Color.Name</span>
+                                                    <small class="text-muted">@Model.Product.Color.HexCode</small>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
+
+
+
                         </div>
+
+
+
+
+
                         <div class="accordion-item">
                             <h2 class="accordion-header rounded-5">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -364,7 +374,8 @@
                             <div class="product-info">
                                 <h3>@item.Name</h3>
 
-                                <div class="rowProduct split bottom px-3">
+                                <div class="
+                                    split bottom px-3">
                                     <span class="price">€ @item.Price / m</span>
                                     <span class="stock">@item.StockQuantity m</span>
                                 </div>
