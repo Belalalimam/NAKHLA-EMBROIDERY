@@ -55,6 +55,8 @@
                                 }
                             </div>
 
+                                
+
                             <div class="quantity-col">
                                 <div class="quantity-control">
                                     <a class="qty-btn" asp-action="DecrementProduct" asp-route-productId="@item.ProductId">-</a>
@@ -87,22 +89,23 @@
                 </div>
 
                 <div class="cart-actions">
-                    <div class="coupon-section">
-                        @if (!string.IsNullOrEmpty(Model.PromotionCode))
-                        {
-                            <div class="applied-promotion">
-                                <span>Applied Promotion: <strong>@Model.PromotionName (@Model.PromotionCode)</strong></span>
-                                <a href="@Url.Action("Index", new { clearPromo = true })" class="remove-promo">Remove</a>
-                            </div>
-                        }
-                        else
-                        {
-                            <form method="get" class="coupon-form">
-                                <input type="text" name="code" class="coupon-input" placeholder="Enter coupon code">
-                                <button type="submit" class="apply-btn">Apply Coupon</button>
-                            </form>
-                        }
-                    </div>
+                        <div class="coupon-section">
+                            @if (!string.IsNullOrEmpty(Model.PromotionCode))
+                            {
+                                <div class="applied-promotion">
+                                    <span>Applied Promotion: <strong>@Model.PromotionName (@Model.PromotionCode)</strong></span>
+                                    @* التصحيح هنا: جعلنا الپارامتر removePromo ليطابق الكنترولر *@
+                                    <a href="@Url.Action("Index", "Cart", new { removePromo = true })" class="remove-promo">Remove</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-action="Index" asp-controller="Cart" method="get" class="coupon-form">
+                                    <input type="text" name="code" class="coupon-input" placeholder="Enter coupon code">
+                                    <button type="submit" class="apply-btn">Apply Coupon</button>
+                                </form>
+                            }
+                        </div>
 
                     <a asp-action="ClearCart" class="clear-cart-btn"
                        onclick="return confirm('Are you sure you want to clear your entire cart?')">
@@ -158,15 +161,14 @@
                     <span>SUBTOTAL</span>
                     <span>€ @Model.FormattedSubtotal</span>
                 </div>
-
                 @if (Model.Discount > 0)
                 {
                     <div class="total-row discount">
                         <span>DISCOUNT</span>
-                        <span>-€ @Model.FormattedDiscount</span>
+                        @* فورمات العملة مباشرة لضمان الظهور *@
+                        <span>-€ @Model.Discount.ToString("N2")</span>
                     </div>
                 }
-
                 <div class="shipping-info">
                     <div class="shipping-label">
                         SHIPPING

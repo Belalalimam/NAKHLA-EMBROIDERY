@@ -31,122 +31,76 @@ namespace NAKHLA.Areas.Customer.Controllers
             _logger = logger;
         }
 
-        // GET: /Customer/Cart
+        // GET: /Customer/Cart        
         [HttpGet]
-        public async Task<IActionResult> Index(string? code = null, bool clear = false)
+        public async Task<IActionResult> Index(string? code = null, bool removePromo = false)
         {
-            try
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cartItems = (await _cartRepository.GetAsync(e => e.ApplicationUserId == userId, includes: [e => e.Product])).ToList();
+
+            // حذف الكوبون وإعادة الأسعار الأصلية
+            if (removePromo)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(userId))
+                HttpContext.Session.Remove("AppliedPromotionCode");
+                foreach (var item in cartItems)
                 {
-                    TempData["error-notification"] = "Please login to view your cart";
-                    return RedirectToAction("Login", "Account", new { area = "Identity" });
+                    item.Price = item.Product.Price;
+                    await _cartRepository.UpdateAsync(item);
                 }
-
-                if (clear)
-                    return await ClearCart();
-
-                var cartItems = await _cartRepository.GetAsync(
-                    e => e.ApplicationUserId == userId,
-                    includes: [e => e.Product, e => e.Product.Category, e => e.Product.Brand]
-                );
-
-                if (!string.IsNullOrEmpty(code))
-                {
-                    var promotion = await _promotionRepository.GetOneAsync(
-                        e => e.Code.ToLower() == code.ToLower() && e.IsCurrentlyActive
-                    );
-
-                    if (promotion != null)
-                    {
-                        if (!promotion.CanCombineWithOtherPromotions && cartItems.Any(e => e.Price < e.Product.Price))
-                        {
-                            TempData["error-notification"] = "This promotion cannot be combined with other discounts";
-                        }
-                        else
-                        {
-                            var cartTotal = cartItems.Sum(e => e.Product.Price * e.Count);
-                            if (promotion.MinimumPurchaseAmount.HasValue && cartTotal < promotion.MinimumPurchaseAmount.Value)
-                            {
-                                TempData["error-notification"] = $"Minimum purchase of ${promotion.MinimumPurchaseAmount.Value} required for this promotion";
-                            }
-                            else
-                            {
-                                bool promotionApplied = false;
-
-                                foreach (var item in cartItems)
-                                {
-                                    if (!promotion.IsApplicableToProduct(item.Product))
-                                        continue;
-
-                                    var itemDiscount = promotion.CalculateDiscount(item.Product.Price, item.Count);
-                                    if (itemDiscount <= 0)
-                                        continue;
-
-                                    item.Price = item.Product.Price - (itemDiscount / item.Count);
-                                    promotionApplied = true;
-                                    await _cartRepository.UpdateAsync(item);
-                                }
-
-                                if (promotionApplied)
-                                {
-                                    await _cartRepository.CommitAsync();
-                                    HttpContext.Session.SetString("AppliedPromotionCode", promotion.Code);
-                                    HttpContext.Session.SetString("AppliedPromotionName", promotion.Name);
-                                    TempData["success-notification"] = $"Promo code '{promotion.Code}' applied successfully! {promotion.DiscountValue}% discount";
-                                }
-                                else
-                                {
-                                    TempData["error-notification"] = "Promotion not applicable to any items in your cart";
-                                }
-                            }
-                        }
-
-                        // Refresh cart items after applying promotion
-                        cartItems = await _cartRepository.GetAsync(
-                            e => e.ApplicationUserId == userId,
-                            includes: [e => e.Product, e => e.Product.Category, e => e.Product.Brand]
-                        );
-                    }
-                    else
-                    {
-                        TempData["error-notification"] = "Invalid or expired promo code";
-                    }
-                }
-
-                // ================== CALCULATIONS ==================
-                var subtotal = cartItems.Sum(e => e.Price * e.Count);
-                var discount = cartItems.Sum(e => (e.Product.Price - e.Price) * e.Count);
-                var shipping = 0m;
-                var tax = 0m;
-                var total = subtotal + shipping + tax;
-
-                var suggestedProducts = await _productRepository.GetAsync(
-                    p => p.Status && !p.IsDeleted && p.IsFeatured
-                );
-
-                var vm = new CartVM
-                {
-                    CartItems = cartItems.ToList(),
-                    Subtotal = subtotal,
-                    Discount = discount,
-                    Shipping = shipping,
-                    Tax = tax,
-                    Total = total,
-                    PromotionCode = HttpContext.Session.GetString("AppliedPromotionCode"),
-                    PromotionName = HttpContext.Session.GetString("AppliedPromotionName"),
-                    SuggestedProducts = suggestedProducts.ToList()
-                };
-
-                return View(vm);
+                await _cartRepository.CommitAsync();
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+
+            // حفظ الكود الجديد في السيشن وعمل Refresh
+            if (!string.IsNullOrEmpty(code))
             {
-                _logger.LogError(ex, "Error loading cart");
-                TempData["error-notification"] = "An error occurred while loading your cart";
-                return RedirectToAction("Index", "Home");
+                HttpContext.Session.SetString("AppliedPromotionCode", code);
+                return RedirectToAction(nameof(Index));
             }
+
+            var appliedCode = HttpContext.Session.GetString("AppliedPromotionCode");
+            Promotion? promotion = null;
+            if (!string.IsNullOrEmpty(appliedCode))
+            {
+                // تم الحل: استدعاء الحقول الأساسية فقط لتجنب الخطأ الذي ظهر بالصورة
+                promotion = await _promotionRepository.GetOneAsync(e => e.Code.ToLower() == appliedCode.ToLower() && e.IsActive && e.IsValid);
+            }
+
+            decimal subtotalOriginal = 0;
+            decimal totalDiscount = 0;
+
+            foreach (var item in cartItems)
+            {
+                subtotalOriginal += item.Product.Price * item.Count;
+
+                // التحقق من الصلاحية يتم هنا في الذاكرة (C#)
+                if (promotion != null && promotion.IsCurrentlyActive && promotion.IsApplicableToProduct(item.Product))
+                {
+                    decimal discountPerUnit = promotion.CalculateDiscount(item.Product.Price, 1);
+                    item.Price = item.Product.Price - discountPerUnit;
+                    totalDiscount += (discountPerUnit * item.Count);
+                }
+                else
+                {
+                    item.Price = item.Product.Price;
+                }
+                await _cartRepository.UpdateAsync(item);
+            }
+            await _cartRepository.CommitAsync();
+
+            // تعبئة الموديل بالقيم التي ينتظرها الـ View الخاص بك
+            var vm = new CartVM
+            {
+                CartItems = cartItems,
+                Subtotal = subtotalOriginal,      // سيظهر في خانة SUBTOTAL
+                Discount = totalDiscount,          // سيظهر في خانة DISCOUNT
+                Shipping = 5.99m,
+                Total = (subtotalOriginal - totalDiscount) + 5.99m, // سيظهر في خانة TOTAL
+                PromotionCode = appliedCode,
+                PromotionName = promotion?.Name
+            };
+
+            return View(vm);
         }
 
 
