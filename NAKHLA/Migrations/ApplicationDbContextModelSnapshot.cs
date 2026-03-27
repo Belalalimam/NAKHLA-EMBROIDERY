@@ -283,7 +283,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Cart", b =>
@@ -313,7 +313,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Category", b =>
@@ -385,7 +385,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categorise");
+                    b.ToTable("Categorise", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Color", b =>
@@ -413,7 +413,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colors");
+                    b.ToTable("Colors", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Composition", b =>
@@ -437,7 +437,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Compositions");
+                    b.ToTable("Compositions", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.FabricType", b =>
@@ -465,7 +465,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FabricTypes");
+                    b.ToTable("FabricTypes", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Order", b =>
@@ -658,7 +658,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.OrderItem", b =>
@@ -703,7 +703,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Product", b =>
@@ -900,7 +900,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("FabricTypeId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductAttribute", b =>
@@ -932,7 +932,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttributes");
+                    b.ToTable("ProductAttributes", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductComposition", b =>
@@ -958,7 +958,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductCompositions");
+                    b.ToTable("ProductCompositions", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductImage", b =>
@@ -986,7 +986,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("productImages");
+                    b.ToTable("productImages", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductReview", b =>
@@ -1024,7 +1024,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReviews");
+                    b.ToTable("ProductReviews", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProductTag", b =>
@@ -1052,7 +1052,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTags");
+                    b.ToTable("ProductTags", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.ProjectCategory", b =>
@@ -1083,7 +1083,7 @@ namespace NAKHLA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectCategories");
+                    b.ToTable("ProjectCategories", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.Promotion", b =>
@@ -1215,7 +1215,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Promotions");
+                    b.ToTable("Promotions", (string)null);
                 });
 
             modelBuilder.Entity("NAKHLA.Models.UserOTP", b =>
@@ -1244,7 +1244,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("UserOTPs");
+                    b.ToTable("UserOTPs", (string)null);
                 });
 
             modelBuilder.Entity("ProductProductTag", b =>
@@ -1259,7 +1259,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("ProductProductTag");
+                    b.ToTable("ProductProductTag", (string)null);
                 });
 
             modelBuilder.Entity("ProductProjectCategory", b =>
@@ -1274,7 +1274,7 @@ namespace NAKHLA.Migrations
 
                     b.HasIndex("ProjectCategoriesId");
 
-                    b.ToTable("ProductProjectCategory");
+                    b.ToTable("ProductProjectCategory", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -620,39 +620,39 @@ swiper-slide img {
 .empty-cart {
     text-align: center;
     padding: 60px 20px;
-    background: #f9f9f9;
+    background: var(--jade-color);
     border-radius: 8px;
-    border: 2px dashed #ddd;
 }
 
     .empty-cart h3 {
-        color: #666;
+        color: var(--evergreen-color);
         margin-bottom: 15px;
         font-size: 22px;
     }
 
     .empty-cart p {
-        color: #888;
+        color: var(--evergreen-color);
         margin-bottom: 25px;
         font-size: 16px;
     }
 
 .continue-shopping-btn {
     display: inline-block;
-    text-decoration: none;    
+    text-decoration: none;
     font-weight: 600;
     font-size: 16px;
     transition: background-color 0.2s;
-    background: #1A1A1A;
-/*    color: #C5A059;
+    background: var(--evergreen-color)  ;
+    color:var(--cotton-color);
+    /*    color: #C5A059;
     border: 1px solid #C5A059;*/
     padding: 12px 30px;
     border-bottom: none;
 }
 
     .continue-shopping-btn:hover {
-        background: #C5A059;
-        color: #1A1A1A;
+        background: var(--cotton-color);
+        color: var(--evergreen-color);
     }
 
 /* Responsive Design */

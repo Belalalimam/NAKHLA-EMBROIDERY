@@ -10,7 +10,7 @@ namespace NAKHLA.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("insert into ProductColors (ProductId, Name, Color) values (60, 'Black', '#000000');\r\ninsert into ProductColors (ProductId, Name, Color) values (61, 'Black', '#000000');\r\ninsert into ProductColors (ProductId, Name, Color) values (62, 'Black', '#000000');insert into ProductColors (ProductId, Name, Color) values (60, 'Black', '#000000');\r\ninsert into ProductColors (ProductId, Name, Color) values (61, 'Black', '#000000');\r\ninsert into ProductColors (ProductId, Name, Color) values (62, 'Black', '#000000');");
+            migrationBuilder.Sql("insert into ProductColors (ProductId, Name, Color) values (3, 'Black', '#000000');");
         }
 
         /// <inheritdoc />

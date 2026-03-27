@@ -12,23 +12,37 @@
 
 /* container */
 .container2 {
-    background-color: #fff;
+    background-color: var(--jade-color);
     width: 400px;
     border-radius: 15px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.2);
     overflow: hidden;
     
 }
+.container2 button{
+    background-color:var(--evergreen-color) !important;
+}
 
 /* form */
 .form-container {
     padding: 40px;
 }
+    .form-container .LoginSpanEdited {
+        color: var(--evergreen-color);
+    }
+    .form-container button {
+        background-color: var(--evergreen-color) !important;
+        color: var(--cotton-color);
+    }
+        .form-container button:hover {
+            background-color: var(--cotton-color) !important;
+            color: var(--evergreen-color);
+        }
 
     .form-container h1 {
         text-align: center;
         margin-bottom: 20px;
-        color: #333;
+        color: var(--evergreen-color);
     }
 
 /* social icons */
